@@ -94,6 +94,26 @@ function getDeviceInfo() {
     return `${os} (${device})`;
 }
 
+async function forceUpdate() {
+    console.log('🔄 กำลังล้างแคชและอัปเดตแอป...');
+    if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (let registration of registrations) {
+            await registration.unregister();
+        }
+    }
+
+    // Clear Caches
+    if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+    }
+
+    // Refresh
+    window.location.reload(true);
+}
+window.forceUpdate = forceUpdate;
+
 // Router Setup
 function initRouter() {
     router

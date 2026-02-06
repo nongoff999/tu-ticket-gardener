@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tu-ticket-v1';
+const CACHE_NAME = 'tu-ticket-v2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -9,16 +9,15 @@ const ASSETS_TO_CACHE = [
     './js/data.js',
     './js/firebase.js',
     './js/router.js',
-    './js/components.js',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Kanit:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap',
-    'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200'
+    './js/components.js'
 ];
 
 // Install Event
 self.addEventListener('install', (event) => {
+    self.skipWaiting(); // Force update
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('✅ Service Worker: Caching Assets');
+            console.log('✅ Service Worker: Caching App Shell');
             return cache.addAll(ASSETS_TO_CACHE);
         })
     );
@@ -38,18 +37,27 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
+    return self.clients.claim();
 });
 
 // Fetch Event
 self.addEventListener('fetch', (event) => {
-    // Skip Firebase and external API calls for basic caching
-    if (event.request.url.includes('firebaseio.com') || event.request.url.includes('firestore')) {
-        return;
+    // Let external resources (Google Fonts, Google Images) pass through normally
+    // unless we specifically want to cache them later.
+    const isExternal = event.request.url.startsWith('http');
+    const isLocal = event.request.url.includes(self.location.origin);
+
+    if (!isLocal && !event.request.url.includes('fonts.googleapis.com')) {
+        return; // Let browser handle external requests
     }
 
     event.respondWith(
         caches.match(event.request).then((response) => {
-            return response || fetch(event.request);
+            // Return cache if found, otherwise fetch from network
+            return response || fetch(event.request).catch(() => {
+                // Optional: Return a fallback for images if offline
+                console.log('🌐 Fetch failed, possibly offline');
+            });
         })
     );
 });

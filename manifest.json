@@ -1,0 +1,22 @@
+{
+    "name": "TU Ticket Gardener",
+    "short_name": "TU Tickets",
+    "description": "ระบบจัดการทิคเก็ตงานดูแลต้นไม้ มหาวิทยาลัยธรรมศาสตร์ ศูนย์รังสิต",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#0284c7",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230284c7'/><text y='.7em' x='5' font-size='70'>🌳</text></svg>",
+            "sizes": "192x192",
+            "type": "image/svg+xml"
+        },
+        {
+            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230284c7'/><text y='.7em' x='5' font-size='70'>🌳</text></svg>",
+            "sizes": "512x512",
+            "type": "image/svg+xml"
+        }
+    ]
+}
