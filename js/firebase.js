@@ -16,7 +16,7 @@
 const firebaseConfig = {
     apiKey: "AIzaSyBBgYv_UyZPJUvf10J_ubf1rN6dtA5pBQE",
     authDomain: "tu-ticket-gardener.firebaseapp.com",
-    databaseURL: "https://tu-ticket-gardener-default-rtdb.firebaseio.com",
+    databaseURL: "https://tu-ticket-gardener-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "tu-ticket-gardener",
     storageBucket: "tu-ticket-gardener.firebasestorage.app",
     messagingSenderId: "218235165872",
