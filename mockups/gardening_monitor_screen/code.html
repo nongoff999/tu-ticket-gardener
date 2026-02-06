@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="light" lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Garden Monitor with Updated Status Label</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&amp;family=Material+Icons+Outlined&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1E293B",
+                        "urgent-bg": "#FFF0F3",
+                        "urgent-text": "#E11D48",
+                        "normal-bg": "#FEF3C7",
+                        "normal-text": "#D97706",
+                        "progress-bg": "#E0F2FE",
+                        "progress-text": "#0369A1",
+                        "success-bg": "#DCFCE7",
+                        "success-text": "#15803D",
+                        "background-light": "#F8FAFC",
+                    },
+                    fontFamily: {
+                        display: ["Kanit", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Kanit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+        }
+        .card-icon-bg {
+            font-size: 70px;
+            position: absolute;
+            right: -8px;
+            bottom: -8px;
+            opacity: 0.12;
+            transform: rotate(-15deg);
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<header class="sticky top-0 z-50 bg-white dark:bg-slate-900 px-4 py-4 flex items-center justify-between shadow-sm border-b border-slate-100 dark:border-slate-800">
+<button class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-white rounded-full transition-colors">
+<span class="material-icons-outlined block text-2xl">arrow_back</span>
+</button>
+<h1 class="text-lg font-semibold text-slate-900 dark:text-white uppercase tracking-tight">Garden Monitor</h1>
+<div class="w-10"></div>
+</header>
+<main class="max-w-md mx-auto w-full flex-grow">
+<div class="px-4">
+<div class="grid grid-cols-2 gap-3 mt-4">
+<div class="bg-urgent-bg dark:bg-rose-950/30 p-4 rounded-2xl relative overflow-hidden h-24 flex flex-col justify-between border border-rose-100/50">
+<div>
+<span class="text-urgent-text dark:text-rose-400 font-semibold text-xs">ทิคเก็ตเร่งด่วน</span>
+</div>
+<div class="text-3xl font-bold text-slate-900 dark:text-white">3</div>
+<span class="material-symbols-outlined card-icon-bg text-urgent-text">notifications</span>
+</div>
+<div class="bg-normal-bg dark:bg-amber-950/30 p-4 rounded-2xl relative overflow-hidden h-24 flex flex-col justify-between border border-amber-100/50">
+<div>
+<span class="text-normal-text dark:text-amber-400 font-semibold text-xs">ทิคเก็ตปกติ</span>
+</div>
+<div class="text-3xl font-bold text-slate-900 dark:text-white">12</div>
+<span class="material-symbols-outlined card-icon-bg text-normal-text">confirmation_number</span>
+</div>
+</div>
+<div class="mt-4">
+<div class="relative group">
+<span class="material-icons-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="w-full pl-11 pr-4 py-2 bg-white dark:bg-slate-800 border-none rounded-xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-slate-400 transition-all text-sm outline-none" placeholder="ค้นหาทิคเก็ต..." type="text"/>
+</div>
+</div>
+</div>
+<div class="mt-4 relative">
+<div class="flex gap-2 overflow-x-auto no-scrollbar px-4 pb-1">
+<button class="px-4 py-1.5 bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 rounded-full text-xs font-medium whitespace-nowrap">ทั้งหมด</button>
+<button class="px-4 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-full text-xs font-medium whitespace-nowrap">ทิคเก็ตใหม่</button>
+<button class="px-4 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-full text-xs font-medium whitespace-nowrap">ระหว่างดำเนินการ</button>
+<button class="px-4 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-full text-xs font-medium whitespace-nowrap">เสร็จสิ้น</button>
+<div class="w-4 flex-shrink-0"></div>
+</div>
+</div>
+<div class="px-4 mt-3 space-y-3 pb-10">
+<div class="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="text-slate-400 font-bold text-xs">#312</span>
+<h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">ต้นไม้โค่นล้ม</h3>
+</div>
+<span class="bg-normal-bg text-normal-text text-[10px] px-2 py-0.5 rounded-full font-medium">ทิคเก็ตใหม่</span>
+</div>
+<div class="flex items-center gap-x-3 text-slate-500 dark:text-slate-400 mb-2">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="text-[10px]">โซน ถนนและไหล่ทาง (A2)</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span class="text-[10px]">24 มี.ค. 2023 • 11:33</span>
+</div>
+</div>
+<div class="mb-2.5 overflow-hidden rounded-lg">
+<div class="flex gap-1.5 overflow-x-auto no-scrollbar">
+<img alt="Large fallen tree" class="w-28 h-16 object-cover rounded-md flex-shrink-0 bg-slate-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ-TUHuzR0fYCG9DKxqmdSu-1wLRuumb3cuZT2rcbHAflKhe_RtuIz3x806Sot2yG0xb0IaKX4FjIpYR1AK18OpNbYa7cpKmCj38T3Qy9GREkL9MSKvRwRiy45iSWgMzqMIo4kQT-UmQATMBNWBGhIr-jR2B7HBCBKOsuUzbkobWTsFLO-h-L9b7h812tt5vB8u5In6bATD_VjQ_EqFAAYvcKLYStiz_8NfAM0DgiAQIEszuzXr0c_x1E3lmPeDrKwF3P_s8Bt79A"/>
+<img alt="Snapped tree trunk" class="w-28 h-16 object-cover rounded-md flex-shrink-0 bg-slate-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCl4CfONdV-UlMcG6Mo0gJGrx2yewJ_2fbmVjBCa24kfYrauSYDomkssIJPQDR54JPJg85O7pYCHy36Bc8g4x7aBOc3x8QVKHfWxpk6bCuO6KsMaj82Kgl3zE81I1ImHvCVmSCLkSzdfz13pFhlL-Cf1sPMBbHyv3cqNMReDVkeYzSz3Wkb-7qRJsbrBEAXlAB5fTRnQn1uGDnr4012SA0nd_pXLnpbw9GCXJcYKEjrPB_sxyqa_rl3F9VRD-66Rs1OAnxTKpMlBkk"/>
+<img alt="Garden debris" class="w-28 h-16 object-cover rounded-md flex-shrink-0 bg-slate-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCim0ELNf7dmQJ5xW13c8TlaJuFY3bE8MU8P0id5V3BL6bRmwNPSU5u4AAysG4650C4__iyl6RHQKNfqv2azh60cSAI57Zy2u1gSTm5NNBc0QxONasnTiDA76MYC0FdTFMsZh5Rp5PB_rR3EkQrN9iFE3x_YN7f9cuJ8E536G-L3Pmeich-pcDxClKRgXs5Qs9IxvF4RXLCR36oR6JFhTBJwZqKsGoKjy_3Ms39EK9GdK1Pri64i4w3bW1m_P5WlwREq5BarSOfaSo"/>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-50 dark:border-slate-700/50 pt-2">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-1.5">
+<img alt="Staff" class="w-5 h-5 rounded-full border border-white dark:border-slate-800 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC48Pmiofe-BRMFwVjyQdTOJBhEdnH_t0Jhx89IN8N9XDXT1QPkr1GptpV2V803Us4JWH0ggo-BLBkeuwHV_p-asDUl8bPQb6kOxno1TibFnQl9T761jpPpN668YopPex1oc5rv0ojO13Lh5HgmSchNAOjRAyVxIdt3DC5OUC7GE_jAm72AQkjWkEX-P89fXeS_pqXz4nq_Kr9oH1uWxLO0Rpa8bHe_p7fMmP4xVXY8BmYIG5Nw0zX7TtXYBWgDKy8FkG1n5avWfXk"/>
+<img alt="Staff" class="w-5 h-5 rounded-full border border-white dark:border-slate-800 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmwjc_sLghF6MeA8oMBOQlNFQ-ROKmKOFeqTmj-yVBGg5Yqc5G1gtIPAzeKAxWYx9mB3pOEqSgV-qYcz-7gMt3D-DxjBztvB0lThwKMaptHOLTqdRsMgPN4Pnb4g8pM5zPmiyQ16QwX12jJESIvgzqh-oQceBpKzHuR8CRO0fNG3kOB42pdCPUzi8Fqz765zQL9-bIdYqcgo002oA-QNj9ZaTIHJrnscMoG8DPuJqPYq_GScukq4ViIB29M6lL-KrP9EpMaSRRSEY"/>
+<div class="w-5 h-5 rounded-full border border-white dark:border-slate-800 bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-500">+2</div>
+</div>
+<span class="text-[10px] text-slate-400 font-medium">เจ้าหน้าที่ 4 คน</span>
+</div>
+<a class="flex items-center text-slate-800 dark:text-slate-200 font-medium text-[11px] hover:underline" href="#">
+                        ดูรายละเอียด
+                        <span class="material-icons-outlined text-sm">chevron_right</span>
+</a>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="text-slate-400 font-bold text-xs">#311</span>
+<h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">ตัดแต่งกิ่งไม้ประจำปี</h3>
+</div>
+<span class="bg-progress-bg text-progress-text text-[10px] px-2 py-0.5 rounded-full font-medium">ระหว่างดำเนินการ</span>
+</div>
+<div class="flex items-center gap-x-3 text-slate-500 dark:text-slate-400 mb-2">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="text-[10px]">สวนพฤกษศาสตร์ส่วนหน้า</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span class="text-[10px]">24 มี.ค. 2023 • 10:45</span>
+</div>
+</div>
+<div class="mb-2.5 overflow-hidden rounded-lg">
+<div class="flex gap-1.5 overflow-x-auto no-scrollbar">
+<img alt="Worker trimming" class="w-28 h-16 object-cover rounded-md flex-shrink-0 bg-slate-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADv61QBDFe7w-zN2Qb4QcIlWSzZ8KUetnvuFVRyXz_tu76iZDBTge-sw1i8w4d2b9dwAxwZnY-KgkrBN44IC5zjxCYwST_IW9ClUWXVdZx7ZNuUQLbuRn5XS2Qx-R0f6VACTGSopufC2P0u9W88qGsIj-h0eKOn9OQ3HfC2cp-GOfUa9liaQKR8EiyQp_ibRJVv0gGHQioihOS7OZr5BUAHbmtdOZkGsY6_WZ103kRdcmmX8Kvq-DZcTist4tPDFhRnWwG7c2mas4"/>
+<img alt="Staff cutting" class="w-28 h-16 object-cover rounded-md flex-shrink-0 bg-slate-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB614d7dFW6G3CX-uu_bmc8qC8o1MsFOZDm0v02f8gZsf2oJOtQNiXnrYlFXsz-Emdcr5JgMG3qFk9F7dG8xI9RG2uy76fQx5X9zuHWvF9ySJ3y9x03eNj0bhydAVE5ZSpOWVXI3NRew9cwJTcnqEjOt_NV0ptGIMrT8c662ZeY7CpTHKLs4zoT2xxdzzEtzcitclCFhpQ_KyVx959Bd0eYa41KpR8FpISjKQoGMvkXmCbZYzUZxsQghX77ePoleLgW5wM63S4vzg"/>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-50 dark:border-slate-700/50 pt-2">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-1.5">
+<img alt="Staff" class="w-5 h-5 rounded-full border border-white dark:border-slate-800 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXHL0XFgVKSDZJbb7p9wnLdmeejNAFF-nWbDqPlrUxm3tPDZYWd6zz0CMJRpvz2nXhh3DDxU2KzO6UmjDYxUN5jm_IKgAvfCVWnjezp_NQwpVVt1bbDvp1s6IDLCyyphd3Oe6dIlwANBonbYP3f5Z1sfP4XRxGhyivFthz0gCxWevtk-K5wnHoCMTk285vWbo9H0xuEYruAYKw2nEDQPIT8FKgJTtc4n8bF5hZcz84nPrR6VzI29EG0_z6GqJSRFGtYbPtSr0YbRA"/>
+</div>
+<span class="text-[10px] text-slate-400 font-medium">สมชาย (หัวหน้างาน)</span>
+</div>
+<a class="flex items-center text-slate-800 dark:text-slate-200 font-medium text-[11px] hover:underline" href="#">
+                        ดูรายละเอียด
+                        <span class="material-icons-outlined text-sm">chevron_right</span>
+</a>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="text-slate-400 font-bold text-xs">#310</span>
+<h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">กิ่งไม้หักขวางทางเดิน</h3>
+</div>
+<span class="bg-urgent-bg text-urgent-text text-[10px] px-2 py-0.5 rounded-full font-medium border border-rose-100">เร่งด่วน</span>
+</div>
+<div class="flex items-center gap-x-3 text-slate-500 dark:text-slate-400 mb-2">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="text-[10px]">ทางเดินข้างสระน้ำ</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span class="text-[10px]">24 มี.ค. 2023 • 09:20</span>
+</div>
+</div>
+<div class="mb-2.5 overflow-hidden rounded-lg">
+<div class="flex gap-1.5 overflow-x-auto no-scrollbar">
+<img alt="Broken branch on sidewalk" class="w-28 h-16 object-cover rounded-md flex-shrink-0 bg-slate-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCim0ELNf7dmQJ5xW13c8TlaJuFY3bE8MU8P0id5V3BL6bRmwNPSU5u4AAysG4650C4__iyl6RHQKNfqv2azh60cSAI57Zy2u1gSTm5NNBc0QxONasnTiDA76MYC0FdTFMsZh5Rp5PB_rR3EkQrN9iFE3x_YN7f9cuJ8E536G-L3Pmeich-pcDxClKRgXs5Qs9IxvF4RXLCR36oR6JFhTBJwZqKsGoKjy_3Ms39EK9GdK1Pri64i4w3bW1m_P5WlwREq5BarSOfaSo"/>
+<img alt="Blockage view" class="w-28 h-16 object-cover rounded-md flex-shrink-0 bg-slate-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCl4CfONdV-UlMcG6Mo0gJGrx2yewJ_2fbmVjBCa24kfYrauSYDomkssIJPQDR54JPJg85O7pYCHy36Bc8g4x7aBOc3x8QVKHfWxpk6bCuO6KsMaj82Kgl3zE81I1ImHvCVmSCLkSzdfz13pFhlL-Cf1sPMBbHyv3cqNMReDVkeYzSz3Wkb-7qRJsbrBEAXlAB5fTRnQn1uGDnr4012SA0nd_pXLnpbw9GCXJcYKEjrPB_sxyqa_rl3F9VRD-66Rs1OAnxTKpMlBkk"/>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-50 dark:border-slate-700/50 pt-2">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-1.5">
+<img alt="Staff" class="w-5 h-5 rounded-full border border-white dark:border-slate-800 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC48Pmiofe-BRMFwVjyQdTOJBhEdnH_t0Jhx89IN8N9XDXT1QPkr1GptpV2V803Us4JWH0ggo-BLBkeuwHV_p-asDUl8bPQb6kOxno1TibFnQl9T761jpPpN668YopPex1oc5rv0ojO13Lh5HgmSchNAOjRAyVxIdt3DC5OUC7GE_jAm72AQkjWkEX-P89fXeS_pqXz4nq_Kr9oH1uWxLO0Rpa8bHe_p7fMmP4xVXY8BmYIG5Nw0zX7TtXYBWgDKy8FkG1n5avWfXk"/>
+<img alt="Staff" class="w-5 h-5 rounded-full border border-white dark:border-slate-800 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmwjc_sLghF6MeA8oMBOQlNFQ-ROKmKOFeqTmj-yVBGg5Yqc5G1gtIPAzeKAxWYx9mB3pOEqSgV-qYcz-7gMt3D-DxjBztvB0lThwKMaptHOLTqdRsMgPN4Pnb4g8pM5zPmiyQ16QwX12jJESIvgzqh-oQceBpKzHuR8CRO0fNG3kOB42pdCPUzi8Fqz765zQL9-bIdYqcgo002oA-QNj9ZaTIHJrnscMoG8DPuJqPYq_GScukq4ViIB29M6lL-KrP9EpMaSRRSEY"/>
+</div>
+<span class="text-[10px] text-slate-400 font-medium">หน่วยเคลื่อนที่เร็ว</span>
+</div>
+<a class="flex items-center text-slate-800 dark:text-slate-200 font-medium text-[11px] hover:underline" href="#">
+                        ดูรายละเอียด
+                        <span class="material-icons-outlined text-sm">chevron_right</span>
+</a>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col opacity-90">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="text-slate-400 font-bold text-xs">#309</span>
+<h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">รดน้ำต้นไม้โซน C</h3>
+</div>
+<span class="bg-success-bg text-success-text text-[10px] px-2 py-0.5 rounded-full font-medium">เสร็จสิ้น</span>
+</div>
+<div class="flex items-center gap-x-3 text-slate-500 dark:text-slate-400 mb-2">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="text-[10px]">โซนไม้ประดับ (C)</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span class="text-[10px]">23 มี.ค. 2023 • 17:00</span>
+</div>
+</div>
+<div class="mb-2.5 overflow-hidden rounded-lg">
+<div class="flex gap-1.5 overflow-x-auto no-scrollbar">
+<img alt="Green garden area" class="w-28 h-16 object-cover rounded-md flex-shrink-0 bg-slate-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADv61QBDFe7w-zN2Qb4QcIlWSzZ8KUetnvuFVRyXz_tu76iZDBTge-sw1i8w4d2b9dwAxwZnY-KgkrBN44IC5zjxCYwST_IW9ClUWXVdZx7ZNuUQLbuRn5XS2Qx-R0f6VACTGSopufC2P0u9W88qGsIj-h0eKOn9OQ3HfC2cp-GOfUa9liaQKR8EiyQp_ibRJVv0gGHQioihOS7OZr5BUAHbmtdOZkGsY6_WZ103kRdcmmX8Kvq-DZcTist4tPDFhRnWwG7c2mas4"/>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-50 dark:border-slate-700/50 pt-2">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-1.5">
+<img alt="Staff" class="w-5 h-5 rounded-full border border-white dark:border-slate-800 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXHL0XFgVKSDZJbb7p9wnLdmeejNAFF-nWbDqPlrUxm3tPDZYWd6zz0CMJRpvz2nXhh3DDxU2KzO6UmjDYxUN5jm_IKgAvfCVWnjezp_NQwpVVt1bbDvp1s6IDLCyyphd3Oe6dIlwANBonbYP3f5Z1sfP4XRxGhyivFthz0gCxWevtk-K5wnHoCMTk285vWbo9H0xuEYruAYKw2nEDQPIT8FKgJTtc4n8bF5hZcz84nPrR6VzI29EG0_z6GqJSRFGtYbPtSr0YbRA"/>
+</div>
+<span class="text-[10px] text-slate-400 font-medium">เสร็จงานแล้ว</span>
+</div>
+<a class="flex items-center text-slate-800 dark:text-slate-200 font-medium text-[11px] hover:underline" href="#">
+                        ดูรายละเอียด
+                        <span class="material-icons-outlined text-sm">chevron_right</span>
+</a>
+</div>
+</div>
+</div>
+</main>
+
+</body></html>

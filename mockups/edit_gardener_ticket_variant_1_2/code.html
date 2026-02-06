@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html class="light" lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Add Ticket Gardener</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Sarabun:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#6366F1",
+                        vibrantBlue: "#007AFF",
+                        lavender: "#F3F4FF",
+                        "background-light": "#F9FAFB",
+                        "background-dark": "#0F172A",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "Sarabun", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "12px",
+                    },
+                },
+            },
+        };
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Sarabun', 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .ios-status-bar {
+            height: env(safe-area-inset-top, 44px);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        input[type='number']::-webkit-inner-spin-button,
+        input[type='number']::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-white dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+<div class="ios-status-bar bg-white dark:bg-slate-900"></div>
+<div class="flex items-center justify-between px-4 py-3">
+<button class="p-2 -ml-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold">Add Ticket Gardener</h1>
+<div class="w-10"></div>
+</div>
+</div>
+<main class="max-w-md mx-auto p-4">
+<div class="mb-10 pt-4">
+<div class="relative w-full px-6">
+<div class="absolute top-5 left-10 right-10 h-[2px] bg-slate-200 dark:bg-slate-700"></div>
+<div class="relative flex justify-between items-center z-10">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-vibrantBlue flex items-center justify-center text-white ring-4 ring-white dark:ring-slate-900 relative z-20">
+<span class="material-symbols-outlined text-base font-bold">check</span>
+</div>
+<span class="text-[11px] text-vibrantBlue font-bold mt-2 text-center w-20">ทิคเก็ตใหม่</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-white ring-4 ring-white dark:ring-slate-900 relative z-20">
+</div>
+<span class="text-[11px] text-slate-400 mt-2 text-center w-24">ระหว่างดำเนินการ</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-white ring-4 ring-white dark:ring-slate-900 relative z-20">
+</div>
+<span class="text-[11px] text-slate-400 mt-2 text-center w-20">ปิดทิคเก็ต</span>
+</div>
+</div>
+</div>
+</div>
+<form class="space-y-5">
+<div>
+<label class="block text-[15px] font-semibold mb-2 text-slate-800 dark:text-slate-200">
+                    ลำดับความสำคัญ <span class="text-red-500">*</span>
+</label>
+<div class="flex p-1 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+<button class="flex-1 py-2.5 text-sm font-medium rounded-lg bg-primary text-white shadow-sm transition-all" type="button">
+                        ปกติ
+                    </button>
+<button class="flex-1 py-2.5 text-sm font-medium rounded-lg text-red-500 transition-all" type="button">
+                        เร่งด่วน
+                    </button>
+</div>
+</div>
+<div>
+<label class="block text-[15px] font-semibold mb-2 text-slate-800 dark:text-slate-200">
+                    Ticket Name <span class="text-red-500">*</span>
+</label>
+<input class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" type="text" value="ต้นไม้โค่นล้ม"/>
+</div>
+<div>
+<label class="block text-[15px] font-semibold mb-2 text-slate-800 dark:text-slate-200">
+                    Ticket Description
+                </label>
+<textarea class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none" placeholder="รายละเอียดของปัญหา" rows="4"></textarea>
+</div>
+<div>
+<label class="block text-[15px] font-semibold mb-2 text-slate-800 dark:text-slate-200">ชื่อสถานที่</label>
+<div class="relative">
+<select class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 appearance-none focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-400">
+<option disabled="" selected="">ระบุชื่อสถานที่</option>
+<option>โซน A</option>
+<option>โซน B</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">chevron_right</span>
+</div>
+</div>
+<div>
+<label class="block text-[15px] font-semibold mb-3 text-slate-800 dark:text-slate-200">
+                    รูปภาพ <span class="text-red-500">*</span>
+</label>
+<div class="grid grid-cols-3 gap-3">
+<div class="relative group aspect-square">
+<img alt="Fallen tree thumbnail 1" class="w-full h-full object-cover rounded-xl border border-slate-200 dark:border-slate-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA02C5ymSKiunUjIJsRXtp3cpeEJPAsq3aflf-PUGFy62xcKXg2eTNn1hNa1AGGbrDYIrJasalse0WrXhxMQrMBF9DPLIDUBDwVkfnW9j--JrV218JTGlX8cBktSPWkuhxoh6KJ9dg5EJCqJJtGpfPP-UlE--5gOWX8SdcKPn_3qD4EeOFW4fDzHBzPbLF6uaqTnK2LuyRgda-l0dR4ufNH1WdMGeTxCTdU2xWYIoiY3wY90bY4TRYa1CciNM8ni-82ic9ajnW6fL8"/>
+<button class="absolute top-1 right-1 bg-white/90 dark:bg-slate-800/90 text-slate-400 rounded-full w-5 h-5 flex items-center justify-center shadow-sm border border-slate-200 dark:border-slate-600" type="button">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<div class="relative group aspect-square">
+<img alt="Fallen tree thumbnail 2" class="w-full h-full object-cover rounded-xl border border-slate-200 dark:border-slate-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFbnjlt4HOT5JGLp9AMKxuXxtgEINjowGdAh5-IQUUgzqWKSWz1Bz4IHX0OSYtT0AxY4wPuqB2ZHpaCWAB9hC5cpR7fyfoHO5ddptkkSnLv9SmYc3cfOizRdmNAeBboKMvoG8mjmtCwxsUggYLDyEA3n9Fs0Po4_JNoF-Z-K7z11aa40kFts4J5J9YjavHMx5myk_uHWsHhUy__st3uY4jU2536p9xbZ0g4ml1ILxa5T--zJgKmb2jBLHPRjz_BoqQzBXQysYFNd0"/>
+<button class="absolute top-1 right-1 bg-white/90 dark:bg-slate-800/90 text-slate-400 rounded-full w-5 h-5 flex items-center justify-center shadow-sm border border-slate-200 dark:border-slate-600" type="button">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<button class="aspect-square flex flex-col items-center justify-center bg-lavender dark:bg-indigo-950/30 border border-transparent rounded-xl transition-colors active:bg-indigo-100" type="button">
+<span class="material-symbols-outlined text-vibrantBlue text-2xl mb-1">add</span>
+<span class="text-[11px] font-semibold text-vibrantBlue">เพิ่มรูป</span>
+</button>
+</div>
+</div>
+<div class="pt-6 pb-8">
+<button class="w-full bg-vibrantBlue hover:bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-100 dark:shadow-none transition-all active:scale-[0.98]" type="submit">
+                    บันทึก
+                </button>
+</div>
+<div class="safe-area-bottom"></div>
+</form>
+</main>
+
+</body></html>

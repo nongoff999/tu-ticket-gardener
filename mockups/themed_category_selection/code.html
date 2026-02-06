@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html class="light" lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Themed Category Selection Header</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0066CC",
+                        "background-light": "#F8F9FA",
+                        "background-dark": "#121212",
+                    },
+                    fontFamily: {
+                        display: ["Kanit", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                    },
+                },
+            },
+        };
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Kanit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .security-gradient {
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.85) 100%);
+        }
+        .gardener-gradient {
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(18, 46, 15, 0.9) 100%);
+        }
+        .selected-glow {
+            box-shadow: 0 0 20px rgba(0, 102, 204, 0.3);
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex justify-center items-start">
+<div class="w-full max-w-[430px] min-h-screen bg-white dark:bg-[#1C1C1E] shadow-2xl relative overflow-hidden flex flex-col">
+<div class="w-full px-8 pt-4 pb-2 flex justify-between items-center text-xs font-semibold text-slate-900 dark:text-white z-20">
+<span>9:41</span>
+<div class="flex gap-1 items-center">
+<span class="material-icons text-[14px]">signal_cellular_alt</span>
+<span class="material-icons text-[14px]">wifi</span>
+<span class="material-icons text-[14px]">battery_full</span>
+</div>
+</div>
+<header class="bg-white dark:bg-[#1C1C1E] text-slate-900 dark:text-white pb-4 px-6 relative border-b border-gray-100 dark:border-gray-800">
+<div class="flex justify-between items-center mt-2">
+<button class="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors">
+<span class="material-icons text-3xl text-slate-800 dark:text-gray-200">notes</span>
+</button>
+<h2 class="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-slate-800 dark:text-gray-200">
+                    โปรดเลือกหมวดหมู่ทิคเก็ต
+                </h2>
+<button class="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[32px] text-slate-800 dark:text-gray-200 font-light">account_circle</span>
+</button>
+</div>
+</header>
+<main class="flex-1 px-6 py-8">
+<div class="grid grid-cols-2 gap-4 mt-4">
+<button class="relative group active:scale-95 transition-all duration-200 text-left opacity-60">
+<div class="aspect-[3/4] rounded-2xl overflow-hidden bg-gray-200 dark:bg-gray-800 border-4 border-transparent relative">
+<img alt="Professional Security Officer" class="absolute inset-0 w-full h-full object-cover grayscale-[20%]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdO2g1xFQm3R6XxkcDCdtIeGNzjvOoJfBvVQLD83ZcFO5XWgXjeku3lEGyRj7uhq5Nd-bGircOU2gh3zzOrOkmJgMLuk06iabUg_7vGqaSF5F2C-dusDicJOeDXjJ8Q63xXOG_ECI1XXl9r2aYbfjzxTRAp0ZVjmTdSX7arUobX47umUMnEWAW0HYiFkIJz_wZSOonXQD5edlr6X38g2T_OZMVi5yfSU82SrzJtXOR1jQts57MnBVhyinzkrPvOZ3VksmbVmyqDMU"/>
+<div class="absolute inset-0 security-gradient flex flex-col justify-end p-4">
+<p class="text-white/80 text-xs font-light tracking-wider uppercase">Ticket</p>
+<h3 class="text-white text-xl font-bold leading-tight">Security</h3>
+</div>
+</div>
+</button>
+<button class="relative group active:scale-95 transition-all duration-200 text-left">
+<div class="aspect-[3/4] rounded-2xl overflow-hidden bg-gray-200 dark:bg-gray-800 border-[4px] border-[#0066CC] selected-glow relative">
+<img alt="Gardener in Lush Green Garden" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAteNisuFGxXvz5p3iZfrBglXaOjnXcduPhkx3UbVYLuG6KUXONqFjg7xb4O5akv1m3F7sZJn9iry-SbLukeHDNcllzeHliu_xWfpPXxM6U55eF1r2oGCOlAfT-q48s_cI0o-Q63Krq6I5LTs6CenOiNTUiFkf1YVyvFyB8nRTiV2Dp9OQcYVNgf1BNGnI0fdOqRa45jfd5g-oIaRvhZ72xA37NJ8PS3TaqCpgQ1xuUD7WnmJZceDEM17WNSX5ZYY6DpS_jmdwyrXQ"/>
+<div class="absolute inset-0 gardener-gradient flex flex-col justify-end p-4">
+<p class="text-white/80 text-xs font-light tracking-wider uppercase">Ticket</p>
+<h3 class="text-white text-xl font-bold leading-tight">Gardener</h3>
+</div>
+</div>
+</button>
+</div>
+</main>
+<div class="pb-2 flex justify-center">
+<div class="w-32 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+</div>
+</div>
+
+</body></html>

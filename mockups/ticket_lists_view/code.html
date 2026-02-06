@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html class="light" lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Ticket Lists Management View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Prompt:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --urgent-bg: #FFE4E6;
+            --urgent-text: #E11D48;
+            --normal-bg: #FEF3C7;
+            --normal-text: #D97706;
+            --primary-blue: #3b82f6;
+        }
+        body {
+            font-family: 'Prompt', 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            background-color: #F9FAFB;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .mobile-container {
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #F9FAFB;
+            position: relative;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-slate-900">
+<div class="mobile-container flex flex-col">
+<header class="sticky top-0 z-50 bg-white border-b border-slate-100 px-4 h-16 flex items-center">
+<button class="w-10 h-10 flex items-center justify-start text-slate-900">
+<span class="material-symbols-outlined text-3xl">chevron_left</span>
+</button>
+<h1 class="flex-1 text-center text-lg font-semibold -ml-10">Ticket Lists</h1>
+</header>
+<main class="flex-1">
+<div class="px-4 py-5 flex gap-3">
+<div class="flex-1 bg-[#FFF1F2] rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden">
+<div class="z-10">
+<p class="text-[var(--urgent-text)] font-semibold text-sm">ทิคเก็ตเร่งด่วน</p>
+<p class="text-3xl font-bold text-slate-900 mt-1">2</p>
+</div>
+<span class="material-symbols-outlined absolute -right-2 -bottom-2 text-6xl text-rose-200/50 rotate-12">notifications_active</span>
+</div>
+<div class="flex-1 bg-[var(--normal-bg)] rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden">
+<div class="z-10">
+<p class="text-[var(--normal-text)] font-semibold text-sm">ทิคเก็ตปกติ</p>
+<p class="text-3xl font-bold text-slate-900 mt-1">10</p>
+</div>
+<span class="material-symbols-outlined absolute -right-2 -bottom-2 text-6xl text-amber-200/50 rotate-12">confirmation_number</span>
+</div>
+</div>
+<div class="px-4 mb-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400 shadow-sm" placeholder="Search ticket" type="text"/>
+</div>
+</div>
+<div class="flex overflow-x-auto gap-2 px-4 mb-5 hide-scrollbar">
+<button class="whitespace-nowrap px-5 py-2 rounded-full font-medium text-sm bg-blue-600 text-white shadow-md shadow-blue-100">
+                    ทั้งหมด
+                </button>
+<button class="whitespace-nowrap px-5 py-2 rounded-full font-medium text-sm bg-white border border-slate-200 text-slate-600">
+                    อุบัติเหตุ
+                </button>
+<button class="whitespace-nowrap px-5 py-2 rounded-full font-medium text-sm bg-white border border-slate-200 text-slate-600">
+                    อุบัติเหตุจากธรรมชาติ
+                </button>
+<button class="whitespace-nowrap px-5 py-2 rounded-full font-medium text-sm bg-white border border-slate-200 text-slate-600">
+                    อุปกรณ์ชำรุดเสียหาย
+                </button>
+</div>
+<div class="px-4 pb-10 space-y-3">
+<div class="flex justify-between items-center mb-2">
+<p class="text-slate-500 text-sm font-medium">ทั้งหมด 12 รายการ</p>
+</div>
+<div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 flex gap-3">
+<div class="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden bg-slate-100">
+<img alt="Fallen tree" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAi8kiOMRopdjGSOlptNcZkg6jeCDmIkKN345K3y5CpRSik9JCOHDpCuz1scew8brwfk_TOUmGG8zOi9842WDzUkffevqlXtcgZUYDqbp4QPMUZH47Vv4sxl3kp2UonojpoHv2ENszkZabJxZWNgj-BQW_9AvBAPaS7mp-tg9fq_dDsK0QjPbukeI_jJqdRR6BrMxqxtjzgjfdzK9766ZaQHuGRK0sAp4VpmaIxbQhFsk_Q-2IPohvWgLmYEs8kk4zDzUaUhqmrHBk"/>
+</div>
+<div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
+<div class="space-y-1">
+<div class="flex justify-between items-start gap-2">
+<span class="text-sm font-bold text-slate-900">#312</span>
+<div class="flex gap-1">
+<span class="bg-rose-100 text-rose-600 px-2 py-0.5 rounded-md text-[10px] font-bold">เร่งด่วน</span>
+<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-md text-[10px] font-bold">ทิคเก็ตใหม่</span>
+</div>
+</div>
+<h3 class="font-bold text-sm text-slate-900 truncate">ต้นไม้โค่นล้ม</h3>
+<p class="text-slate-500 text-[11px] leading-tight line-clamp-2">ต้นหางนกยูง เส้นรอบวง 13 นิ้ว โค่นล้มทับทางเดินและไหล่ทาง</p>
+</div>
+<div class="flex justify-between items-center mt-2">
+<span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-500 rounded-md font-medium">อุบัติเหตุจากธรรมชาติ</span>
+<span class="text-[10px] text-slate-400">24/03/2023 11:33</span>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 flex gap-3">
+<div class="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden bg-slate-100">
+<img alt="Maintenance" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqIdRWWMME_2YbQukMegmyMbzUiTjqByzOZl6qI8NTURu4tI1fxBu7_yUXCAChov-zwxaWCO9OeRCMCWUQtgJjTX5_Pudw5NJtiiDaV7Hy5s7uQybeH1R9JcqsNPlaqH54El1LQPRhbLTGgZgjZNFGCzpSHXR9cE42m9ViwsyENiXJXHBT0v46kjBZGWV0u-wriQRCQrGQeDEIIL4UjIe6TU-CKZK4mIx8nRg1lZzzkuadvh0BreJ78axe-af1QgVwribAxHeHwoY"/>
+</div>
+<div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
+<div class="space-y-1">
+<div class="flex justify-between items-start gap-2">
+<span class="text-sm font-bold text-slate-900">#311</span>
+<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-md text-[10px] font-bold">ทิคเก็ตใหม่</span>
+</div>
+<h3 class="font-bold text-sm text-slate-900 truncate">ต้นไม้โค่นล้ม</h3>
+<p class="text-slate-500 text-[11px] leading-tight line-clamp-2">ต้นหางนกยูง ลักษณะโค่นล้ม โซนถนนหลัก</p>
+</div>
+<div class="flex justify-between items-center mt-2">
+<span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-500 rounded-md font-medium">อุบัติเหตุจากธรรมชาติ</span>
+<span class="text-[10px] text-slate-400">24/03/2023 11:33</span>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 flex gap-3">
+<div class="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden bg-slate-100">
+<img alt="Maintenance" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAi8kiOMRopdjGSOlptNcZkg6jeCDmIkKN345K3y5CpRSik9JCOHDpCuz1scew8brwfk_TOUmGG8zOi9842WDzUkffevqlXtcgZUYDqbp4QPMUZH47Vv4sxl3kp2UonojpoHv2ENszkZabJxZWNgj-BQW_9AvBAPaS7mp-tg9fq_dDsK0QjPbukeI_jJqdRR6BrMxqxtjzgjfdzK9766ZaQHuGRK0sAp4VpmaIxbQhFsk_Q-2IPohvWgLmYEs8kk4zDzUaUhqmrHBk"/>
+</div>
+<div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
+<div class="space-y-1">
+<div class="flex justify-between items-start gap-2">
+<span class="text-sm font-bold text-slate-900">#310</span>
+<span class="bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md text-[10px] font-bold">รับทราบแล้ว</span>
+</div>
+<h3 class="font-bold text-sm text-slate-900 truncate">กิ่งไม้หักพาดสายไฟ</h3>
+<p class="text-slate-500 text-[11px] leading-tight line-clamp-2">ตรวจสอบและตัดแต่งกิ่งไม้บริเวณเสาไฟฟ้าหน้าโครงการ</p>
+</div>
+<div class="flex justify-between items-center mt-2">
+<span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-500 rounded-md font-medium">อุบัติเหตุ</span>
+<span class="text-[10px] text-slate-400">23/03/2023 14:20</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>
