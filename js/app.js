@@ -13,13 +13,86 @@ const AppState = {
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', async function () {
+    // Initialize Device Detection
+    initDeviceDetection();
+
     // โหลดข้อมูลจาก JSON ก่อน
     await loadData();
+
+    // Listen for realtime updates from Firebase
+    if (typeof listenForUpdates === 'function') {
+        listenForUpdates((newData) => {
+            console.log('✨ ข้อมูลอัปเดตแบบ Real-time!');
+            // Update the global MOCK_DATA reference
+            window.MOCK_DATA = newData;
+            // Re-render current page
+            refreshCurrentPage();
+        });
+    }
 
     initRouter();
     initDrawer();
     initFilterTabs();
 });
+
+function refreshCurrentPage() {
+    if (!router || !AppState.currentPage) return;
+
+    // We don't want to re-render if the user is in the middle of a form
+    if (['add', 'edit', 'add-select'].includes(AppState.currentPage)) {
+        console.log('📝 ผู้ใช้กำลังกรอกข้อมูล - ข้ามการรีเฟรชหน้าจอ');
+        return;
+    }
+
+    console.log(`♻️ รีเฟรชหน้า: ${AppState.currentPage}`);
+    router.navigate(router.getCurrentPath(), true); // true for silent/force re-render if supported by your router
+    // If router doesn't support force, we can call the renderer directly
+    const routes = {
+        'dashboard': renderDashboard,
+        'monitor': renderMonitor,
+        'tickets': renderTicketList,
+        'ticket': renderTicketDetail
+    };
+
+    if (routes[AppState.currentPage]) {
+        routes[AppState.currentPage]();
+    }
+}
+
+function initDeviceDetection() {
+    const info = getDeviceInfo();
+    const el = document.getElementById('device-info');
+    if (el) {
+        el.textContent = `Device: ${info}`;
+        console.log(`📱 ตรวจพบอุปกรณ์: ${info}`);
+    }
+}
+
+function getDeviceInfo() {
+    const ua = navigator.userAgent;
+    let os = "Unknown OS";
+    let device = "Desktop";
+
+    if (ua.indexOf("Win") !== -1) os = "Windows";
+    if (ua.indexOf("Mac") !== -1) os = "macOS";
+    if (ua.indexOf("X11") !== -1) os = "UNIX";
+    if (ua.indexOf("Linux") !== -1) os = "Linux";
+    if (ua.indexOf("Android") !== -1) {
+        os = "Android";
+        device = "Mobile";
+    }
+    if (ua.indexOf("iPhone") !== -1 || ua.indexOf("iPad") !== -1 || ua.indexOf("iPod") !== -1) {
+        os = "iOS";
+        device = "iPhone/iPad";
+    }
+
+    // Secondary Check for common mobile devices
+    if (/Mobi|Android/i.test(ua)) {
+        device = "Mobile";
+    }
+
+    return `${os} (${device})`;
+}
 
 // Router Setup
 function initRouter() {
@@ -55,7 +128,10 @@ function closeDrawer() {
 }
 
 function navigateTo(page) {
-    closeDrawer();
+    // Close drawer only on mobile
+    if (window.innerWidth < 1024) {
+        closeDrawer();
+    }
     router.navigate('/' + page);
 }
 
