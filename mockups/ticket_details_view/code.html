@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html class="light" lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ticket Details View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&amp;family=Material+Icons&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3088B4",
+                        "background-light": "#F5F7FA",
+                        "background-dark": "#121212",
+                        "status-yellow": "#FEF3C7",
+                        "status-yellow-text": "#D97706",
+                        "status-pink": "#FCE7F3",
+                        "status-pink-text": "#DB2777",
+                    },
+                    fontFamily: {
+                        display: ["Kanit", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "12px",
+                    },
+                },
+            },
+        };
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Kanit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            background-color: #F5F7FA;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .carousel-container {
+            scroll-snap-type: x mandatory;
+            display: flex;
+            overflow-x: scroll;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .carousel-item {
+            scroll-snap-align: start;
+            flex: 0 0 100%;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex justify-center items-start">
+<div class="relative w-full max-w-[430px] min-h-screen flex flex-col">
+<div class="flex justify-between items-center px-8 pt-4 pb-2 text-sm font-semibold dark:text-white">
+<span>9:41</span>
+<div class="flex gap-1.5 items-center">
+<span class="material-icons text-xs">signal_cellular_alt</span>
+<span class="material-icons text-xs">wifi</span>
+<span class="material-icons text-xs rotate-90">battery_full</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto no-scrollbar pb-32">
+<div class="relative px-4 mt-2">
+<div class="relative h-72 rounded-3xl overflow-hidden bg-white shadow-md">
+<div class="carousel-container h-full">
+<div class="carousel-item h-full">
+<img alt="Fallen tree incident 1" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxvXJ3E5bzjysN_vy2N0sdGj0hRADEL6t51Rrf1O7HNzXjQFQeeIKYikNVbdcDRHQ19Af-1ioN4nttPn-y-Rv2SgrncXRs-bb0U92pEJKRXnXcAtd15hj7N-WHTIygECrHmUQ85URtpXYaLKK6Gd1CH803QGhVS-_wst4PK75t8kUhURgg-bgYw1OaSA9J4aJAaViJ0zTbVUVmA7nl04NcA3-bi47YAeroTOk7xZeBHHQRVgOpqR3zf3kasRyR1Ze677Q2Q07hTG8"/>
+</div>
+<div class="carousel-item h-full">
+<img alt="Fallen tree incident 2" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxvXJ3E5bzjysN_vy2N0sdGj0hRADEL6t51Rrf1O7HNzXjQFQeeIKYikNVbdcDRHQ19Af-1ioN4nttPn-y-Rv2SgrncXRs-bb0U92pEJKRXnXcAtd15hj7N-WHTIygECrHmUQ85URtpXYaLKK6Gd1CH803QGhVS-_wst4PK75t8kUhURgg-bgYw1OaSA9J4aJAaViJ0zTbVUVmA7nl04NcA3-bi47YAeroTOk7xZeBHHQRVgOpqR3zf3kasRyR1Ze677Q2Q07hTG8"/>
+</div>
+<div class="carousel-item h-full">
+<img alt="Fallen tree incident 3" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxvXJ3E5bzjysN_vy2N0sdGj0hRADEL6t51Rrf1O7HNzXjQFQeeIKYikNVbdcDRHQ19Af-1ioN4nttPn-y-Rv2SgrncXRs-bb0U92pEJKRXnXcAtd15hj7N-WHTIygECrHmUQ85URtpXYaLKK6Gd1CH803QGhVS-_wst4PK75t8kUhURgg-bgYw1OaSA9J4aJAaViJ0zTbVUVmA7nl04NcA3-bi47YAeroTOk7xZeBHHQRVgOpqR3zf3kasRyR1Ze677Q2Q07hTG8"/>
+</div>
+</div>
+<button class="absolute top-4 left-4 w-10 h-10 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-gray-800 dark:text-white">chevron_left</span>
+</button>
+<div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+<div class="w-2 h-2 rounded-full bg-white shadow-sm"></div>
+<div class="w-2 h-2 rounded-full bg-white/50 shadow-sm border border-white/20"></div>
+<div class="w-2 h-2 rounded-full bg-white/50 shadow-sm border border-white/20"></div>
+</div>
+</div>
+</div>
+<div class="mx-4 mt-6 p-6 bg-white dark:bg-zinc-900 rounded-[24px] shadow-sm border border-gray-50 dark:border-zinc-800">
+<div class="flex justify-between items-start">
+<h1 class="text-3xl font-bold text-gray-900 dark:text-white leading-tight">
+                        ต้นไม้โค่นล้ม
+                    </h1>
+<div class="flex flex-col items-end gap-2">
+<span class="bg-status-yellow text-status-yellow-text px-4 py-1.5 rounded-lg text-sm font-medium">
+                            ทิคเก็ตใหม่
+                        </span>
+<span class="bg-status-pink text-status-pink-text px-4 py-1.5 rounded-lg text-sm font-medium">
+                            เร่งด่วน
+                        </span>
+</div>
+</div>
+<div class="mt-8 grid grid-cols-2 gap-4">
+<div>
+<p class="text-gray-400 dark:text-zinc-500 text-xs uppercase tracking-wider font-semibold">Ticket number</p>
+<p class="text-3xl font-bold text-gray-900 dark:text-white">312</p>
+</div>
+<div>
+<p class="text-gray-400 dark:text-zinc-500 text-xs uppercase tracking-wider font-semibold">Ticket Type</p>
+<p class="text-lg font-medium text-gray-800 dark:text-zinc-200">อุบัติเหตุจากธรรมชาติ</p>
+</div>
+</div>
+<div class="mt-8">
+<p class="text-gray-400 dark:text-zinc-500 text-xs uppercase tracking-wider font-semibold mb-2">Ticket Description :</p>
+<p class="text-gray-700 dark:text-zinc-300 text-[15px] leading-relaxed">
+                        ต้นพฤกษ์โค่นล้มขวางทางจราจร การดำเนินการ ตัดแต่งเพื่อลดระดับและย้ายออกไปพักพื้นที่แปลงนา ผลกระทบ หลังคาป้ายรถเมล์ โซน ถนนและไหล่ทาง หมายเหตุ ถนนปรีดี
+                    </p>
+</div>
+<div class="mt-8 grid grid-cols-2 gap-y-6 gap-x-4">
+<div>
+<p class="text-gray-400 dark:text-zinc-500 text-xs uppercase tracking-wider font-semibold mb-1">การดำเนินงาน :</p>
+<p class="text-gray-800 dark:text-zinc-200 font-medium">โค่นล้ม</p>
+</div>
+<div>
+<p class="text-gray-400 dark:text-zinc-500 text-xs uppercase tracking-wider font-semibold mb-1">สถานที่เกิดเหตุ :</p>
+<p class="text-gray-800 dark:text-zinc-200 font-medium">ถนนไหล่ทาง</p>
+</div>
+<div class="col-span-2">
+<p class="text-gray-400 dark:text-zinc-500 text-xs uppercase tracking-wider font-semibold mb-1">ผู้รับผิดชอบ :</p>
+<p class="text-gray-800 dark:text-zinc-200 font-medium">พีระพล แสนสุข</p>
+</div>
+<div class="col-span-2">
+<p class="text-gray-400 dark:text-zinc-500 text-xs uppercase tracking-wider font-semibold mb-1">หมายเหตุ :</p>
+<p class="text-gray-800 dark:text-zinc-200 font-medium">-</p>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background-light dark:from-background-dark via-background-light/95 dark:via-background-dark/95 to-transparent flex justify-center">
+<button class="w-full max-w-[345px] bg-primary hover:opacity-90 text-white font-medium py-4 rounded-2xl shadow-lg transition-all active:scale-[0.98] flex justify-center items-center gap-2">
+                Edit Ticket
+            </button>
+</div>
+<div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-1 bg-gray-300 dark:bg-zinc-700 rounded-full"></div>
+</div>
+
+</body></html>

@@ -1,0 +1,315 @@
+{
+    "user": {
+        "name": "สมชาย การดี",
+        "role": "หัวหน้าช่างสวน",
+        "avatar": null
+    },
+    "stats": {
+        "total": 8,
+        "new": 3,
+        "inProgress": 2,
+        "pending": 1,
+        "completed": 2
+    },
+    "categories": [
+        {
+            "id": "all",
+            "name": "ทั้งหมด"
+        },
+        {
+            "id": "accident",
+            "name": "อุบัติเหตุ"
+        },
+        {
+            "id": "nature",
+            "name": "อุบัติเหตุจากธรรมชาติ"
+        },
+        {
+            "id": "damage",
+            "name": "อุปกรณ์ชำรุดเสียหาย"
+        }
+    ],
+    "treeTypes": [
+        "ต้นนนทรี",
+        "ต้นพฤกษ์",
+        "ต้นราชพฤกษ์",
+        "ต้นอินทนิล",
+        "ต้นหางนกยูง",
+        "ต้นมะฮอกกานี",
+        "ต้นสน",
+        "ต้นไทร",
+        "ต้นประดู่",
+        "ต้นตะแบก"
+    ],
+    "zones": [
+        {
+            "id": "A1",
+            "name": "ถนนปรีดี พนมยงค์ (ถนนหลัก)"
+        },
+        {
+            "id": "A2",
+            "name": "ถนนยูงทอง"
+        },
+        {
+            "id": "B1",
+            "name": "โซนสนามกีฬา"
+        },
+        {
+            "id": "B2",
+            "name": "โซนหอพักนักศึกษา"
+        },
+        {
+            "id": "C1",
+            "name": "โซนคณะวิศวกรรมศาสตร์"
+        },
+        {
+            "id": "C2",
+            "name": "โซนคณะนิติศาสตร์"
+        },
+        {
+            "id": "D1",
+            "name": "โซนหอสมุด"
+        },
+        {
+            "id": "D2",
+            "name": "โซนอาคารบริการ"
+        },
+        {
+            "id": "E1",
+            "name": "โซนสระว่ายน้ำ"
+        },
+        {
+            "id": "E2",
+            "name": "โซนสวนพฤกษศาสตร์"
+        }
+    ],
+    "damageTypes": [
+        {
+            "id": "broken",
+            "name": "ฉีก / หัก",
+            "icon": "content_cut"
+        },
+        {
+            "id": "tilted",
+            "name": "เอน / เอียง",
+            "icon": "height"
+        },
+        {
+            "id": "fallen",
+            "name": "โค่นล้ม",
+            "icon": "landscape"
+        },
+        {
+            "id": "replant",
+            "name": "ปลูกใหม่",
+            "icon": "eco"
+        }
+    ],
+    "operations": [
+        "ตัดแต่งกิ่งเพื่อลดน้ำหนักของลำต้นและทรงพุ่ม ก่อนย้ายไปยังที่พักฟื้น",
+        "ดึงลำต้นให้ตรง และค้ำยันใหม่",
+        "ตัดทอน ขนย้าย และคืนสภาพพื้นที่ สาเหตุ จากโรคแมลงและปลวก ทำให้รากและลำต้นผุ เน่า",
+        "ตัดแต่งแผลของกิ่งที่ฉีกหัก พร้อมเก็บเคลียร์ความสะอาดในพื้นที่",
+        "ปลูกเพื่อทดแทนต้นเดิมที่โค่นล่ม หรือ ยืนต้นตาย"
+    ],
+    "tickets": [
+        {
+            "id": 312,
+            "title": "ต้นนนทรีโค่นล้ม",
+            "description": "ต้นนนทรีขนาดใหญ่ เส้นรอบวง 45 นิ้ว โค่นล้มขวางถนนปรีดี พนมยงค์ (ถนนหลัก) ทำให้การจราจรติดขัด",
+            "category": "nature",
+            "status": "new",
+            "priority": "urgent",
+            "zone": "A1",
+            "zoneName": "ถนนปรีดี พนมยงค์",
+            "treeType": "ต้นนนทรี",
+            "damageType": "fallen",
+            "circumference": 45,
+            "quantity": 1,
+            "impact": "ขวางเส้นทางจราจรหลัก 2 ช่องทาง",
+            "operation": "ตัดทอน ขนย้าย และคืนสภาพพื้นที่ สาเหตุ จากโรคแมลงและปลวก ทำให้รากและลำต้นผุ เน่า",
+            "date": "2026-02-06 08:30",
+            "assignees": [
+                "พีระพล แสนสุข",
+                "สมศักดิ์ ดีมาก"
+            ],
+            "images": [
+                "https://lh3.googleusercontent.com/aida-public/AB6AXuAi8kiOMRopdjGSOlptNcZkg6jeCDmIkKN345K3y5CpRSik9JCOHDpCuz1scew8brwfk_TOUmGG8zOi9842WDzUkffevqlXtcgZUYDqbp4QPMUZH47Vv4sxl3kp2UonojpoHv2ENszkZabJxZWNgj-BQW_9AvBAPaS7mp-tg9fq_dDsK0QjPbukeI_jJqdRR6BrMxqxtjzgjfdzK9766ZaQHuGRK0sAp4VpmaIxbQhFsk_Q-2IPohvWgLmYEs8kk4zDzUaUhqmrHBk",
+                "https://lh3.googleusercontent.com/aida-public/AB6AXuBJ-TUHuzR0fYCG9DKxqmdSu-1wLRuumb3cuZT2rcbHAflKhe_RtuIz3x806Sot2yG0xb0IaKX4FjIpYR1AK18OpNbYa7cpKmCj38T3Qy9GREkL9MSKvRwRiy45iSWgMzqMIo4kQT-UmQATMBNWBGhIr-jR2B7HBCBKOsuUzbkobWTsFLO-h-L9b7h812tt5vB8u5In6bATD_VjQ_EqFAAYvcKLYStiz_8NfAM0DgiAQIEszuzXr0c_x1E3lmPeDrKwF3P_s8Bt79A"
+            ],
+            "notes": ""
+        },
+        {
+            "id": 311,
+            "title": "กิ่งต้นพฤกษ์หักพาดสายไฟ",
+            "description": "กิ่งต้นพฤกษ์ขนาดใหญ่หักพาดสายไฟบริเวณหน้าคณะนิติศาสตร์ อาจเกิดอันตราย",
+            "category": "nature",
+            "status": "new",
+            "priority": "urgent",
+            "zone": "C2",
+            "zoneName": "โซนคณะนิติศาสตร์",
+            "treeType": "ต้นพฤกษ์",
+            "damageType": "broken",
+            "circumference": 28,
+            "quantity": 1,
+            "impact": "เสี่ยงต่อการเกิดไฟฟ้าลัดวงจร",
+            "operation": "ตัดแต่งแผลของกิ่งที่ฉีกหัก พร้อมเก็บเคลียร์ความสะอาดในพื้นที่",
+            "date": "2026-02-06 07:45",
+            "assignees": [
+                "สมชาย การดี"
+            ],
+            "images": [
+                "https://lh3.googleusercontent.com/aida-public/AB6AXuAqIdRWWMME_2YbQukMegmyMbzUiTjqByzOZl6qI8NTURu4tI1fxBu7_yUXCAChov-zwxaWCO9OeRCMCWUQtgJjTX5_Pudw5NJtiiDaV7Hy5s7uQybeH1R9JcqsNPlaqH54El1LQPRhbLTGgZgjZNFGCzpSHXR9cE42m9ViwsyENiXJXHBT0v46kjBZGWV0u-wriQRCQrGQeDEIIL4UjIe6TU-CKZK4mIx8nRg1lZzzkuadvh0BreJ78axe-af1QgVwribAxHeHwoY"
+            ],
+            "notes": "ติดต่อการไฟฟ้าก่อนดำเนินการ"
+        },
+        {
+            "id": 310,
+            "title": "ต้นหางนกยูงเอียง",
+            "description": "ต้นหางนกยูงบริเวณหอพักนักศึกษาเอียงประมาณ 30 องศา มีความเสี่ยงโค่นล้ม",
+            "category": "nature",
+            "status": "inProgress",
+            "priority": "normal",
+            "zone": "B2",
+            "zoneName": "โซนหอพักนักศึกษา",
+            "treeType": "ต้นหางนกยูง",
+            "damageType": "tilted",
+            "circumference": 22,
+            "quantity": 1,
+            "impact": "อาจล้มทับรถยนต์หรือผู้สัญจร",
+            "operation": "ดึงลำต้นให้ตรง และค้ำยันใหม่",
+            "date": "2026-02-05 14:20",
+            "assignees": [
+                "พีระพล แสนสุข",
+                "วิชัย ใจดี",
+                "สมศักดิ์ ดีมาก"
+            ],
+            "images": [
+                "https://lh3.googleusercontent.com/aida-public/AB6AXuCl4CfONdV-UlMcG6Mo0gJGrx2yewJ_2fbmVjBCa24kfYrauSYDomkssIJPQDR54JPJg85O7pYCHy36Bc8g4x7aBOc3x8QVKHfWxpk6bCuO6KsMaj82Kgl3zE81I1ImHvCVmSCLkSzdfz13pFhlL-Cf1sPMBbHyv3cqNMReDVkeYzSz3Wkb-7qRJsbrBEAXlAB5fTRnQn1uGDnr4012SA0nd_pXLnpbw9GCXJcYKEjrPB_sxyqa_rl3F9VRD-66Rs1OAnxTKpMlBkk"
+            ],
+            "notes": "กำลังดำเนินการค้ำยัน"
+        },
+        {
+            "id": 309,
+            "title": "ตัดแต่งกิ่งต้นราชพฤกษ์",
+            "description": "ตัดแต่งกิ่งต้นราชพฤกษ์ประจำปี บริเวณถนนยูงทอง เพื่อป้องกันกิ่งหักในฤดูฝน",
+            "category": "accident",
+            "status": "inProgress",
+            "priority": "normal",
+            "zone": "A2",
+            "zoneName": "ถนนยูงทอง",
+            "treeType": "ต้นราชพฤกษ์",
+            "damageType": "broken",
+            "circumference": 35,
+            "quantity": 8,
+            "impact": "ปิดการจราจรบางส่วนชั่วคราว",
+            "operation": "ตัดแต่งกิ่งเพื่อลดน้ำหนักของลำต้นและทรงพุ่ม ก่อนย้ายไปยังที่พักฟื้น",
+            "date": "2026-02-05 09:00",
+            "assignees": [
+                "สมชาย การดี",
+                "วิชัย ใจดี"
+            ],
+            "images": [
+                "https://lh3.googleusercontent.com/aida-public/AB6AXuADv61QBDFe7w-zN2Qb4QcIlWSzZ8KUetnvuFVRyXz_tu76iZDBTge-sw1i8w4d2b9dwAxwZnY-KgkrBN44IC5zjxCYwST_IW9ClUWXVdZx7ZNuUQLbuRn5XS2Qx-R0f6VACTGSopufC2P0u9W88qGsIj-h0eKOn9OQ3HfC2cp-GOfUa9liaQKR8EiyQp_ibRJVv0gGHQioihOS7OZr5BUAHbmtdOZkGsY6_WZ103kRdcmmX8Kvq-DZcTist4tPDFhRnWwG7c2mas4"
+            ],
+            "notes": "กำหนดเสร็จสิ้น 2 วัน"
+        },
+        {
+            "id": 308,
+            "title": "ต้นมะฮอกกานีถูกปลวกกัด",
+            "description": "พบปลวกเข้าทำลายต้นมะฮอกกานี 3 ต้น บริเวณสวนพฤกษศาสตร์",
+            "category": "damage",
+            "status": "pending",
+            "priority": "normal",
+            "zone": "E2",
+            "zoneName": "โซนสวนพฤกษศาสตร์",
+            "treeType": "ต้นมะฮอกกานี",
+            "damageType": "broken",
+            "circumference": 40,
+            "quantity": 3,
+            "impact": "ต้นไม้อาจตายหรือโค่นล้ม",
+            "operation": "กำจัดปลวกด้วยสารเคมีพิเศษ (ดำเนินการนอกแผน)",
+            "date": "2026-02-04 11:15",
+            "assignees": [],
+            "images": [
+                "https://lh3.googleusercontent.com/aida-public/AB6AXuBB614d7dFW6G3CX-uu_bmc8qC8o1MsFOZDm0v02f8gZsf2oJOtQNiXnrYlFXsz-Emdcr5JgMG3qFk9F7dG8xI9RG2uy76fQx5X9zuHWvF9ySJ3y9x03eNj0bhydAVE5ZSpOWVXI3NRew9cwJTcnqEjOt_NV0ptGIMrT8c662ZeY7CpTHKLs4zoT2xxdzzEtzcitclCFhpQ_KyVx959Bd0eYa41KpR8FpISjKQoGMvkXmCbZYzUZxsQghX77ePoleLgW5wM63S4vzg"
+            ],
+            "notes": "รอจัดซื้อยากำจัดปลวก"
+        },
+        {
+            "id": 307,
+            "title": "ต้นอินทนิลกิ่งหักขวางทางเดิน",
+            "description": "กิ่งต้นอินทนิลหักขวางทางเดินบริเวณหน้าหอสมุด",
+            "category": "nature",
+            "status": "new",
+            "priority": "normal",
+            "zone": "D1",
+            "zoneName": "โซนหอสมุด",
+            "treeType": "ต้นอินทนิล",
+            "damageType": "broken",
+            "circumference": 18,
+            "quantity": 1,
+            "impact": "ขวางทางเดินนักศึกษา",
+            "operation": "ตัดแต่งแผลของกิ่งที่ฉีกหัก พร้อมเก็บเคลียร์ความสะอาดในพื้นที่",
+            "date": "2026-02-06 06:30",
+            "assignees": [
+                "พีระพล แสนสุข"
+            ],
+            "images": [
+                "https://lh3.googleusercontent.com/aida-public/AB6AXuCim0ELNf7dmQJ5xW13c8TlaJuFY3bE8MU8P0id5V3BL6bRmwNPSU5u4AAysG4650C4__iyl6RHQKNfqv2azh60cSAI57Zy2u1gSTm5NNBc0QxONasnTiDA76MYC0FdTFMsZh5Rp5PB_rR3EkQrN9iFE3x_YN7f9cuJ8E536G-L3Pmeich-pcDxClKRgXs5Qs9IxvF4RXLCR36oR6JFhTBJwZqKsGoKjy_3Ms39EK9GdK1Pri64i4w3bW1m_P5WlwREq5BarSOfaSo"
+            ],
+            "notes": ""
+        },
+        {
+            "id": 306,
+            "title": "ปลูกต้นประดู่ทดแทน",
+            "description": "ปลูกต้นประดู่ทดแทนต้นเดิมที่ตายไป จำนวน 5 ต้น บริเวณโซนสนามกีฬา",
+            "category": "accident",
+            "status": "completed",
+            "priority": "normal",
+            "zone": "B1",
+            "zoneName": "โซนสนามกีฬา",
+            "treeType": "ต้นประดู่",
+            "damageType": "replant",
+            "circumference": 0,
+            "quantity": 5,
+            "impact": "เพิ่มพื้นที่สีเขียว",
+            "operation": "ปลูกเพื่อทดแทนต้นเดิมที่โค่นล่ม หรือ ยืนต้นตาย",
+            "date": "2026-02-03 13:00",
+            "assignees": [
+                "สมชาย การดี",
+                "วิชัย ใจดี",
+                "พีระพล แสนสุข"
+            ],
+            "images": [
+                "https://lh3.googleusercontent.com/aida-public/AB6AXuADv61QBDFe7w-zN2Qb4QcIlWSzZ8KUetnvuFVRyXz_tu76iZDBTge-sw1i8w4d2b9dwAxwZnY-KgkrBN44IC5zjxCYwST_IW9ClUWXVdZx7ZNuUQLbuRn5XS2Qx-R0f6VACTGSopufC2P0u9W88qGsIj-h0eKOn9OQ3HfC2cp-GOfUa9liaQKR8EiyQp_ibRJVv0gGHQioihOS7OZr5BUAHbmtdOZkGsY6_WZ103kRdcmmX8Kvq-DZcTist4tPDFhRnWwG7c2mas4"
+            ],
+            "notes": "ดำเนินการเสร็จสิ้น รดน้ำต่อเนื่อง 2 สัปดาห์"
+        },
+        {
+            "id": 305,
+            "title": "ซ่อมค้ำยันต้นไทร",
+            "description": "ค้ำยันต้นไทรบริเวณสระว่ายน้ำชำรุด ต้องซ่อมแซม",
+            "category": "damage",
+            "status": "completed",
+            "priority": "normal",
+            "zone": "E1",
+            "zoneName": "โซนสระว่ายน้ำ",
+            "treeType": "ต้นไทร",
+            "damageType": "tilted",
+            "circumference": 60,
+            "quantity": 1,
+            "impact": "ต้นไม้อาจเอียงหรือล้ม",
+            "operation": "ดึงลำต้นให้ตรง และค้ำยันใหม่",
+            "date": "2026-02-02 10:00",
+            "assignees": [
+                "พีระพล แสนสุข",
+                "สมศักดิ์ ดีมาก"
+            ],
+            "images": [
+                "https://lh3.googleusercontent.com/aida-public/AB6AXuBxvXJ3E5bzjysN_vy2N0sdGj0hRADEL6t51Rrf1O7HNzXjQFQeeIKYikNVbdcDRHQ19Af-1ioN4nttPn-y-Rv2SgrncXRs-bb0U92pEJKRXnXcAtd15hj7N-WHTIygECrHmUQ85URtpXYaLKK6Gd1CH803QGhVS-_wst4PK75t8kUhURgg-bgYw1OaSA9J4aJAaViJ0zTbVUVmA7nl04NcA3-bi47YAeroTOk7xZeBHHQRVgOpqR3zf3kasRyR1Ze677Q2Q07hTG8"
+            ],
+            "notes": "ติดตั้งค้ำยันสแตนเลสใหม่"
+        }
+    ]
+}

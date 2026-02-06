@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Themed Navigation Menu Drawer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2563eb",
+                        "primary-light": "#eff6ff",
+                        "background-light": "#f1f5f9",
+                        "accent-red": "#f43f5e",
+                        "logout-bg": "#fff1f2",
+                        "profile-bg": "#f8fafc"
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Manrope', sans-serif;
+            min-height: 100dvh;
+            background-color: theme('colors.background-light');
+        }
+        .ios-shadow {
+            box-shadow: 20px 0 50px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display text-slate-900">
+<div class="relative min-h-screen w-full overflow-hidden flex flex-col p-6">
+<header class="flex justify-between items-center mb-8">
+<span class="material-symbols-outlined text-3xl text-slate-800">menu</span>
+<div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden border border-slate-100">
+<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1BM1sqHnNGuUiEq2k73wLydiIkUdFFEt2GHd2hB1heXJqURKKuzyZUqWLn2A7PCT2yhXszvopppFi2Q1lmTiYR2kVVVgtRDCo-MKF3HGHLr6dKM2mb2XFjsuMz7nXkO6tz9F4xxYSwybt_Wh3IKG_jY5PavPISoz3u1IWl4hoJVh1434HhWv0GYDs1sBuzQidVO_r2BNYxJtoxsgwnxrEQa74TNgG6FvIdkERSgySnCiS9jjHdsYDTssyhqmlpJy3qAh769DppdE"/>
+</div>
+</header>
+<h1 class="text-3xl font-extrabold mb-6 tracking-tight text-slate-900">Today's Tasks</h1>
+<div class="grid gap-4">
+<div class="p-5 bg-white rounded-xl border border-slate-200">
+<div class="flex justify-between items-start mb-2">
+<span class="px-3 py-1 bg-blue-100 text-blue-600 text-xs font-bold rounded-full uppercase">In Progress</span>
+<span class="text-slate-400 text-xs">#4452</span>
+</div>
+<h3 class="font-bold text-lg text-slate-800">Central Park Pruning</h3>
+<p class="text-slate-500 text-sm">Zone A - Tree maintenance</p>
+</div>
+<div class="p-5 bg-white rounded-xl border border-slate-200">
+<div class="flex justify-between items-start mb-2">
+<span class="px-3 py-1 bg-slate-100 text-slate-400 text-xs font-bold rounded-full uppercase">Pending</span>
+<span class="text-slate-400 text-xs">#4453</span>
+</div>
+<h3 class="font-bold text-lg text-slate-800">Botanical Garden Irrigation</h3>
+<p class="text-slate-500 text-sm">Main Lawn - Sprinkler Check</p>
+</div>
+</div>
+<div class="absolute inset-0 z-40 bg-slate-900/40 backdrop-blur-sm"></div>
+<div class="absolute inset-y-0 left-0 z-50 w-10/12 max-w-[320px] bg-white ios-shadow flex flex-col">
+<div class="flex items-center justify-between p-6 pt-12">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-xl">potted_plant</span>
+</div>
+<span class="text-xl font-extrabold tracking-tighter text-slate-900 uppercase">
+                        TU <span class="text-primary">TICKET</span>
+</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-900 active:bg-slate-100">
+<span class="material-symbols-outlined text-2xl">close</span>
+</button>
+</div>
+<div class="px-6 py-4 mb-4">
+<div class="flex items-center gap-4 p-4 rounded-2xl bg-profile-bg border border-slate-100">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/5">
+<span class="material-symbols-outlined text-primary fill-0">person</span>
+</div>
+<div>
+<p class="text-sm font-bold leading-none mb-1 text-slate-900">Marcus Gardener</p>
+<p class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Lead Technician</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<a class="flex items-center gap-4 h-14 px-5 rounded-full bg-primary text-white transition-all duration-200" href="#">
+<span class="material-symbols-outlined fill-1">dashboard</span>
+<span class="text-sm font-extrabold tracking-wide">TICKET DASHBOARD</span>
+</a>
+<a class="flex items-center gap-4 h-14 px-5 rounded-full text-slate-500 hover:bg-slate-50 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-primary">monitoring</span>
+<span class="text-sm font-extrabold tracking-wide">MONITOR</span>
+</a>
+<a class="flex items-center gap-4 h-14 px-5 rounded-full text-slate-500 hover:bg-slate-50 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-primary">assignment</span>
+<span class="text-sm font-extrabold tracking-wide">TICKET LISTS</span>
+</a>
+<a class="flex items-center gap-4 h-14 px-5 rounded-full text-slate-500 hover:bg-slate-50 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-primary">add_circle</span>
+<span class="text-sm font-extrabold tracking-wide">ADD TICKET</span>
+</a>
+</nav>
+<div class="p-6 pb-12">
+<button class="w-full flex items-center justify-center gap-3 h-14 rounded-full bg-logout-bg text-accent-red active:scale-[0.98] transition-all duration-200 border border-red-100">
+<span class="material-symbols-outlined font-bold">logout</span>
+<span class="text-sm font-extrabold tracking-wide">LOG OUT</span>
+</button>
+<div class="mt-8 text-center">
+<p class="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-bold">Version 2.4.0 (Stable)</p>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>
