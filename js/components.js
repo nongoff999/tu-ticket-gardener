@@ -114,6 +114,36 @@ const Components = {
                 `).join('')}
             </div>
         `;
+    },
+
+    // Weekly Calendar Selector
+    weeklyCalendar(selectedDateStr) {
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const today = new Date();
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay()); // Start from Sunday
+
+        let html = '<div class="weekly-calendar-container"><div class="weekly-calendar">';
+
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(startOfWeek);
+            date.setDate(startOfWeek.getDate() + i);
+            const dateStr = date.toISOString().split('T')[0];
+            const isActive = dateStr === selectedDateStr;
+            const isToday = dateStr === today.toISOString().split('T')[0];
+
+            html += `
+                <div class="calendar-day ${isActive ? 'active' : ''} ${isToday ? 'today' : ''}" data-date="${dateStr}">
+                    <span class="day-name">${days[date.getDay()]}</span>
+                    <div class="day-number-circle">
+                        <span class="day-number">${date.getDate()}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        html += '</div></div>';
+        return html;
     }
 };
 

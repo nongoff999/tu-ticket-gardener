@@ -520,6 +520,78 @@ body,
 }
 
 /* ==========================================
+   Weekly Calendar
+   ========================================== */
+
+.weekly-calendar-container {
+    padding: 1rem 1.5rem;
+    background: linear-gradient(to bottom, var(--primary), #0ea5e9);
+    margin-bottom: 2rem;
+    border-radius: 0 0 2rem 2rem;
+}
+
+.weekly-calendar {
+    display: flex;
+    justify-content: space-between;
+    background: white;
+    padding: 1rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    flex: 1;
+    transition: all 0.2s;
+}
+
+.day-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.day-number-circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.day-number {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.calendar-day.active .day-number-circle {
+    background: #E0F2FE;
+}
+
+.calendar-day.active .day-number {
+    background: #334155;
+    color: white;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-day.today .day-name {
+    color: var(--primary);
+}
+
+/* ==========================================
    Filter Tabs
    ========================================== */
 

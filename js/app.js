@@ -8,7 +8,8 @@ const AppState = {
     currentPage: 'dashboard',
     selectedCategory: 'all',
     selectedTicket: null,
-    isDrawerOpen: false
+    isDrawerOpen: false,
+    selectedDate: new Date().toISOString().split('T')[0] // Default to today
 };
 
 // Initialize App
@@ -197,15 +198,21 @@ function renderDashboard() {
 
     document.getElementById('page-title').textContent = 'TICKET DASHBOARD';
 
+    // Calculate dynamic stats for selected date
+    const stats = getStatsForDate(AppState.selectedDate);
+
     const content = document.getElementById('main-content');
     content.innerHTML = `
+        <!-- Weekly Calendar -->
+        ${Components.weeklyCalendar(AppState.selectedDate)}
+
         <!-- Stats Grid -->
-        <div class="stats-grid">
-            ${Components.statCard('ทิคเก็ตทั้งหมด', MOCK_DATA.stats.total, 'blue', 'dashboard')}
-            ${Components.statCard('ทิคเก็ตใหม่', MOCK_DATA.stats.new, 'yellow', 'notification_important')}
-            ${Components.statCard('ดำเนินการ', MOCK_DATA.stats.inProgress, 'purple', 'settings_suggest')}
-            ${Components.statCard('ยังไม่ดำเนินการ', MOCK_DATA.stats.pending, 'pink', 'pending_actions')}
-            ${Components.statCard('เสร็จสิ้น', MOCK_DATA.stats.completed, 'green', 'task_alt')}
+        <div class="stats-grid" style="margin-top: -1rem;">
+            ${Components.statCard('ทิคเก็ตทั้งหมด', stats.total, 'blue', 'dashboard')}
+            ${Components.statCard('ทิคเก็ตใหม่', stats.new, 'yellow', 'notification_important')}
+            ${Components.statCard('ดำเนินการ', stats.inProgress, 'purple', 'settings_suggest')}
+            ${Components.statCard('ยังไม่ดำเนินการ', stats.pending, 'pink', 'pending_actions')}
+            ${Components.statCard('เสร็จสิ้น', stats.completed, 'green', 'task_alt')}
         </div>
 
         <!-- Period Tabs -->
@@ -296,7 +303,7 @@ function renderDashboard() {
                             style="transform: rotate(-90deg); transform-origin: 50% 50%;"></circle>
                 </svg>
                 <div style="position: absolute; display: flex; flex-direction: column; align-items: center;">
-                    <span style="font-size: 1.875rem; font-weight: 700;">15</span>
+                    <span style="font-size: 1.875rem; font-weight: 700;">${stats.total}</span>
                     <span style="font-size: 0.625rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">Total</span>
                 </div>
             </div>
@@ -304,6 +311,15 @@ function renderDashboard() {
 
         <div class="safe-area-bottom"></div>
     `;
+
+    // Add calendar functionality
+    const calendarDays = content.querySelectorAll('.calendar-day');
+    calendarDays.forEach(day => {
+        day.addEventListener('click', function () {
+            AppState.selectedDate = this.dataset.date;
+            renderDashboard(); // Re-render with new date
+        });
+    });
 
     // Add period tab functionality
     const periodTabs = content.querySelectorAll('.period-tab');
@@ -313,6 +329,17 @@ function renderDashboard() {
             this.classList.add('active');
         });
     });
+}
+
+function getStatsForDate(dateStr) {
+    const tickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr));
+    return {
+        total: tickets.length,
+        new: tickets.filter(t => t.status === 'new').length,
+        inProgress: tickets.filter(t => t.status === 'inProgress').length,
+        pending: tickets.filter(t => t.status === 'pending').length,
+        completed: tickets.filter(t => t.status === 'completed').length
+    };
 }
 
 function renderMonitor() {
