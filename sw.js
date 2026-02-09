@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tu-ticket-v2';
+const CACHE_NAME = 'tu-ticket-v3';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
