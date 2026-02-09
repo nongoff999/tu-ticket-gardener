@@ -725,22 +725,20 @@ function renderEditTicket(params) {
                     </select>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" class="form-group">
-                    <div>
-                        <label class="form-label text-center">เส้นรอบวง (นิ้ว)</label>
-                        <div class="number-input">
-                            <button type="button" class="number-btn minus"><span class="material-symbols-outlined">remove</span></button>
-                            <input type="number" value="${ticket.circumference}" id="circumference">
-                            <button type="button" class="number-btn plus"><span class="material-symbols-outlined">add</span></button>
-                        </div>
+                <div class="form-group">
+                    <label class="form-label text-center">เส้นรอบวง (นิ้ว)</label>
+                    <div class="number-input">
+                        <button type="button" class="number-btn minus"><span class="material-symbols-outlined">remove</span></button>
+                        <input type="number" value="${ticket.circumference}" id="circumference">
+                        <button type="button" class="number-btn plus"><span class="material-symbols-outlined">add</span></button>
                     </div>
-                    <div>
-                        <label class="form-label text-center">จำนวน</label>
-                        <div class="number-input">
-                            <button type="button" class="number-btn minus"><span class="material-symbols-outlined">remove</span></button>
-                            <input type="number" value="${ticket.quantity}" id="quantity">
-                            <button type="button" class="number-btn plus"><span class="material-symbols-outlined">add</span></button>
-                        </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label text-center">จำนวน</label>
+                    <div class="number-input">
+                        <button type="button" class="number-btn minus"><span class="material-symbols-outlined">remove</span></button>
+                        <input type="number" value="${ticket.quantity}" id="quantity">
+                        <button type="button" class="number-btn plus"><span class="material-symbols-outlined">add</span></button>
                     </div>
                 </div>
 
