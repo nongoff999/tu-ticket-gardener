@@ -14,13 +14,14 @@
 // 🔥 FIREBASE CONFIG - แก้ไขค่าตรงนี้!
 // =====================================
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBBgYv_UyZPJUvf10J_ubf1rN6dtA5pBQE",
+    authDomain: "tu-ticket-gardener.firebaseapp.com",
+    databaseURL: "https://tu-ticket-gardener-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "tu-ticket-gardener",
+    storageBucket: "tu-ticket-gardener.firebasestorage.app",
+    messagingSenderId: "218235165872",
+    appId: "1:218235165872:web:f1c2c737033e031b3fef75",
+    measurementId: "G-TXW011J3CW"
 };
 
 // =====================================

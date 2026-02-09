@@ -19,7 +19,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Kanit:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
     <!-- Material Icons -->
@@ -31,6 +31,24 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/category-selection.css">
     <link rel="stylesheet" href="css/popup.css">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0284c7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230284c7'/><text y='.7em' x='5' font-size='70'>🌳</text></svg>">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('🚀 PWA: Service Worker Registered'))
+                    .catch(err => console.log('❌ PWA: Service Worker Failed', err));
+            });
+        }
+    </script>
 </head>
 
 <body>
@@ -40,16 +58,18 @@
             <button class="header-btn" onclick="openDrawer()">
                 <span class="material-symbols-outlined" style="font-size: 1.75rem;">menu</span>
             </button>
-            <h1 id="page-title">TICKET DASHBOARD</h1>
-            <button class="header-btn" onclick="navigateTo('tickets')">
-                <div
-                    style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--background); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); position: relative;">
-                    <span class="material-symbols-outlined" style="color: var(--text-muted);">person</span>
+            <h1 id="page-title" class="outfit">TICKET DASHBOARD</h1>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <button class="header-btn" onclick="navigateTo('tickets')">
                     <div
-                        style="position: absolute; bottom: 0; right: 0; width: 0.75rem; height: 0.75rem; background: #22C55E; border-radius: 50%; border: 2px solid white;">
+                        style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--background); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); position: relative;">
+                        <span class="material-symbols-outlined" style="color: var(--text-muted);">person</span>
+                        <div
+                            style="position: absolute; bottom: 0; right: 0; width: 0.75rem; height: 0.75rem; background: #22C55E; border-radius: 50%; border: 2px solid white;">
+                        </div>
                     </div>
-                </div>
-            </button>
+                </button>
+            </div>
         </header>
 
         <!-- Main Content -->
@@ -89,6 +109,9 @@
             <div>
                 <p class="drawer-profile-name">สมชาย การดี</p>
                 <p class="drawer-profile-role">หัวหน้าช่างสวน</p>
+                <p id="device-info"
+                    style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.25rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">
+                </p>
             </div>
         </div>
 
@@ -114,11 +137,17 @@
         </nav>
 
         <div class="drawer-footer">
-            <button class="logout-btn">
+            <button class="logout-btn" style="margin-bottom: 1rem;">
                 <span class="material-symbols-outlined">logout</span>
                 <span>LOG OUT</span>
             </button>
-            <div class="drawer-version">Version 1.0.0 (TU Rangsit)</div>
+            <div style="text-align: center;">
+                <a href="#" onclick="forceUpdate(); return false;"
+                    style="font-size: 0.65rem; color: var(--primary); font-weight: 700; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em;">
+                    🔄 รีเซ็ตและอัปเดตแอป (แก้ปัญหารูปลาย)
+                </a>
+            </div>
+            <div class="drawer-version">Version 1.0.1 (TU Rangsit)</div>
         </div>
     </aside>
 
