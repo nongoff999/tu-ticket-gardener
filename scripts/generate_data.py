@@ -29,7 +29,6 @@ def generate_mock_data():
     ]
     assignees_list = ["สมชาย การดี", "พีระพล แสนสุข", "วิชัย ใจดี", "สมศักดิ์ ดีมาก"]
     
-    # Random images from previous entries (simulated)
     image_urls = [
         "https://lh3.googleusercontent.com/aida-public/AB6AXuAi8kiOMRopdjGSOlptNcZkg6jeCDmIkKN345K3y5CpRSik9JCOHDpCuz1scew8brwfk_TOUmGG8zOi9842WDzUkffevqlXtcgZUYDqbp4QPMUZH47Vv4sxl3kp2UonojpoHv2ENszkZabJxZWNgj-BQW_9AvBAPaS7mp-tg9fq_dDsK0QjPbukeI_jJqdRR6BrMxqxtjzgjfdzK9766ZaQHuGRK0sAp4VpmaIxbQhFsk_Q-2IPohvWgLmYEs8kk4zDzUaUhqmrHBk",
         "https://lh3.googleusercontent.com/aida-public/AB6AXuAqIdRWWMME_2YbQukMegmyMbzUiTjqByzOZl6qI8NTURu4tI1fxBu7_yUXCAChov-zwxaWCO9OeRCMCWUQtgJjTX5_Pudw5NJtiiDaV7Hy5s7uQybeH1R9JcqsNPlaqH54El1LQPRhbLTGgZgjZNFGCzpSHXR9cE42m9ViwsyENiXJXHBT0v46kjBZGWV0u-wriQRCQrGQeDEIIL4UjIe6TU-CKZK4mIx8nRg1lZzzkuadvh0BreJ78axe-af1QgVwribAxHeHwoY",
@@ -37,14 +36,21 @@ def generate_mock_data():
         "https://lh3.googleusercontent.com/aida-public/AB6AXuADv61QBDFe7w-zN2Qb4QcIlWSzZ8KUetnvuFVRyXz_tu76iZDBTge-sw1i8w4d2b9dwAxwZnY-KgkrBN44IC5zjxCYwST_IW9ClUWXVdZx7ZNuUQLbuRn5XS2Qx-R0f6VACTGSopufC2P0u9W88qGsIj-h0eKOn9OQ3HfC2cp-GOfUa9liaQKR8EiyQp_ibRJVv0gGHQioihOS7OZr5BUAHbmtdOZkGsY6_WZ103kRdcmmX8Kvq-DZcTist4tPDFhRnWwG7c2mas4"
     ]
 
+    # Load existing data to find current lowest ID
+    with open('d:/Source code Aof/tu ticket gardener/tu ticket gardener/data/tickets.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    
+    existing_ids = [t['id'] for t in data['tickets']]
+    current_id = min(existing_ids) - 1 if existing_ids else 1000
+    
     tickets = []
-    current_id = 304
-    start_date = datetime(2025, 11, 1)
-    end_date = datetime(2026, 1, 31)
+    # New period: Aug 1, 2025 to Oct 31, 2025 (approx 90 days)
+    start_date = datetime(2025, 8, 1)
+    end_date = datetime(2025, 10, 31)
     
     total_days = (end_date - start_date).days
     
-    for i in range(60):
+    for i in range(180): # Approx 2 tickets per day
         random_day = start_date + timedelta(days=random.randint(0, total_days))
         random_hour = random.randint(7, 18)
         random_minute = random.randint(0, 59)
@@ -57,7 +63,7 @@ def generate_mock_data():
         ticket = {
             "id": current_id,
             "title": f"{tree}{random.choice(['กิ่งหัก', 'เอียง', 'โค่นล้ม', 'มีปลวก'])}",
-            "description": f"พบปัญหา{tree}บริเวณ{zone['name']} ต้องการการตรวจสอบและแก้ไข",
+            "description": f"พบปัญหา{tree}บริเวณ{zone['name']} ต้องการการตรวจสอบและแก้ไข (ประวัติย้อนหลัง)",
             "category": random.choice(categories),
             "status": random.choice(statuses),
             "priority": random.choice(priorities),
@@ -72,24 +78,27 @@ def generate_mock_data():
             "date": date_str,
             "assignees": random.sample(assignees_list, random.randint(0, 2)),
             "images": [random.choice(image_urls)],
-            "notes": ""
+            "notes": "ข้อมูลประวัติย้อนหลังจากการขยายฐานข้อมูล"
         }
         tickets.append(ticket)
         current_id -= 1
 
-    # Load existing data
-    with open('d:/Source code Aof/tu ticket gardener/tu ticket gardener/data/tickets.json', 'r', encoding='utf-8') as f:
-        data = json.load(f)
-    
     # Add new tickets
     data["tickets"] = data["tickets"] + tickets
     
-    # Sort tickets by date descending (though ID descending is also used)
+    # Sort tickets by date descending
     data["tickets"].sort(key=lambda x: x["date"], reverse=True)
     
+    # Update stats (optional, but good for consistency)
+    data["stats"]["total"] = len(data["tickets"])
+    data["stats"]["new"] = len([t for t in data["tickets"] if t["status"] == "new"])
+    data["stats"]["inProgress"] = len([t for t in data["tickets"] if t["status"] == "inProgress"])
+    data["stats"]["pending"] = len([t for t in data["tickets"] if t["status"] == "pending"])
+    data["stats"]["completed"] = len([t for t in data["tickets"] if t["status"] == "completed"])
+
     with open('d:/Source code Aof/tu ticket gardener/tu ticket gardener/data/tickets.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
     generate_mock_data()
-    print("Done generating 60 tickets.")
+    print("Done generating 180 additional tickets (6 months total).")
