@@ -682,12 +682,12 @@ function renderEditTicket(params) {
 
                 <div class="form-group">
                     <label class="form-label">Ticket Name <span class="required">*</span></label>
-                    <input type="text" class="form-input" value="${ticket.title}">
+                    <input type="text" id="edit-ticket-title" class="form-input" value="${ticket.title}">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Ticket Description</label>
-                    <textarea class="form-textarea" rows="3">${ticket.description}</textarea>
+                    <textarea id="edit-ticket-description" class="form-textarea" rows="3">${ticket.description}</textarea>
                 </div>
 
                 <div class="form-group">
@@ -718,7 +718,7 @@ function renderEditTicket(params) {
 
                 <div class="form-group">
                     <label class="form-label">ชนิดพันธุ์ต้นไม้</label>
-                    <select class="form-select">
+                    <select class="form-select" id="edit-ticket-treeType">
                         ${MOCK_DATA.treeTypes.map(tt => `
                             <option ${ticket.treeType === tt ? 'selected' : ''}>${tt}</option>
                         `).join('')}
@@ -727,7 +727,7 @@ function renderEditTicket(params) {
 
                 <div class="form-group">
                     <label class="form-label text-center">เส้นรอบวง (นิ้ว)</label>
-                    <div class="number-input">
+                    <div class="number-input" style="width: 100%;">
                         <button type="button" class="number-btn minus"><span class="material-symbols-outlined">remove</span></button>
                         <input type="number" value="${ticket.circumference}" id="circumference">
                         <button type="button" class="number-btn plus"><span class="material-symbols-outlined">add</span></button>
@@ -735,7 +735,7 @@ function renderEditTicket(params) {
                 </div>
                 <div class="form-group">
                     <label class="form-label text-center">จำนวน</label>
-                    <div class="number-input">
+                    <div class="number-input" style="width: 100%;">
                         <button type="button" class="number-btn minus"><span class="material-symbols-outlined">remove</span></button>
                         <input type="number" value="${ticket.quantity}" id="quantity">
                         <button type="button" class="number-btn plus"><span class="material-symbols-outlined">add</span></button>
@@ -744,17 +744,17 @@ function renderEditTicket(params) {
 
                 <div class="form-group">
                     <label class="form-label">ผลกระทบที่ได้รับ</label>
-                    <input type="text" class="form-input" value="${ticket.impact}">
+                    <input type="text" id="edit-ticket-impact" class="form-input" value="${ticket.impact}">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">สถานที่เกิดเหตุ (โซน)</label>
-                    <input type="text" class="form-input" value="${ticket.zoneName}">
+                    <input type="text" id="edit-ticket-zoneName" class="form-input" value="${ticket.zoneName}">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">หมายเหตุ</label>
-                    <input type="text" class="form-input" value="${ticket.notes || ''}">
+                    <input type="text" id="edit-ticket-notes" class="form-input" value="${ticket.notes || ''}">
                 </div>
 
                 <div class="form-group">
@@ -839,33 +839,32 @@ function renderEditTicket(params) {
             return;
         }
 
-        // Gather values
+        // Gather values using IDs to prevent index mapping issues
         const status = form.querySelector('select').value;
         const isUrgent = form.querySelector('.priority-btn.urgent').classList.contains('active');
-        const title = form.querySelectorAll('input.form-input')[0].value;
-        const description = form.querySelector('textarea').value;
-        const resultImpact = form.querySelectorAll('input.form-input')[1].value; // Impact input
-        const zoneName = form.querySelectorAll('input.form-input')[2].value; // Zone name input
-        const notes = form.querySelectorAll('input.form-input')[3].value; // Notes input
+        const title = document.getElementById('edit-ticket-title').value.trim();
+        const description = document.getElementById('edit-ticket-description').value.trim();
+        const resultImpact = document.getElementById('edit-ticket-impact').value.trim();
+        const zoneName = document.getElementById('edit-ticket-zoneName').value.trim();
+        const notes = document.getElementById('edit-ticket-notes').value.trim();
 
         // Tags (Damage Type)
         const activeTag = form.querySelector('.tag.active');
         const damageTypeId = activeTag ? activeTag.dataset.value : ticket.damageType;
 
         // Operation
-        const opSelect = form.querySelector('#operation-select');
-        let operation = opSelect.value;
+        const opSelectInput = document.getElementById('operation-select');
+        let operation = opSelectInput.value;
         if (operation === 'other') {
-            operation = form.querySelector('#operation-other-input').value;
+            operation = document.getElementById('operation-other-input').value.trim();
         }
 
-        // Selects
-        const treeTypeSelect = form.querySelectorAll('select.form-select')[2]; // 3rd select is tree type
-        const treeType = treeTypeSelect.value;
+        // Tree Type
+        const treeType = document.getElementById('edit-ticket-treeType').value;
 
         // Numbers
-        const circumference = parseInt(form.querySelector('#circumference').value) || 0;
-        const quantity = parseInt(form.querySelector('#quantity').value) || 1;
+        const circumference = parseInt(document.getElementById('circumference').value) || 0;
+        const quantity = parseInt(document.getElementById('quantity').value) || 1;
 
         // Update Ticket Object
         ticket.status = status;
