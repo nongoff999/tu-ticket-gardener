@@ -1309,7 +1309,8 @@ async function exportToExcel(startDateStr, endDateStr) {
         { width: 38 }  // กิ่งหัก/ฉีก/เอน
     ];
 
-    // 1. Add PSM Logo
+    // 1. Add PSM Logo - SKIPPED to avoid CORS/Fetch errors
+    /*
     try {
         const logoUrl = 'https://psm.tu.ac.th/wp-content/uploads/2025/07/cropped-SapSin_Triangle_Color.png';
         const logoResponse = await fetch(logoUrl);
@@ -1327,6 +1328,7 @@ async function exportToExcel(startDateStr, endDateStr) {
     } catch (e) {
         console.warn('Could not load logo:', e);
     }
+    */
 
     // 2. Headers (Title & Subtitle)
     const titleRow = worksheet.addRow(['รายงานสรุปต้นไม้โค่นล้ม หัก ฉีกขาด จากลมฝน']);
