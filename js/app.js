@@ -1174,45 +1174,36 @@ function renderReportDetail() {
     AppState.currentPage = 'report-detail';
     document.getElementById('page-title').textContent = 'รายงานสรุปต้นไม้โค่นล้มฯ';
 
-    const today = new Date().toISOString().split('T')[0];
-
-    // Calculate current fiscal year date range (Oct 1 - Sep 30)
+    // Calculate current fiscal year (Oct-Sep)
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
-    const fiscalYearStart = currentMonth >= 9 ? currentYear : currentYear - 1;
-    const fiscalStartDate = `${fiscalYearStart}-10-01`;
-    const fiscalEndDate = today;
+    const currentFiscalYear = currentMonth >= 9 ? currentYear : currentYear - 1;
+
+    // Generate fiscal year options from 2567 (2024) up to current + allow future
+    const startFY = 2024; // First year the system launched (พ.ศ. 2567)
+    let fyOptions = '';
+    for (let fy = currentFiscalYear; fy >= startFY; fy--) {
+        const thaiYear = fy + 543;
+        const selected = fy === currentFiscalYear ? 'selected' : '';
+        fyOptions += `<option value="${fy}" ${selected}>ปีงบประมาณ ${thaiYear} (ต.ค. ${thaiYear - 1} - ก.ย. ${thaiYear})</option>`;
+    }
 
     const content = document.getElementById('main-content');
 
     content.innerHTML = `
         <div class="search-container">
-            <div style="margin-bottom: 1rem;">
-                <label class="form-label" style="font-size: 0.875rem; margin-bottom: 0.5rem; display: block;">ช่วงเวลา</label>
-                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                    <button class="btn" onclick="setFiscalYear()" style="background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); flex: 1; min-width: 150px;">
-                        <span class="material-symbols-outlined" style="font-size: 1rem;">calendar_month</span>
-                        ปีงบประมาณ ${fiscalYearStart + 543}
-                    </button>
-                    <button class="btn" onclick="setLastMonth()" style="background: white; color: var(--text-primary); border: 1px solid var(--border); flex: 1; min-width: 150px;">
-                        เดือนที่แล้ว
-                    </button>
-                </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label" style="font-size: 0.875rem; margin-bottom: 0.5rem; display: block;">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 4px;">calendar_month</span>
+                    เลือกปีงบประมาณ
+                </label>
+                <select id="report-fiscal-year" class="form-input" style="font-size: 1rem; padding: 0.75rem 1rem; cursor: pointer;">
+                    ${fyOptions}
+                </select>
             </div>
             
-            <div class="search-grid">
-                <div class="form-group">
-                    <label class="form-label" style="font-size: 0.75rem;">วันเริ่มต้น</label>
-                    <input type="date" id="report-start-date" class="form-input" value="${fiscalStartDate}">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" style="font-size: 0.75rem;">วันสิ้นสุด</label>
-                    <input type="date" id="report-end-date" class="form-input" value="${fiscalEndDate}">
-                </div>
-            </div>
-            
-            <button class="btn btn-primary" onclick="downloadRangeReport()" style="height: 3.5rem; width: 100%; margin-top: 1rem;">
+            <button class="btn btn-primary" onclick="downloadRangeReport()" style="height: 3.5rem; width: 100%; margin-top: 0.5rem;">
                 <span class="material-symbols-outlined">download</span>
                 ดาวน์โหลดรายงาน Excel
             </button>
@@ -1221,7 +1212,8 @@ function renderReportDetail() {
                 <div style="display: flex; align-items: start; gap: 0.75rem;">
                     <span class="material-symbols-outlined" style="color: var(--primary); font-size: 1.25rem;">info</span>
                     <div style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.5;">
-                        <strong style="color: var(--primary);">รายงานจะรวมข้อมูลทั้งหมดในช่วงวันที่ที่เลือก</strong><br>
+                        <strong style="color: var(--primary);">รายงานจะรวมข้อมูลทั้งหมดในปีงบประมาณที่เลือก</strong><br>
+                        • ช่วงเวลา: 1 ตุลาคม ถึง 30 กันยายน<br>
                         • แสดงรายการความเสียหายทั้งหมดพร้อมวันที่เกิดเหตุ<br>
                         • รวมรูปภาพประกอบในไฟล์ Excel<br>
                         • แสดงสถิติสรุปและยอดสะสมอัตโนมัติ
@@ -1232,36 +1224,29 @@ function renderReportDetail() {
     `;
 }
 
-// Helper functions for quick date presets
-function setFiscalYear() {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
-    const fiscalYearStart = currentMonth >= 9 ? currentYear : currentYear - 1;
-
-    document.getElementById('report-start-date').value = `${fiscalYearStart}-10-01`;
-    document.getElementById('report-end-date').value = new Date().toISOString().split('T')[0];
-}
-window.setFiscalYear = setFiscalYear;
-
-function setLastMonth() {
-    const now = new Date();
-    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
-
-    document.getElementById('report-start-date').value = lastMonth.toISOString().split('T')[0];
-    document.getElementById('report-end-date').value = lastMonthEnd.toISOString().split('T')[0];
-}
-window.setLastMonth = setLastMonth;
-
-// New range-based download function
+// Download report based on selected fiscal year
 async function downloadRangeReport() {
-    const startDate = document.getElementById('report-start-date').value;
-    const endDate = document.getElementById('report-end-date').value;
-
-    if (!startDate || !endDate) {
-        showPopup('แจ้งเตือน', 'กรุณาระบุช่วงวันที่', 'warning');
+    const fySelect = document.getElementById('report-fiscal-year');
+    if (!fySelect) {
+        showPopup('แจ้งเตือน', 'กรุณาเลือกปีงบประมาณ', 'warning');
         return;
+    }
+
+    const fy = parseInt(fySelect.value); // e.g. 2025
+    const startDate = `${fy}-10-01`;
+
+    // End date: Sep 30 of next year, or today if current fiscal year
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentFiscalYear = currentMonth >= 9 ? now.getFullYear() : now.getFullYear() - 1;
+
+    let endDate;
+    if (fy === currentFiscalYear) {
+        // Current fiscal year: use today's date
+        endDate = now.toISOString().split('T')[0];
+    } else {
+        // Past fiscal year: use Sep 30 of next year
+        endDate = `${fy + 1}-09-30`;
     }
 
     await exportToExcel(startDate, endDate);
@@ -1450,31 +1435,59 @@ async function exportToExcel(startDateStr, endDateStr) {
         }
     }
 
-    // 5. Summary Row
-    const summaryRow = worksheet.addRow(['', '', 'สรุปรวมจำนวนทั้งสิ้น', '', grandTotalItems + ' ต้น', totalFallen, totalBroken]);
-    worksheet.mergeCells(`B${summaryRow.number}:C${summaryRow.number}`);
-    summaryRow.eachCell((cell, colNumber) => {
+    // 5. Summary Row - สรุปรวมในช่วงที่เลือก
+    const totalCases = rangeTickets.length;
+    const summaryStyle = (cell, colNumber) => {
         if (colNumber > 1) {
             cell.border = {
                 top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
             };
             cell.font = { name: 'Sarabun', size: 11, bold: true };
             cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        }
+    };
+
+    // Row: สรุปจำนวนต้นไม้
+    const treeSumRow = worksheet.addRow(['', '', 'สรุปรวมจำนวนต้นไม้ทั้งสิ้น', '', grandTotalItems + ' ต้น', '', '']);
+    worksheet.mergeCells(`B${treeSumRow.number}:D${treeSumRow.number}`);
+    treeSumRow.eachCell(summaryStyle);
+
+    // Row: สรุปจำนวนเคส (โค่นล้ม / กิ่งหัก)
+    const caseSumRow = worksheet.addRow(['', '', 'สรุปจำนวนเคส', '', totalCases + ' เคส', totalFallen + ' เคส', totalBroken + ' เคส']);
+    worksheet.mergeCells(`B${caseSumRow.number}:D${caseSumRow.number}`);
+    caseSumRow.eachCell(summaryStyle);
+    caseSumRow.getCell(6).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF2CC' } }; // Light orange
+    caseSumRow.getCell(7).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2EFDA' } }; // Light green
+
+    // 6. Accumulated Row - ยอดสะสมตั้งแต่ต้นปีงบประมาณ
+    const accTotalItems = accTickets.reduce((sum, t) => sum + (t.quantity || 1), 0);
+    const accTotalCases = accTickets.length;
+
+    worksheet.addRow([]); // Gap
+    const accHeaderRow = worksheet.addRow(['', '', `ยอดสะสมตั้งแต่ ${fiscalStartLabel} ถึงปัจจุบัน`, '', '', '', '']);
+    worksheet.mergeCells(`B${accHeaderRow.number}:G${accHeaderRow.number}`);
+    accHeaderRow.eachCell((cell, colNumber) => {
+        if (colNumber > 1) {
+            cell.border = {
+                top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
+            };
+            cell.font = { name: 'Sarabun', size: 12, bold: true, color: { argb: 'FF0000FF' } };
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCE6F1' } }; // Light blue
         }
     });
 
-    // 6. Accumulated Row
-    const accRow = worksheet.addRow(['', '', `ยอดสะสมตั้งแต่ (${fiscalStartLabel} ถึงปัจจุบัน)`, '', '', accFallen, accBroken]);
-    worksheet.mergeCells(`B${accRow.number}:C${accRow.number}`);
-    accRow.eachCell((cell, colNumber) => {
-        if (colNumber > 1) {
-            cell.border = {
-                top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
-            };
-            cell.font = { name: 'Sarabun', size: 11, bold: true };
-            cell.alignment = { vertical: 'middle', horizontal: 'center' };
-        }
-    });
+    // Accumulated trees
+    const accTreeRow = worksheet.addRow(['', '', 'ยอดสะสมต้นไม้', '', accTotalItems + ' ต้น', '', '']);
+    worksheet.mergeCells(`B${accTreeRow.number}:D${accTreeRow.number}`);
+    accTreeRow.eachCell(summaryStyle);
+
+    // Accumulated cases by type
+    const accCaseRow = worksheet.addRow(['', '', 'ยอดสะสมเคส', '', accTotalCases + ' เคส', accFallen + ' เคส', accBroken + ' เคส']);
+    worksheet.mergeCells(`B${accCaseRow.number}:D${accCaseRow.number}`);
+    accCaseRow.eachCell(summaryStyle);
+    accCaseRow.getCell(6).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF2CC' } };
+    accCaseRow.getCell(7).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2EFDA' } };
 
     // Generate Excel File
     const fileName = `TU_Report_${startDateStr}_to_${endDateStr}.xlsx`;
