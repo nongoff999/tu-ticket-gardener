@@ -1429,8 +1429,11 @@ async function exportToExcel(startDateStr, endDateStr) {
                     const validExtensions = ['png', 'jpeg', 'gif'];
                     const finalExt = ext === 'jpg' ? 'jpeg' : (validExtensions.includes(ext) ? ext : 'png');
 
+                    // Extract ONLY the base64 part (after "base64,")
+                    const base64Data = imgUrl.split(',')[1];
+
                     imageId = workbook.addImage({
-                        base64: imgUrl,
+                        base64: base64Data,
                         extension: finalExt,
                     });
                 } else {
