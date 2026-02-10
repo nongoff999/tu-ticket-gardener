@@ -40,6 +40,10 @@
     <link rel="apple-touch-icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230284c7'/><text y='.7em' x='5' font-size='70'>🌳</text></svg>">
 
+    <!-- Excel Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -129,6 +133,10 @@
             <a href="#/tickets" class="drawer-nav-item" onclick="closeDrawer()">
                 <span class="material-symbols-outlined">confirmation_number</span>
                 <span>TICKET LIST</span>
+            </a>
+            <a href="#/reports" class="drawer-nav-item" onclick="closeDrawer()">
+                <span class="material-symbols-outlined">summarize</span>
+                <span>REPORTS</span>
             </a>
             <a href="#/add" class="drawer-nav-item" onclick="closeDrawer()">
                 <span class="material-symbols-outlined">add_circle</span>

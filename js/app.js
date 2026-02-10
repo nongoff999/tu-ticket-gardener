@@ -9,7 +9,8 @@ const AppState = {
     selectedCategory: 'all',
     selectedTicket: null,
     isDrawerOpen: false,
-    selectedDate: new Date().toISOString().split('T')[0] // Default to today
+    selectedDate: new Date().toISOString().split('T')[0], // Default to today
+    selectedReport: null
 };
 
 // Initialize App
@@ -124,7 +125,9 @@ function initRouter() {
         .register('/ticket', renderTicketDetail)
         .register('/add', renderAddTicket)
         .register('/add-select', renderCategorySelection)
-        .register('/edit', renderEditTicket);
+        .register('/edit', renderEditTicket)
+        .register('/reports', renderReportList)
+        .register('/report-detail', renderReportDetail);
 }
 
 // Drawer Functions
@@ -1131,6 +1134,347 @@ function removeUploadedImage(index) {
 }
 
 // Export functions
+window.removeUploadedImage = removeUploadedImage;
+
+/**
+ * ==========================================
+ * Reports Module Implementation
+ * ==========================================
+ */
+
+function renderReportList() {
+    AppState.currentPage = 'reports';
+    updateActiveNavItem('reports');
+    document.getElementById('page-title').textContent = 'รายงาน';
+
+    const content = document.getElementById('main-content');
+    content.innerHTML = `
+        <div class="report-list">
+            <div class="report-card" onclick="openReportDetail('summary')">
+                <div class="report-card-icon">
+                    <span class="material-symbols-outlined">summarize</span>
+                </div>
+                <div class="report-card-info">
+                    <h3>รายงานสรุปต้นไม้โค่นล้ม หัก ฉีกขาด จากลมฝน</h3>
+                    <p>สรุปรายการความเสียหายรายวัน พร้อมรูปภาพและสถิติสะสม</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
+            </div>
+        </div>
+    `;
+}
+
+function openReportDetail(type) {
+    AppState.selectedReport = type;
+    navigateTo('/report-detail');
+}
+window.openReportDetail = openReportDetail;
+
+function renderReportDetail() {
+    AppState.currentPage = 'report-detail';
+    document.getElementById('page-title').textContent = 'รายงานสรุปต้นไม้โค่นล้มฯ';
+
+    const today = new Date().toISOString().split('T')[0];
+    const content = document.getElementById('main-content');
+
+    content.innerHTML = `
+        <div class="search-container">
+            <div class="search-grid">
+                <div class="form-group">
+                    <label class="form-label" style="font-size: 0.75rem;">วันเริ่มต้น</label>
+                    <input type="date" id="report-start-date" class="form-input" value="${today}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-size: 0.75rem;">วันสิ้นสุด</label>
+                    <input type="date" id="report-end-date" class="form-input" value="${today}">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="performReportSearch()" style="height: 3.5rem;">
+                <span class="material-symbols-outlined">search</span>
+                ค้นหา
+            </button>
+        </div>
+        <div id="report-results-container" class="report-results">
+            <!-- Results will be injected here -->
+            <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                <span class="material-symbols-outlined" style="font-size: 3rem; opacity: 0.3;">find_in_page</span>
+                <p style="margin-top: 1rem;">ระบุช่วงวันที่เพื่อค้นหารายงาน</p>
+            </div>
+        </div>
+        <div id="download-actions" class="download-actions">
+            <button class="btn btn-primary" onclick="downloadSelectedReports()" style="width: 100%; max-width: 400px; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);">
+                <span class="material-symbols-outlined">download</span>
+                ดาวน์โหลดที่เลือก (<span id="selected-count">0</span> รายการ)
+            </button>
+        </div>
+    `;
+}
+
+function performReportSearch() {
+    const startDate = document.getElementById('report-start-date').value;
+    const endDate = document.getElementById('report-end-date').value;
+
+    if (!startDate || !endDate) return;
+
+    const resultsContainer = document.getElementById('report-results-container');
+    const downloadActions = document.getElementById('download-actions');
+
+    // Generate date sequence
+    const dates = [];
+    let current = new Date(startDate);
+    const end = new Date(endDate);
+
+    while (current <= end) {
+        dates.push(current.toISOString().split('T')[0]);
+        current.setDate(current.getDate() + 1);
+    }
+
+    if (dates.length === 0) {
+        resultsContainer.innerHTML = '<p style="text-align: center; padding: 2rem;">ไม่พบข้อมูลในช่วงวันที่ระบุ</p>';
+        downloadActions.classList.remove('active');
+        return;
+    }
+
+    let html = `
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th style="width: 3rem; padding-right: 0;">
+                        <input type="checkbox" id="select-all-reports" onclick="toggleAllReports(this)">
+                    </th>
+                    <th>วันที่</th>
+                    <th style="text-align: right;">ดาวน์โหลด</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    dates.reverse().forEach(date => {
+        // Format Thai Date
+        const d = new Date(date);
+        const thaiDate = d.toLocaleDateString('th-TH', {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric'
+        });
+
+        html += `
+            <tr>
+                <td style="padding-right: 0;">
+                    <input type="checkbox" class="report-checkbox" data-date="${date}" onclick="updateSelectedCount()">
+                </td>
+                <td onclick="this.parentElement.querySelector('.report-checkbox').click()" style="cursor: pointer;">
+                    <div style="font-weight: 600;">${thaiDate}</div>
+                </td>
+                <td style="text-align: right;">
+                    <button class="excel-tag" onclick="exportToExcel('${date}')" style="border: none; cursor: pointer;">
+                        <span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 4px;">description</span>
+                        Excel
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += '</tbody></table>';
+    resultsContainer.innerHTML = html;
+
+    downloadActions.classList.add('active');
+    updateSelectedCount();
+}
+window.performReportSearch = performReportSearch;
+
+function toggleAllReports(source) {
+    const checkboxes = document.querySelectorAll('.report-checkbox');
+    checkboxes.forEach(cb => cb.checked = source.checked);
+    updateSelectedCount();
+}
+window.toggleAllReports = toggleAllReports;
+
+function updateSelectedCount() {
+    const checked = document.querySelectorAll('.report-checkbox:checked').length;
+    document.getElementById('selected-count').textContent = checked;
+}
+window.updateSelectedCount = updateSelectedCount;
+
+async function downloadSelectedReports() {
+    const checkboxes = document.querySelectorAll('.report-checkbox:checked');
+    if (checkboxes.length === 0) {
+        showPopup('แจ้งเตือน', 'กรุณาเลือกรูปแบบรายงานที่ต้องการดาวน์โหลด', 'warning');
+        return;
+    }
+
+    for (const cb of checkboxes) {
+        const date = cb.getAttribute('data-date');
+        await exportToExcel(date);
+    }
+}
+window.downloadSelectedReports = downloadSelectedReports;
+
+/**
+ * Excel Export Logic using ExcelJS
+ * Matches the requested layout from the screenshots
+ */
+async function exportToExcel(dateStr) {
+    const date = new Date(dateStr);
+    const thaiDateFull = date.toLocaleDateString('th-TH', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+
+    // Filter tickets for this date
+    const dayTickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr));
+
+    // Calculate Stats
+    const totalFallen = dayTickets.filter(t => t.damageType === 'fallen').length;
+    const totalBroken = dayTickets.filter(t => t.damageType === 'broken' || t.damageType === 'tilted').length;
+    const grandTotalItems = dayTickets.reduce((sum, t) => sum + (t.quantity || 1), 0);
+
+    // Calculate Accumulated (from Oct 1st of current fiscal year)
+    // For simplicity, let's say fiscal year starts Oct 2024
+    const fiscalStart = new Date('2024-10-01');
+    const accTickets = MOCK_DATA.tickets.filter(t => {
+        const d = new Date(t.date);
+        return d >= fiscalStart && d <= date;
+    });
+    const accFallen = accTickets.filter(t => t.damageType === 'fallen').length;
+    const accBroken = accTickets.filter(t => t.damageType === 'broken' || t.damageType === 'tilted').length;
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet(dateStr);
+
+    // Set Column Widths
+    worksheet.columns = [
+        { width: 8 },  // ลำดับ
+        { width: 30 }, // สถานที่เกิดเหตุ
+        { width: 25 }, // รูปภาพ
+        { width: 12 }, // จำนวน
+        { width: 40 }, // โค่นล้ม
+        { width: 40 }  // กิ่งหัก/ฉีก/เอน
+    ];
+
+    // 1. Headers (Title & Subtitle)
+    const titleRow = worksheet.addRow(['รายงานสรุปต้นไม้โค่นล้ม หัก ฉีกขาด จากลมฝน']);
+    worksheet.mergeCells('A1:F1');
+    titleRow.font = { name: 'Sarabun', size: 16, bold: true };
+    titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
+
+    const dateRow = worksheet.addRow([thaiDateFull]);
+    worksheet.mergeCells('A2:F2');
+    dateRow.font = { name: 'Sarabun', size: 14, bold: true };
+    dateRow.alignment = { vertical: 'middle', horizontal: 'center' };
+
+    const locationRow = worksheet.addRow(['(ในพื้นที่ สำนักงานบริหารทรัพยากรสินทรัพย์และกีฬา)']);
+    worksheet.mergeCells('A3:F3');
+    locationRow.font = { name: 'Sarabun', size: 12, bold: true, color: { argb: 'FF0000FF' } };
+    locationRow.alignment = { vertical: 'middle', horizontal: 'center' };
+
+    worksheet.addRow([]); // Gap
+
+    // 2. Table Header Row
+    const headerRow = worksheet.addRow(['ลำดับ', 'สถานที่เกิดเหตุ', 'รูปภาพ', 'จำนวน', 'ชนิดต้นไม้และสถานะ\nโค่นล้ม', 'กิ่งหัก/หัก/ฉีกขาด/เอน']);
+    headerRow.height = 40;
+    headerRow.eachCell(cell => {
+        cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFCCCCCC' }
+        };
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
+        };
+        cell.font = { name: 'Sarabun', size: 10, bold: true };
+        cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+    });
+    // Color special headers
+    headerRow.getCell(5).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFA500' } }; // Orange
+    headerRow.getCell(6).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF90EE90' } }; // Green
+
+    // 3. Data Rows
+    for (let i = 0; i < dayTickets.length; i++) {
+        const t = dayTickets[i];
+        const isFallen = t.damageType === 'fallen';
+        const statusText = `${t.treeType} / ${t.operation || 'อยู่ระหว่างดำเนินการ'}`;
+
+        const row = worksheet.addRow([
+            i + 1,
+            t.zoneName + '\n' + t.title,
+            '', // Image Placeholder
+            `${t.quantity || 1} ต้น`,
+            isFallen ? statusText : '',
+            !isFallen ? statusText : ''
+        ]);
+
+        row.height = 100; // Large height for images
+        row.eachCell(cell => {
+            cell.border = {
+                top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
+            };
+            cell.font = { name: 'Sarabun', size: 10 };
+            cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        });
+        row.getCell(2).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+        row.getCell(5).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+        row.getCell(6).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+
+        // Add Image
+        if (t.images && t.images.length > 0) {
+            try {
+                const imgUrl = t.images[0];
+                const response = await fetch(imgUrl);
+                const buffer = await response.arrayBuffer();
+                const extension = imgUrl.split('.').pop().split('?')[0] || 'png';
+
+                const imageId = workbook.addImage({
+                    buffer: buffer,
+                    extension: extension === 'jpg' ? 'jpeg' : (['png', 'jpeg', 'gif'].includes(extension) ? extension : 'png'),
+                });
+
+                worksheet.addImage(imageId, {
+                    tl: { col: 2.1, row: row.number - 1.1 },
+                    ext: { width: 140, height: 110 }
+                });
+            } catch (e) {
+                console.warn('Could not load image for Excel:', e);
+            }
+        }
+    }
+
+    // 4. Summary Row (The "13" goes here)
+    const summaryRow = worksheet.addRow(['', 'สรุปรวมจำนวนทั้งสิ้น', '', totalFallen, totalBroken, totalFallen + totalBroken]);
+    worksheet.mergeCells(`B${summaryRow.number}:C${summaryRow.number}`);
+    summaryRow.eachCell((cell, colNumber) => {
+        if (colNumber > 1) {
+            cell.border = {
+                top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
+            };
+            cell.font = { name: 'Sarabun', size: 11, bold: true };
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        }
+    });
+
+    // 5. Accumulated Row
+    const accRow = worksheet.addRow(['', 'ยอดสะสมตั้งแต่ (1 ตุลาคม 2567 ถึงปัจจุบัน)', '', accFallen, accBroken, '']);
+    worksheet.mergeCells(`B${accRow.number}:C${accRow.number}`);
+    accRow.eachCell((cell, colNumber) => {
+        if (colNumber > 1) {
+            cell.border = {
+                top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
+            };
+            cell.font = { name: 'Sarabun', size: 11, bold: true };
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        }
+    });
+
+    // Generate Excel File
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buffer]), `TU_Report_${dateStr}.xlsx`);
+}
+window.exportToExcel = exportToExcel;
+
+// Add navigation items to export
 window.openDrawer = openDrawer;
 window.closeDrawer = closeDrawer;
 window.navigateTo = navigateTo;
