@@ -1416,9 +1416,26 @@ async function exportToExcel(startDateStr, endDateStr) {
         if (t.images && t.images.length > 0) {
             try {
                 const imgUrl = t.images[0];
-                const response = await fetch(imgUrl);
-                const buffer = await response.arrayBuffer();
-                const extension = imgUrl.split('.').pop().split('?')[0] || 'png';
+                let buffer;
+                let extension;
+
+                if (imgUrl.startsWith('data:image/')) {
+                    // Handle Base64 Image
+                    const base64Data = imgUrl.split(',')[1];
+                    const binaryString = window.atob(base64Data);
+                    const len = binaryString.length;
+                    const bytes = new Uint8Array(len);
+                    for (let j = 0; j < len; j++) {
+                        bytes[j] = binaryString.charCodeAt(j);
+                    }
+                    buffer = bytes.buffer;
+                    extension = imgUrl.split(';')[0].split('/')[1];
+                } else {
+                    // Handle URL Image
+                    const response = await fetch(imgUrl);
+                    buffer = await response.arrayBuffer();
+                    extension = imgUrl.split('.').pop().split('?')[0] || 'png';
+                }
 
                 const imageId = workbook.addImage({
                     buffer: buffer,
