@@ -1436,14 +1436,30 @@ async function exportToExcel(startDateStr, endDateStr) {
                 } else {
                     // Handle URL Image
                     const response = await fetch(imgUrl);
+                    if (!response.ok) throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.startsWith('image/')) {
+                        throw new Error(`Invalid content-type: ${contentType}`);
+                    }
+
                     const buffer = await response.arrayBuffer();
-                    const ext = imgUrl.split('.').pop().split('?')[0];
+
+                    // Determine extension from content-type or URL
+                    let ext = 'png';
+                    if (contentType) {
+                        const type = contentType.split('/')[1];
+                        if (['jpeg', 'jpg', 'png', 'gif'].includes(type)) {
+                            ext = type === 'jpeg' ? 'jpg' : type;
+                        }
+                    }
+
                     const validExtensions = ['png', 'jpeg', 'gif'];
                     const finalExt = ext === 'jpg' ? 'jpeg' : (validExtensions.includes(ext) ? ext : 'png');
 
                     imageId = workbook.addImage({
                         buffer: buffer,
-                        extension: finalExt || 'png',
+                        extension: finalExt,
                     });
                 }
 
