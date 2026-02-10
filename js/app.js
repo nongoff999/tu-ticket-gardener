@@ -1355,11 +1355,31 @@ async function exportToExcel(dateStr) {
         { width: 40 }  // กิ่งหัก/ฉีก/เอน
     ];
 
-    // 1. Headers (Title & Subtitle)
+    // 1. Add PSM Logo
+    try {
+        const logoUrl = 'https://psm.tu.ac.th/wp-content/uploads/2025/07/cropped-SapSin_Triangle_Color.png';
+        const logoResponse = await fetch(logoUrl);
+        const logoBuffer = await logoResponse.arrayBuffer();
+
+        const logoImageId = workbook.addImage({
+            buffer: logoBuffer,
+            extension: 'png',
+        });
+
+        worksheet.addImage(logoImageId, {
+            tl: { col: 0.2, row: 0.2 },
+            ext: { width: 80, height: 80 }
+        });
+    } catch (e) {
+        console.warn('Could not load logo:', e);
+    }
+
+    // 2. Headers (Title & Subtitle)
     const titleRow = worksheet.addRow(['รายงานสรุปต้นไม้โค่นล้ม หัก ฉีกขาด จากลมฝน']);
     worksheet.mergeCells('A1:F1');
     titleRow.font = { name: 'Sarabun', size: 16, bold: true };
     titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
+    titleRow.height = 30;
 
     const dateRow = worksheet.addRow([thaiDateFull]);
     worksheet.mergeCells('A2:F2');
