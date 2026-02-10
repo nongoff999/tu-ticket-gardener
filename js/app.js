@@ -1333,14 +1333,22 @@ async function exportToExcel(dateStr) {
     const grandTotalItems = dayTickets.reduce((sum, t) => sum + (t.quantity || 1), 0);
 
     // Calculate Accumulated (from Oct 1st of current fiscal year)
-    // For simplicity, let's say fiscal year starts Oct 2024
-    const fiscalStart = new Date('2024-10-01');
+    // Auto-determine fiscal year start based on report date
+    const reportYear = date.getFullYear();
+    const reportMonth = date.getMonth(); // 0-indexed (0=Jan, 9=Oct)
+    const fiscalYearStart = reportMonth >= 9 ? reportYear : reportYear - 1; // If Oct-Dec, use current year; else use previous year
+    const fiscalStart = new Date(`${fiscalYearStart}-10-01`);
+
     const accTickets = MOCK_DATA.tickets.filter(t => {
         const d = new Date(t.date);
         return d >= fiscalStart && d <= date;
     });
     const accFallen = accTickets.filter(t => t.damageType === 'fallen').length;
     const accBroken = accTickets.filter(t => t.damageType === 'broken' || t.damageType === 'tilted').length;
+
+    // Format fiscal year in Thai Buddhist calendar (Add 543 years)
+    const thaiYear = fiscalYearStart + 543;
+    const fiscalStartLabel = `1 ตุลาคม ${thaiYear}`;
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet(dateStr);
@@ -1393,8 +1401,8 @@ async function exportToExcel(dateStr) {
 
     worksheet.addRow([]); // Gap
 
-    // 2. Table Header Row
-    const headerRow = worksheet.addRow(['ลำดับ', 'สถานที่เกิดเหตุ', 'รูปภาพ', 'จำนวน', 'ชนิดต้นไม้และสถานะ\nโค่นล้ม', 'กิ่งหัก/หัก/ฉีกขาด/เอน']);
+    // 2. Table Header Row - matching the reference screenshot
+    const headerRow = worksheet.addRow(['ลำดับ', 'สถานที่เกิดเหตุ', 'รูปภาพ', 'จำนวน', 'ชนิดต้นไม้และสถานะ\nโค่นล้ม', 'กิ่งหัก/ฉีก/เอน']);
     headerRow.height = 40;
     headerRow.eachCell(cell => {
         cell.fill = {
@@ -1476,7 +1484,7 @@ async function exportToExcel(dateStr) {
     });
 
     // 5. Accumulated Row
-    const accRow = worksheet.addRow(['', 'ยอดสะสมตั้งแต่ (1 ตุลาคม 2567 ถึงปัจจุบัน)', '', accFallen, accBroken, '']);
+    const accRow = worksheet.addRow(['', `ยอดสะสมตั้งแต่ (${fiscalStartLabel} ถึงปัจจุบัน)`, '', accFallen, accBroken, '']);
     worksheet.mergeCells(`B${accRow.number}:C${accRow.number}`);
     accRow.eachCell((cell, colNumber) => {
         if (colNumber > 1) {
