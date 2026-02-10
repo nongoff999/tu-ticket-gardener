@@ -1175,192 +1175,153 @@ function renderReportDetail() {
     document.getElementById('page-title').textContent = 'รายงานสรุปต้นไม้โค่นล้มฯ';
 
     const today = new Date().toISOString().split('T')[0];
+
+    // Calculate current fiscal year date range (Oct 1 - Sep 30)
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const fiscalYearStart = currentMonth >= 9 ? currentYear : currentYear - 1;
+    const fiscalStartDate = `${fiscalYearStart}-10-01`;
+    const fiscalEndDate = today;
+
     const content = document.getElementById('main-content');
 
     content.innerHTML = `
         <div class="search-container">
+            <div style="margin-bottom: 1rem;">
+                <label class="form-label" style="font-size: 0.875rem; margin-bottom: 0.5rem; display: block;">ช่วงเวลา</label>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                    <button class="btn" onclick="setFiscalYear()" style="background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); flex: 1; min-width: 150px;">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">calendar_month</span>
+                        ปีงบประมาณ ${fiscalYearStart + 543}
+                    </button>
+                    <button class="btn" onclick="setLastMonth()" style="background: white; color: var(--text-primary); border: 1px solid var(--border); flex: 1; min-width: 150px;">
+                        เดือนที่แล้ว
+                    </button>
+                </div>
+            </div>
+            
             <div class="search-grid">
                 <div class="form-group">
                     <label class="form-label" style="font-size: 0.75rem;">วันเริ่มต้น</label>
-                    <input type="date" id="report-start-date" class="form-input" value="${today}">
+                    <input type="date" id="report-start-date" class="form-input" value="${fiscalStartDate}">
                 </div>
                 <div class="form-group">
                     <label class="form-label" style="font-size: 0.75rem;">วันสิ้นสุด</label>
-                    <input type="date" id="report-end-date" class="form-input" value="${today}">
+                    <input type="date" id="report-end-date" class="form-input" value="${fiscalEndDate}">
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="performReportSearch()" style="height: 3.5rem;">
-                <span class="material-symbols-outlined">search</span>
-                ค้นหา
-            </button>
-        </div>
-        <div id="report-results-container" class="report-results">
-            <!-- Results will be injected here -->
-            <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
-                <span class="material-symbols-outlined" style="font-size: 3rem; opacity: 0.3;">find_in_page</span>
-                <p style="margin-top: 1rem;">ระบุช่วงวันที่เพื่อค้นหารายงาน</p>
-            </div>
-        </div>
-        <div id="download-actions" class="download-actions">
-            <button class="btn btn-primary" onclick="downloadSelectedReports()" style="width: 100%; max-width: 400px; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);">
+            
+            <button class="btn btn-primary" onclick="downloadRangeReport()" style="height: 3.5rem; width: 100%; margin-top: 1rem;">
                 <span class="material-symbols-outlined">download</span>
-                ดาวน์โหลดที่เลือก (<span id="selected-count">0</span> รายการ)
+                ดาวน์โหลดรายงาน Excel
             </button>
+            
+            <div style="margin-top: 1.5rem; padding: 1rem; background: var(--primary-light); border-radius: 0.75rem; border-left: 4px solid var(--primary);">
+                <div style="display: flex; align-items: start; gap: 0.75rem;">
+                    <span class="material-symbols-outlined" style="color: var(--primary); font-size: 1.25rem;">info</span>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.5;">
+                        <strong style="color: var(--primary);">รายงานจะรวมข้อมูลทั้งหมดในช่วงวันที่ที่เลือก</strong><br>
+                        • แสดงรายการความเสียหายทั้งหมดพร้อมวันที่เกิดเหตุ<br>
+                        • รวมรูปภาพประกอบในไฟล์ Excel<br>
+                        • แสดงสถิติสรุปและยอดสะสมอัตโนมัติ
+                    </div>
+                </div>
+            </div>
         </div>
     `;
 }
 
-function performReportSearch() {
+// Helper functions for quick date presets
+function setFiscalYear() {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const fiscalYearStart = currentMonth >= 9 ? currentYear : currentYear - 1;
+
+    document.getElementById('report-start-date').value = `${fiscalYearStart}-10-01`;
+    document.getElementById('report-end-date').value = new Date().toISOString().split('T')[0];
+}
+window.setFiscalYear = setFiscalYear;
+
+function setLastMonth() {
+    const now = new Date();
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    document.getElementById('report-start-date').value = lastMonth.toISOString().split('T')[0];
+    document.getElementById('report-end-date').value = lastMonthEnd.toISOString().split('T')[0];
+}
+window.setLastMonth = setLastMonth;
+
+// New range-based download function
+async function downloadRangeReport() {
     const startDate = document.getElementById('report-start-date').value;
     const endDate = document.getElementById('report-end-date').value;
 
-    if (!startDate || !endDate) return;
-
-    const resultsContainer = document.getElementById('report-results-container');
-    const downloadActions = document.getElementById('download-actions');
-
-    // Generate date sequence
-    const dates = [];
-    let current = new Date(startDate);
-    const end = new Date(endDate);
-
-    while (current <= end) {
-        dates.push(current.toISOString().split('T')[0]);
-        current.setDate(current.getDate() + 1);
-    }
-
-    if (dates.length === 0) {
-        resultsContainer.innerHTML = '<p style="text-align: center; padding: 2rem;">ไม่พบข้อมูลในช่วงวันที่ระบุ</p>';
-        downloadActions.classList.remove('active');
+    if (!startDate || !endDate) {
+        showPopup('แจ้งเตือน', 'กรุณาระบุช่วงวันที่', 'warning');
         return;
     }
 
-    let html = `
-        <table class="results-table">
-            <thead>
-                <tr>
-                    <th style="width: 3rem; padding-right: 0;">
-                        <input type="checkbox" id="select-all-reports" onclick="toggleAllReports(this)">
-                    </th>
-                    <th>วันที่</th>
-                    <th style="text-align: right;">ดาวน์โหลด</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    dates.reverse().forEach(date => {
-        // Format Thai Date
-        const d = new Date(date);
-        const thaiDate = d.toLocaleDateString('th-TH', {
-            day: 'numeric',
-            month: 'numeric',
-            year: 'numeric'
-        });
-
-        html += `
-            <tr>
-                <td style="padding-right: 0;">
-                    <input type="checkbox" class="report-checkbox" data-date="${date}" onclick="updateSelectedCount()">
-                </td>
-                <td onclick="this.parentElement.querySelector('.report-checkbox').click()" style="cursor: pointer;">
-                    <div style="font-weight: 600;">${thaiDate}</div>
-                </td>
-                <td style="text-align: right;">
-                    <button class="excel-tag" onclick="exportToExcel('${date}')" style="border: none; cursor: pointer;">
-                        <span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 4px;">description</span>
-                        Excel
-                    </button>
-                </td>
-            </tr>
-        `;
-    });
-
-    html += '</tbody></table>';
-    resultsContainer.innerHTML = html;
-
-    downloadActions.classList.add('active');
-    updateSelectedCount();
+    await exportToExcel(startDate, endDate);
 }
-window.performReportSearch = performReportSearch;
-
-function toggleAllReports(source) {
-    const checkboxes = document.querySelectorAll('.report-checkbox');
-    checkboxes.forEach(cb => cb.checked = source.checked);
-    updateSelectedCount();
-}
-window.toggleAllReports = toggleAllReports;
-
-function updateSelectedCount() {
-    const checked = document.querySelectorAll('.report-checkbox:checked').length;
-    document.getElementById('selected-count').textContent = checked;
-}
-window.updateSelectedCount = updateSelectedCount;
-
-async function downloadSelectedReports() {
-    const checkboxes = document.querySelectorAll('.report-checkbox:checked');
-    if (checkboxes.length === 0) {
-        showPopup('แจ้งเตือน', 'กรุณาเลือกรูปแบบรายงานที่ต้องการดาวน์โหลด', 'warning');
-        return;
-    }
-
-    for (const cb of checkboxes) {
-        const date = cb.getAttribute('data-date');
-        await exportToExcel(date);
-    }
-}
-window.downloadSelectedReports = downloadSelectedReports;
+window.downloadRangeReport = downloadRangeReport;
 
 /**
  * Excel Export Logic using ExcelJS
- * Matches the requested layout from the screenshots
+ * Now supports date ranges and shows incident dates
  */
-async function exportToExcel(dateStr) {
-    const date = new Date(dateStr);
-    const thaiDateFull = date.toLocaleDateString('th-TH', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    });
+async function exportToExcel(startDateStr, endDateStr) {
+    const startDate = new Date(startDateStr);
+    const endDate = new Date(endDateStr);
+    const today = new Date();
 
-    // Filter tickets for this date
-    const dayTickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr));
+    // Format dates for headers
+    const startThaiDate = startDate.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+    const endThaiDate = endDate.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+    const todayThaiDate = today.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-    // Calculate Stats
-    const totalFallen = dayTickets.filter(t => t.damageType === 'fallen').length;
-    const totalBroken = dayTickets.filter(t => t.damageType === 'broken' || t.damageType === 'tilted').length;
-    const grandTotalItems = dayTickets.reduce((sum, t) => sum + (t.quantity || 1), 0);
+    // Determine fiscal year
+    const reportYear = endDate.getFullYear();
+    const reportMonth = endDate.getMonth();
+    const fiscalYearStart = reportMonth >= 9 ? reportYear : reportYear - 1;
+    const thaiYear = fiscalYearStart + 543;
 
-    // Calculate Accumulated (from Oct 1st of current fiscal year)
-    // Auto-determine fiscal year start based on report date
-    const reportYear = date.getFullYear();
-    const reportMonth = date.getMonth(); // 0-indexed (0=Jan, 9=Oct)
-    const fiscalYearStart = reportMonth >= 9 ? reportYear : reportYear - 1; // If Oct-Dec, use current year; else use previous year
+    // Filter tickets for the date range
+    const rangeTickets = MOCK_DATA.tickets.filter(t => {
+        const d = new Date(t.date);
+        return d >= startDate && d <= endDate;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date ascending
+
+    // Calculate Stats for range
+    const totalFallen = rangeTickets.filter(t => t.damageType === 'fallen').length;
+    const totalBroken = rangeTickets.filter(t => t.damageType === 'broken' || t.damageType === 'tilted').length;
+    const grandTotalItems = rangeTickets.reduce((sum, t) => sum + (t.quantity || 1), 0);
+
+    // Calculate Accumulated (from Oct 1st to end date)
     const fiscalStart = new Date(`${fiscalYearStart}-10-01`);
-
     const accTickets = MOCK_DATA.tickets.filter(t => {
         const d = new Date(t.date);
-        return d >= fiscalStart && d <= date;
+        return d >= fiscalStart && d <= endDate;
     });
     const accFallen = accTickets.filter(t => t.damageType === 'fallen').length;
     const accBroken = accTickets.filter(t => t.damageType === 'broken' || t.damageType === 'tilted').length;
 
-    // Format fiscal year in Thai Buddhist calendar (Add 543 years)
-    const thaiYear = fiscalYearStart + 543;
     const fiscalStartLabel = `1 ตุลาคม ${thaiYear}`;
 
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet(dateStr);
+    const worksheet = workbook.addWorksheet(`รายงาน ${thaiYear}`);
 
-    // Set Column Widths
+    // Set Column Widths (added date column)
     worksheet.columns = [
         { width: 8 },  // ลำดับ
-        { width: 30 }, // สถานที่เกิดเหตุ
+        { width: 15 }, // วันที่เกิดเหตุ (NEW)
+        { width: 28 }, // สถานที่เกิดเหตุ
         { width: 25 }, // รูปภาพ
         { width: 12 }, // จำนวน
-        { width: 40 }, // โค่นล้ม
-        { width: 40 }  // กิ่งหัก/ฉีก/เอน
+        { width: 38 }, // โค่นล้ม
+        { width: 38 }  // กิ่งหัก/ฉีก/เอน
     ];
 
     // 1. Add PSM Logo
@@ -1384,25 +1345,35 @@ async function exportToExcel(dateStr) {
 
     // 2. Headers (Title & Subtitle)
     const titleRow = worksheet.addRow(['รายงานสรุปต้นไม้โค่นล้ม หัก ฉีกขาด จากลมฝน']);
-    worksheet.mergeCells('A1:F1');
+    worksheet.mergeCells('A1:G1');
     titleRow.font = { name: 'Sarabun', size: 16, bold: true };
     titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
     titleRow.height = 30;
 
-    const dateRow = worksheet.addRow([thaiDateFull]);
-    worksheet.mergeCells('A2:F2');
-    dateRow.font = { name: 'Sarabun', size: 14, bold: true };
-    dateRow.alignment = { vertical: 'middle', horizontal: 'center' };
+    // Show fiscal year or date range
+    const periodLabel = startThaiDate === endThaiDate
+        ? startThaiDate
+        : `ปีงบประมาณ ${thaiYear} (${startThaiDate} - ${endThaiDate})`;
+    const periodRow = worksheet.addRow([periodLabel]);
+    worksheet.mergeCells('A2:G2');
+    periodRow.font = { name: 'Sarabun', size: 14, bold: true };
+    periodRow.alignment = { vertical: 'middle', horizontal: 'center' };
+
+    // Report generation date
+    const genDateRow = worksheet.addRow([`วันที่จัดทำรายงาน: ${todayThaiDate}`]);
+    worksheet.mergeCells('A3:G3');
+    genDateRow.font = { name: 'Sarabun', size: 12, bold: true, color: { argb: 'FF0000FF' } };
+    genDateRow.alignment = { vertical: 'middle', horizontal: 'center' };
 
     const locationRow = worksheet.addRow(['(ในพื้นที่ สำนักงานบริหารทรัพยากรสินทรัพย์และกีฬา)']);
-    worksheet.mergeCells('A3:F3');
+    worksheet.mergeCells('A4:G4');
     locationRow.font = { name: 'Sarabun', size: 12, bold: true, color: { argb: 'FF0000FF' } };
     locationRow.alignment = { vertical: 'middle', horizontal: 'center' };
 
     worksheet.addRow([]); // Gap
 
-    // 2. Table Header Row - matching the reference screenshot
-    const headerRow = worksheet.addRow(['ลำดับ', 'สถานที่เกิดเหตุ', 'รูปภาพ', 'จำนวน', 'ชนิดต้นไม้และสถานะ\nโค่นล้ม', 'กิ่งหัก/ฉีก/เอน']);
+    // 3. Table Header Row - 7 columns with date column
+    const headerRow = worksheet.addRow(['ลำดับ', 'วันที่เกิดเหตุ', 'สถานที่เกิดเหตุ', 'รูปภาพ', 'จำนวน', 'ชนิดต้นไม้และสถานะ\nโค่นล้ม', 'กิ่งหัก/ฉีก/เอน']);
     headerRow.height = 40;
     headerRow.eachCell(cell => {
         cell.fill = {
@@ -1417,17 +1388,26 @@ async function exportToExcel(dateStr) {
         cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
     });
     // Color special headers
-    headerRow.getCell(5).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFA500' } }; // Orange
-    headerRow.getCell(6).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF90EE90' } }; // Green
+    headerRow.getCell(6).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFA500' } }; // Orange
+    headerRow.getCell(7).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF90EE90' } }; // Green
 
-    // 3. Data Rows
-    for (let i = 0; i < dayTickets.length; i++) {
-        const t = dayTickets[i];
+    // 4. Data Rows - all tickets in range
+    for (let i = 0; i < rangeTickets.length; i++) {
+        const t = rangeTickets[i];
         const isFallen = t.damageType === 'fallen';
         const statusText = `${t.treeType} / ${t.operation || 'อยู่ระหว่างดำเนินการ'}`;
 
+        // Format incident date in Thai
+        const incidentDate = new Date(t.date);
+        const incidentDateStr = incidentDate.toLocaleDateString('th-TH', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+
         const row = worksheet.addRow([
             i + 1,
+            incidentDateStr,
             t.zoneName + '\n' + t.title,
             '', // Image Placeholder
             `${t.quantity || 1} ต้น`,
@@ -1443,9 +1423,9 @@ async function exportToExcel(dateStr) {
             cell.font = { name: 'Sarabun', size: 10 };
             cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
         });
-        row.getCell(2).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
-        row.getCell(5).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+        row.getCell(3).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
         row.getCell(6).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+        row.getCell(7).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
 
         // Add Image
         if (t.images && t.images.length > 0) {
@@ -1461,7 +1441,7 @@ async function exportToExcel(dateStr) {
                 });
 
                 worksheet.addImage(imageId, {
-                    tl: { col: 2.1, row: row.number - 1.1 },
+                    tl: { col: 3.1, row: row.number - 1.1 },
                     ext: { width: 140, height: 110 }
                 });
             } catch (e) {
@@ -1470,8 +1450,8 @@ async function exportToExcel(dateStr) {
         }
     }
 
-    // 4. Summary Row (The "13" goes here)
-    const summaryRow = worksheet.addRow(['', 'สรุปรวมจำนวนทั้งสิ้น', '', totalFallen, totalBroken, totalFallen + totalBroken]);
+    // 5. Summary Row
+    const summaryRow = worksheet.addRow(['', '', 'สรุปรวมจำนวนทั้งสิ้น', '', grandTotalItems + ' ต้น', totalFallen, totalBroken]);
     worksheet.mergeCells(`B${summaryRow.number}:C${summaryRow.number}`);
     summaryRow.eachCell((cell, colNumber) => {
         if (colNumber > 1) {
@@ -1483,8 +1463,8 @@ async function exportToExcel(dateStr) {
         }
     });
 
-    // 5. Accumulated Row
-    const accRow = worksheet.addRow(['', `ยอดสะสมตั้งแต่ (${fiscalStartLabel} ถึงปัจจุบัน)`, '', accFallen, accBroken, '']);
+    // 6. Accumulated Row
+    const accRow = worksheet.addRow(['', '', `ยอดสะสมตั้งแต่ (${fiscalStartLabel} ถึงปัจจุบัน)`, '', '', accFallen, accBroken]);
     worksheet.mergeCells(`B${accRow.number}:C${accRow.number}`);
     accRow.eachCell((cell, colNumber) => {
         if (colNumber > 1) {
@@ -1497,8 +1477,9 @@ async function exportToExcel(dateStr) {
     });
 
     // Generate Excel File
-    const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(new Blob([buffer]), `TU_Report_${dateStr}.xlsx`);
+    const fileName = `TU_Report_${startDateStr}_to_${endDateStr}.xlsx`;
+    const excelBuffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([excelBuffer]), fileName);
 }
 window.exportToExcel = exportToExcel;
 
