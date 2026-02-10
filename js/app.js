@@ -1418,31 +1418,34 @@ async function exportToExcel(startDateStr, endDateStr) {
         if (t.images && t.images.length > 0) {
             try {
                 const imgUrl = t.images[0];
-                let buffer;
-                let extension;
+                let imageId;
 
                 if (imgUrl.startsWith('data:image/')) {
-                    // Handle Base64 Image
-                    const base64Data = imgUrl.split(',')[1];
-                    const binaryString = window.atob(base64Data);
-                    const len = binaryString.length;
-                    const bytes = new Uint8Array(len);
-                    for (let j = 0; j < len; j++) {
-                        bytes[j] = binaryString.charCodeAt(j);
-                    }
-                    buffer = bytes.buffer;
-                    extension = imgUrl.split(';')[0].split('/')[1];
+                    // Handle Base64 Image safely using ExcelJS native support
+                    // Extract extension from data URI scheme (e.g. data:image/png;base64,...)
+                    const mimeType = imgUrl.split(';')[0].split(':')[1]; // image/png
+                    const ext = mimeType.split('/')[1]; // png
+
+                    const validExtensions = ['png', 'jpeg', 'gif'];
+                    const finalExt = ext === 'jpg' ? 'jpeg' : (validExtensions.includes(ext) ? ext : 'png');
+
+                    imageId = workbook.addImage({
+                        base64: imgUrl,
+                        extension: finalExt,
+                    });
                 } else {
                     // Handle URL Image
                     const response = await fetch(imgUrl);
-                    buffer = await response.arrayBuffer();
-                    extension = imgUrl.split('.').pop().split('?')[0] || 'png';
-                }
+                    const buffer = await response.arrayBuffer();
+                    const ext = imgUrl.split('.').pop().split('?')[0];
+                    const validExtensions = ['png', 'jpeg', 'gif'];
+                    const finalExt = ext === 'jpg' ? 'jpeg' : (validExtensions.includes(ext) ? ext : 'png');
 
-                const imageId = workbook.addImage({
-                    buffer: buffer,
-                    extension: extension === 'jpg' ? 'jpeg' : (['png', 'jpeg', 'gif'].includes(extension) ? extension : 'png'),
-                });
+                    imageId = workbook.addImage({
+                        buffer: buffer,
+                        extension: finalExt || 'png',
+                    });
+                }
 
                 worksheet.addImage(imageId, {
                     tl: { col: 3.1, row: row.number - 1.1 },
