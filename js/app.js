@@ -796,13 +796,8 @@ function renderTicketDetail(params) {
                 </div>
                 <div class="detail-info-item full">
                     <span class="detail-info-label">ผู้รับผิดชอบ :</span>
-                    <div class="detail-info-value" style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem;">
-                        ${ticket.assignees.length > 0 ? ticket.assignees.map(name => `
-                            <div style="display: flex; align-items: center; gap: 0.5rem; background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.25rem 0.75rem 0.25rem 0.25rem; border-radius: 2rem;">
-                                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=64" alt="${name}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
-                                <span style="font-size: 0.9rem; font-weight: 500; color: #334155;">${name}</span>
-                            </div>
-                        `).join('') : '-'}
+                    <div class="detail-info-value" style="margin-top: 0.5rem;">
+                        ${Components.renderAssignees(ticket.assignees, 'large')}
                     </div>
                 </div>
                 ${ticket.notes ? `

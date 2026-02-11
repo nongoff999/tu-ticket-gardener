@@ -30,6 +30,28 @@ const Components = {
         `;
     },
 
+    // Helper: Render Assignees with Avatars
+    renderAssignees(assignees, size = 'small') {
+        const avatarSize = size === 'large' ? '32px' : '20px';
+        const fontSize = size === 'large' ? '0.9rem' : '0.7rem';
+        const gap = size === 'large' ? '0.5rem' : '0.35rem';
+        const padding = size === 'large' ? '0.25rem 0.75rem 0.25rem 0.25rem' : '0.15rem 0.5rem 0.15rem 0.15rem';
+
+        if (!assignees || assignees.length === 0) {
+            return `<span style="font-size: ${size === 'large' ? '0.85rem' : '0.625rem'}; color: var(--text-muted); font-style: italic;">ยังไม่มีผู้รับผิดชอบ</span>`;
+        }
+        return `
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; width: 100%;">
+                ${assignees.map(name => `
+                    <div style="display: flex; align-items: center; gap: ${gap}; background: #f8fafc; border: 1px solid #e2e8f0; padding: ${padding}; border-radius: 9999px;">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=64" alt="${name}" style="width: ${avatarSize}; height: ${avatarSize}; border-radius: 50%; object-fit: cover;">
+                        <span style="font-size: ${fontSize}; font-weight: 500; color: #334155;">${name}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    },
+
     // Monitor Ticket Card (with images row)
     monitorCard(ticket) {
         return `
@@ -56,15 +78,9 @@ const Components = {
                         <img src="${img}" alt="" style="width: 7rem; height: 4rem; object-fit: cover; border-radius: 0.5rem; flex-shrink: 0; background: var(--background);">
                     `).join('')}
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 0.5rem;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        ${ticket.assignees.length > 0 ? `
-                            <span style="font-size: 0.625rem; color: var(--text-secondary); font-weight: 500;">ผู้รับผิดชอบ:</span>
-                            <span style="font-size: 0.625rem; color: var(--text-primary); font-weight: 600;">${ticket.assignees.join(', ')}</span>
-                        ` : `
-                            <span style="font-size: 0.625rem; color: var(--text-muted); font-style: italic;">ยังไม่มีผู้รับผิดชอบ</span>
-                        `}
-                    </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; border-top: 1px solid var(--border); padding-top: 0.5rem;">
+                    <span style="font-size: 0.625rem; color: var(--text-secondary); font-weight: 500;">ผู้รับผิดชอบ:</span>
+                    ${this.renderAssignees(ticket.assignees)}
                 </div>
             </div>
         `;
