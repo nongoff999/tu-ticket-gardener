@@ -92,7 +92,10 @@ async function loadData() {
             user: { name: "สมชาย การดี", role: "หัวหน้าช่างสวน", avatar: null },
             stats: { total: 0, new: 0, inProgress: 0, pending: 0, completed: 0 },
             categories: [
-                { id: "all", name: "ทั้งหมด" }
+                { id: "all", name: "ทั้งหมด" },
+                { id: "accident", name: "อุบัติเหตุ" },
+                { id: "nature", name: "อุบัติเหตุจากธรรมชาติ" },
+                { id: "other", name: "อื่นๆ" }
             ],
             treeTypes: [],
             zones: [],

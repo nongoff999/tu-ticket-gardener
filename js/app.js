@@ -1098,7 +1098,7 @@ function renderAddTicket() {
             id: Math.floor(Math.random() * 100000), // Simple random ID
             title: title,
             description: description,
-            category: 'all', // Default category since other categories were removed
+            category: selectedDamageType, // Set category to match the selected type for filtering
             status: 'new',
             priority: isUrgent ? 'urgent' : 'normal',
             zone: zoneId,
@@ -1586,6 +1586,7 @@ function renderEditTicket(params) {
         ticket.priority = isUrgent ? 'urgent' : 'normal';
         ticket.title = title;
         ticket.description = description;
+        ticket.category = damageTypeId;
         ticket.damageType = damageTypeId;
         ticket.operation = operation;
         ticket.treeType = treeType;

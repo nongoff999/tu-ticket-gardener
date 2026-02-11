@@ -73,7 +73,7 @@ for (let i = 1; i <= 60; i++) {
         id: 1000 + i,
         title: `${tree} (${damage === 'accident' ? 'อุบัติเหตุ' : (damage === 'nature' ? 'อุบัติเหตุจากธรรมชาติ' : 'อื่นๆ')})`,
         description: `พบปัญหา${tree}บริเวณ${zone.name} ต้องการการตรวจสอบ`,
-        category: 'all',
+        category: damage,
         status: status,
         priority: Math.random() > 0.8 ? 'urgent' : 'normal',
         zone: zone.id,
@@ -106,7 +106,10 @@ const data = {
     user: { name: "สมชาย การดี", role: "หัวหน้าช่างสวน", avatar: null },
     stats: stats,
     categories: [
-        { id: "all", name: "ทั้งหมด" }
+        { id: "all", name: "ทั้งหมด" },
+        { id: "accident", name: "อุบัติเหตุ" },
+        { id: "nature", name: "อุบัติเหตุจากธรรมชาติ" },
+        { id: "other", name: "อื่นๆ" }
     ],
     treeTypes: TREE_TYPES,
     zones: ZONES,
