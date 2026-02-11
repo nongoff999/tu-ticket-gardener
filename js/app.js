@@ -853,10 +853,10 @@ function renderTicketDetail(params) {
                     <span class="detail-info-value">${ticket.notes}</span>
                 </div>
                 ` : ''}
+            </div>
 
-                <div style="margin-top: 1.5rem;">
-                    ${renderTimeline(ticket)}
-                </div>
+            <div style="margin-top: 1.5rem;">
+                ${renderTimeline(ticket)}
             </div>
 
         <!-- Sticky Footer for Edit Button -->
@@ -1829,7 +1829,7 @@ function renderReportList() {
     content.innerHTML = `
         <div class="report-list">
             <div class="report-card" onclick="openReportDetail('summary')">
-                <div class="report-card-icon">
+                <div class="report-card-icon" style="background: #f0fdf4; color: #10b981;">
                     <span class="material-symbols-outlined">summarize</span>
                 </div>
                 <div class="report-card-info">
@@ -1838,19 +1838,212 @@ function renderReportList() {
                 </div>
                 <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
             </div>
+
+            <div class="report-card" onclick="openReportDetail('yearly')">
+                <div class="report-card-icon" style="background: #eff6ff; color: #2563eb;">
+                    <span class="material-symbols-outlined">analytics</span>
+                </div>
+                <div class="report-card-info">
+                    <h3>รายงานวิเคราะห์เชิงสถิติรายปี</h3>
+                    <p>วิเคราะห์แนวโน้มรายเดือน และโซนที่เกิดเหตุสูงสุด</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
+            </div>
         </div>
     `;
 }
 
-function openReportDetail(type) {
-    AppState.selectedReport = type;
-    navigateTo('/report-detail');
+
+function renderYearlyAnalysis() {
+    document.getElementById('page-title').textContent = 'วิเคราะห์เชิงสถิติรายปี';
+    const content = document.getElementById('main-content');
+
+    // Aggregate Data
+    const yearlyTrend = getYearlyPerformanceData();
+    const topZones = getYearlyZoneData();
+    const now = new Date();
+    const currentYear = now.getFullYear() + 543;
+
+    content.innerHTML = `
+        <div style="padding: 1rem;">
+            <!-- Performance Trend (Annual Line Chart) -->
+            <div style="background: white; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); border: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div>
+                        <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--text-primary);">แนวโน้มเคสรายเดือนปี ${currentYear}</h3>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">จำนวนเคสรวม vs เคสที่แก้ไขสำเร็จ</p>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; font-size: 0.7rem; margin-bottom: 1rem; justify-content: flex-end;">
+                    <div style="display: flex; align-items: center; gap: 0.35rem;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #0ea5e9;"></div>
+                        <span>เคสทั้งหมด</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.35rem;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></div>
+                        <span>เสร็จสิ้น</span>
+                    </div>
+                </div>
+                
+                ${generateTrendChartSVG(yearlyTrend)}
+            </div>
+
+            <!-- Top Zones (Horizontal Bar Chart) -->
+            <div style="background: white; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); border: 1px solid var(--border);">
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--text-primary);">8 โซนที่เกิดเหตุสูงสุดปี ${currentYear}</h3>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">วิเคราะห์ตามปริมาณทิคเก็ตสะสม</p>
+                </div>
+                
+                ${generateHorizontalBarChartSVG(topZones)}
+            </div>
+
+            <!-- Summary Stats -->
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                <div style="background: #f0f9ff; padding: 1.25rem; border-radius: 1.25rem; border: 1px solid #bae6fd; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.5rem; font-weight: 600;">เคสรวมปีนี้</div>
+                    <div style="font-size: 1.75rem; font-weight: 800; color: #0c4a6e;">${MOCK_DATA.tickets.length}</div>
+                    <div style="font-size: 0.75rem; color: #0c4a6e; opacity: 0.7;">ทิคเก็ตแจ้งซ่อม</div>
+                </div>
+                <div style="background: #ecfdf4; padding: 1.25rem; border-radius: 1.25rem; border: 1px solid #a7f3d0; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <div style="font-size: 0.75rem; color: #047857; margin-bottom: 0.5rem; font-weight: 600;">สำเร็จรวมปีนี้</div>
+                    <div style="font-size: 1.75rem; font-weight: 800; color: #064e3b;">${MOCK_DATA.tickets.filter(t => t.status === 'completed').length}</div>
+                    <div style="font-size: 0.75rem; color: #064e3b; opacity: 0.7;">ดำเนินการเรียบร้อย</div>
+                </div>
+            </div>
+
+            <div style="height: 4rem;"></div>
+        </div>
+    `;
 }
-window.openReportDetail = openReportDetail;
+
+function getYearlyPerformanceData() {
+    const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+    const data = {
+        labels: months,
+        series: {
+            total: new Array(12).fill(0),
+            completed: new Array(12).fill(0)
+        }
+    };
+
+    const now = new Date();
+    MOCK_DATA.tickets.forEach(t => {
+        const d = new Date(t.date);
+        if (d.getFullYear() === now.getFullYear()) {
+            const m = d.getMonth();
+            data.series.total[m]++;
+            if (t.status === 'completed') data.series.completed[m]++;
+        }
+    });
+
+    return data;
+}
+
+function getYearlyZoneData() {
+    const zones = {};
+    const now = new Date();
+
+    MOCK_DATA.tickets.forEach(t => {
+        const d = new Date(t.date);
+        if (d.getFullYear() === now.getFullYear()) {
+            const zone = t.zoneName || 'ไม่ระบุ';
+            zones[zone] = (zones[zone] || 0) + 1;
+        }
+    });
+
+    return Object.entries(zones)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+}
+
+function generateTrendChartSVG(data) {
+    const height = 180;
+    const width = 360;
+    const allValues = [...data.series.total, ...data.series.completed];
+    const maxValue = Math.max(...allValues, 10) * 1.3;
+
+    const pointsToPath = (values) => {
+        if (values.length === 0) return '';
+        const points = values.map((v, i) => {
+            const x = (i / (values.length - 1)) * width;
+            const y = height - (v / maxValue * height);
+            return [x, y];
+        });
+
+        return points.reduce((acc, point, i, a) => {
+            if (i === 0) return `M ${point[0]},${point[1]}`;
+            const cp1x = a[i - 1][0] + (point[0] - a[i - 1][0]) / 2;
+            return `${acc} C ${cp1x},${a[i - 1][1]} ${cp1x},${point[1]} ${point[0]},${point[1]}`;
+        }, '');
+    };
+
+    return `
+        <div style="position: relative; height: 16rem; width: 100%;">
+            <svg viewBox="0 -10 ${width} ${height + 40}" style="width: 100%; height: 100%; overflow: visible;" preserveAspectRatio="none">
+                <!-- Grid Labels (Y-axis) -->
+                <text x="-10" y="0" font-size="8" fill="#94a3b8" text-anchor="end">${Math.round(maxValue)}</text>
+                <text x="-10" y="${height / 2}" font-size="8" fill="#94a3b8" text-anchor="end">${Math.round(maxValue / 2)}</text>
+                <text x="-10" y="${height}" font-size="8" fill="#94a3b8" text-anchor="end">0</text>
+                
+                <!-- Grid Lines -->
+                <line x1="0" y1="0" x2="${width}" y2="0" stroke="#f1f5f9" stroke-width="1" />
+                <line x1="0" y1="${height / 2}" x2="${width}" y2="${height / 2}" stroke="#f1f5f9" stroke-width="1" />
+                <line x1="0" y1="${height}" x2="${width}" y2="${height}" stroke="#e2e8f0" stroke-width="2" />
+
+                <!-- Glow Effects (Optional) -->
+                <defs>
+                    <linearGradient id="gradTotal" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:0.2" />
+                        <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:0" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Lines -->
+                <path d="${pointsToPath(data.series.total)}" fill="none" stroke="#0ea5e9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="${pointsToPath(data.series.completed)}" fill="none" stroke="#10b981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+
+                <!-- X Axis Labels -->
+                ${data.labels.map((l, i) => `
+                    <text x="${(i / (data.labels.length - 1)) * width}" y="${height + 25}" font-size="8" fill="#94a3b8" text-anchor="middle">${l}</text>
+                `).join('')}
+            </svg>
+        </div>
+    `;
+}
+
+function generateHorizontalBarChartSVG(zones) {
+    if (!zones.length) return '<p style="text-align:center;color:#94a3b8;">ยังไม่มีข้อมูล</p>';
+    const maxVal = zones[0][1];
+
+    return `
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            ${zones.map(([name, count]) => `
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.875rem; font-weight: 500;">
+                        <span style="color: var(--text-primary);">${name}</span>
+                        <span style="color: var(--primary); font-weight: 700;">${count} <small style="font-weight: 400; color: #94a3b8;">เคส</small></span>
+                    </div>
+                    <div style="height: 12px; background: #f1f5f9; border-radius: 6px; position: relative; overflow: hidden;">
+                        <div style="position: absolute; left: 0; top: 0; height: 100%; background: linear-gradient(to right, #0ea5e9, #0284c7); width: ${(count / maxVal) * 100}%; border-radius: 6px; transition: width 1s ease-out;"></div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
 
 function renderReportDetail() {
     updateHeaderNav(true);
     AppState.currentPage = 'report-detail';
+
+    if (AppState.selectedReport === 'yearly') {
+        renderYearlyAnalysis();
+        return;
+    }
+
     document.getElementById('page-title').textContent = 'รายงานสรุปต้นไม้โค่นล้มฯ';
 
     const content = document.getElementById('main-content');

@@ -65,8 +65,8 @@ const IMAGE_POOL = {
 const tickets = [];
 const today = new Date('2026-02-11T17:00:00');
 
-// Generate data for the last 30 days
-for (let d = 0; d < 30; d++) {
+// Generate data for the last 365 days
+for (let d = 0; d < 365; d++) {
     const currentDate = new Date(today);
     currentDate.setDate(today.getDate() - d);
 
