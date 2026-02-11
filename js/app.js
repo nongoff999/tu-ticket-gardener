@@ -212,8 +212,8 @@ function renderDashboard() {
         <!-- Stats Grid -->
         <div class="stats-grid" style="margin-top: -1rem;">
             ${Components.statCard('ทิคเก็ตทั้งหมด', stats.total, 'blue', 'dashboard')}
-            ${Components.statCard('ทิคเก็ตใหม่', stats.new, 'yellow', 'notification_important')}
-            ${Components.statCard('ดำเนินการ', stats.inProgress, 'purple', 'settings_suggest')}
+            ${Components.statCard('ทิคเก็ตใหม่วันนี้', stats.new, 'yellow', 'notification_important')}
+            ${Components.statCard('ระหว่างดำเนินการ', stats.inProgress, 'purple', 'settings_suggest')}
             ${Components.statCard('ยังไม่ดำเนินการ', stats.pending, 'pink', 'pending_actions')}
             ${Components.statCard('เสร็จสิ้น', stats.completed, 'green', 'task_alt')}
         </div>
@@ -486,6 +486,67 @@ function renderTicketDetail(params) {
                 </div>
             </div>
 
+            <!-- Timeline Section -->
+            <div style="margin: 1.5rem 0; padding: 1rem; background: var(--surface); border-radius: 0.75rem; border-left: 4px solid var(--primary);">
+                <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">
+                    ไทม์ไลน์ทิคเก็ต
+                    <span style="font-weight: 400; color: var(--text-secondary); font-size: 0.85rem;">ความเคลื่อนไหวของทิคเก็ต</span>
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <!-- Timeline Item -->
+                    <div style="display: flex; gap: 0.75rem; align-items: start;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <span class="material-symbols-outlined" style="font-size: 1.25rem; color: white;">notification_important</span>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
+                                เปิดทิคเก็ตใหม่โดย ${ticket.locationDetail ? ticket.locationDetail.replace('Ticket By Name: ', '') : MOCK_DATA.user?.name || 'ผู้ใช้'}
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                                ${new Date(ticket.date).toLocaleDateString('th-TH', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    })} ${new Date(ticket.date).toLocaleTimeString('th-TH', {
+        hour: '2-digit',
+        minute: '2-digit'
+    })}
+                            </div>
+                        </div>
+                    </div>
+                    ${ticket.status !== 'new' ? `
+                    <div style="display: flex; gap: 0.75rem; align-items: start;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <span class="material-symbols-outlined" style="font-size: 1.25rem; color: white;">settings_suggest</span>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
+                                เริ่มดำเนินการ
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                                อัพเดตโดย ${MOCK_DATA.user?.name || 'ผู้ใช้'}
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    ${ticket.status === 'completed' ? `
+                    <div style="display: flex; gap: 0.75rem; align-items: start;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #34d399 0%, #10b981 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <span class="material-symbols-outlined" style="font-size: 1.25rem; color: white;">task_alt</span>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
+                                เสร็จสิ้น
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                                ปิดงานโดย ${MOCK_DATA.user?.name || 'ผู้ใช้'}
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+
             <div class="detail-info-grid">
                 <div class="detail-info-item">
                     <span class="detail-info-label">Ticket Number</span>
@@ -511,6 +572,12 @@ function renderTicketDetail(params) {
                     <span class="detail-info-label">สถานที่เกิดเหตุ :</span>
                     <span class="detail-info-value">${ticket.zoneName}</span>
                 </div>
+                ${ticket.locationDetail ? `
+                <div class="detail-info-item full">
+                    <span class="detail-info-label">ระบุสถานที่ใกล้เกียง :</span>
+                    <span class="detail-info-value">${ticket.locationDetail}</span>
+                </div>
+                ` : ''}
                 <div class="detail-info-item">
                     <span class="detail-info-label">ชนิดพันธุ์ไม้ :</span>
                     <span class="detail-info-value">${ticket.treeType}</span>
@@ -551,15 +618,11 @@ function renderAddTicket() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Stepper -->
-        ${Components.stepper(1)}
-
         <div style="padding: 0 1rem;">
             <form id="ticket-form">
                 <div class="form-group">
-                    <label class="form-label">ลำดับความสำคัญ <span class="required">*</span></label>
                     <div class="priority-toggle">
-                        <button type="button" class="priority-btn normal active">ปกติ</button>
+                        <button type="button" class="priority-btn normal active">ไม่เร่งด่วน</button>
                         <button type="button" class="priority-btn urgent">เร่งด่วน</button>
                     </div>
                 </div>
@@ -575,11 +638,27 @@ function renderAddTicket() {
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">ชื่อสถานที่ <span class="required">*</span></label>
+                    <label class="form-label">สถานที่เกิดเหตุ (โซน) <span class="required">*</span></label>
                     <select id="ticket-zone" class="form-select">
-                        <option value="" disabled selected>ระบุชื่อสถานที่</option>
+                        <option value="" disabled selected>เลือกโซน</option>
                         ${MOCK_DATA.zones.map(z => `<option value="${z.id}">${z.name}</option>`).join('')}
                     </select>
+                </div>
+
+                <div class="form-group" id="location-detail-group" style="display: none;">
+                    <label class="form-label">ระบุสถานที่ใกล้เกียง</label>
+                    <input type="text" id="location-detail" class="form-input" readonly style="background: var(--background); color: var(--text-secondary);" placeholder="เลือกโซนเพื่อดูข้อมูล">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ticket Type <span class="required">*</span></label>
+                    <div class="damage-type-toggle" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        ${MOCK_DATA.damageTypes.map((dt, idx) => `
+                            <button type="button" class="damage-type-btn ${idx === 0 ? 'active' : ''}" data-type="${dt.id}">
+                                ${dt.name}
+                            </button>
+                        `).join('')}
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -611,6 +690,45 @@ function renderAddTicket() {
         });
     });
 
+    // Damage type toggle
+    const damageTypeBtns = content.querySelectorAll('.damage-type-btn');
+    damageTypeBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            damageTypeBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Zone selection - Show location detail
+    const zoneSelect = content.querySelector('#ticket-zone');
+    const locationDetailGroup = content.querySelector('#location-detail-group');
+    const locationDetailInput = content.querySelector('#location-detail');
+
+    zoneSelect.addEventListener('change', function () {
+        if (this.value) {
+            // Show location detail field
+            locationDetailGroup.style.display = 'block';
+
+            // Generate "Ticket By Name: [user] เมื่อ [date]" format
+            const userName = MOCK_DATA.user?.name || 'ผู้ใช้';
+            const now = new Date();
+            const thaiDate = now.toLocaleDateString('th-TH', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            const time = now.toLocaleTimeString('th-TH', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            locationDetailInput.value = `Ticket By Name: ${userName} เมื่อ ${thaiDate} ${time}`;
+        } else {
+            locationDetailGroup.style.display = 'none';
+            locationDetailInput.value = '';
+        }
+    });
+
     // Image upload functionality
     const uploadedImages = [];
     const MAX_IMAGES = 6;
@@ -625,6 +743,8 @@ function renderAddTicket() {
         const zoneId = content.querySelector('#ticket-zone').value;
         const description = content.querySelector('.form-textarea').value.trim();
         const isUrgent = content.querySelector('.priority-btn.urgent').classList.contains('active');
+        const selectedDamageType = content.querySelector('.damage-type-btn.active')?.dataset.type || 'broken';
+        const locationDetail = content.querySelector('#location-detail').value || '';
 
         const errors = [];
         if (!title) errors.push('ชื่อทิคเก็ต');
@@ -646,8 +766,9 @@ function renderAddTicket() {
             priority: isUrgent ? 'urgent' : 'normal',
             zone: zoneId,
             zoneName: MOCK_DATA.zones.find(z => z.id === zoneId)?.name || zoneId,
+            locationDetail: locationDetail, // Save location detail
             treeType: '-',
-            damageType: 'broken',
+            damageType: selectedDamageType,
             circumference: 0,
             quantity: 1,
             impact: '-',
@@ -688,9 +809,6 @@ function renderEditTicket(params) {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Stepper -->
-        ${Components.stepper(statusStep)}
-
         <div style="padding: 0 1rem;">
             <form id="ticket-form">
                 <div class="form-group">
@@ -1174,262 +1292,297 @@ function renderReportDetail() {
     AppState.currentPage = 'report-detail';
     document.getElementById('page-title').textContent = 'รายงานสรุปต้นไม้โค่นล้มฯ';
 
-    // Calculate current fiscal year (Oct-Sep)
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
-    const currentFiscalYear = currentMonth >= 9 ? currentYear : currentYear - 1;
-
-    // Generate fiscal year options from 2567 (2024) up to current + allow future
-    const startFY = 2024; // First year the system launched (พ.ศ. 2567)
-    let fyOptions = '';
-    for (let fy = currentFiscalYear; fy >= startFY; fy--) {
-        const thaiYear = fy + 543;
-        const selected = fy === currentFiscalYear ? 'selected' : '';
-        fyOptions += `<option value="${fy}" ${selected}>ปีงบประมาณ ${thaiYear} (ต.ค. ${thaiYear - 1} - ก.ย. ${thaiYear})</option>`;
-    }
-
     const content = document.getElementById('main-content');
 
-    content.innerHTML = `
-        <div class="search-container">
-            <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label class="form-label" style="font-size: 0.875rem; margin-bottom: 0.5rem; display: block;">
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 4px;">calendar_month</span>
-                    เลือกปีงบประมาณ
-                </label>
-                <select id="report-fiscal-year" class="form-input" style="font-size: 1rem; padding: 0.75rem 1rem; cursor: pointer;">
-                    ${fyOptions}
-                </select>
+    // Initialize calendar state if not exists
+    if (!window.calendarState) {
+        window.calendarState = {
+            currentMonth: new Date().getMonth(),
+            currentYear: new Date().getFullYear()
+        };
+    }
+
+    renderCalendar();
+}
+
+function renderCalendar() {
+    const { currentMonth, currentYear } = window.calendarState;
+    const content = document.getElementById('main-content');
+
+    // Create ticket count map by date
+    const ticketsByDate = {};
+    MOCK_DATA.tickets.forEach(t => {
+        const dateKey = t.date.split(' ')[0]; // YYYY-MM-DD
+        if (!ticketsByDate[dateKey]) {
+            ticketsByDate[dateKey] = [];
+        }
+        ticketsByDate[dateKey].push(t);
+    });
+
+    // Get calendar data
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const lastDay = new Date(currentYear, currentMonth + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const firstDayOfWeek = firstDay.getDay(); // 0=Sun, 1=Mon, etc.
+
+    // Thai month names
+    const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+        'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+
+    // Generate calendar HTML
+    let calendarHTML = `
+        <div class="calendar-container" style="background: var(--card-bg); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <!-- Calendar Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <button onclick="changeMonth(-1)" class="btn btn-sm" style="padding: 0.5rem 1rem;">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <h2 style="margin: 0; font-size: 1.5rem; font-weight: 600;">
+                    ${thaiMonths[currentMonth]} ${currentYear + 543}
+                </h2>
+                <button onclick="changeMonth(1)" class="btn btn-sm" style="padding: 0.5rem 1rem;">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
             </div>
             
-            <button class="btn btn-primary" onclick="downloadRangeReport()" style="height: 3.5rem; width: 100%; margin-top: 0.5rem;">
-                <span class="material-symbols-outlined">download</span>
-                ดาวน์โหลดรายงาน Excel
-            </button>
+            <!-- Day headers -->
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; margin-bottom: 0.5rem;">
+                <div style="text-align: center; font-weight: 600; color: #ef4444; padding: 0.5rem;">อา</div>
+                <div style="text-align: center; font-weight: 600; padding: 0.5rem;">จ</div>
+                <div style="text-align: center; font-weight: 600; padding: 0.5rem;">อ</div>
+                <div style="text-align: center; font-weight: 600; padding: 0.5rem;">พ</div>
+                <div style="text-align: center; font-weight: 600; padding: 0.5rem;">พฤ</div>
+                <div style="text-align: center; font-weight: 600; padding: 0.5rem;">ศ</div>
+                <div style="text-align: center; font-weight: 600; color: #3b82f6; padding: 0.5rem;">ส</div>
+            </div>
             
-            <div style="margin-top: 1.5rem; padding: 1rem; background: var(--primary-light); border-radius: 0.75rem; border-left: 4px solid var(--primary);">
-                <div style="display: flex; align-items: start; gap: 0.75rem;">
-                    <span class="material-symbols-outlined" style="color: var(--primary); font-size: 1.25rem;">info</span>
-                    <div style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.5;">
-                        <strong style="color: var(--primary);">รายงานจะรวมข้อมูลทั้งหมดในปีงบประมาณที่เลือก</strong><br>
-                        • ช่วงเวลา: 1 ตุลาคม ถึง 30 กันยายน<br>
-                        • แสดงรายการความเสียหายทั้งหมดพร้อมวันที่เกิดเหตุ<br>
-                        • รวมรูปภาพประกอบในไฟล์ Excel<br>
-                        • แสดงสถิติสรุปและยอดสะสมอัตโนมัติ
-                    </div>
+            <!-- Calendar days -->
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem;">
+    `;
+
+    // Empty cells before first day
+    for (let i = 0; i < firstDayOfWeek; i++) {
+        calendarHTML += `<div style="aspect-ratio: 1; min-height: 80px;"></div>`;
+    }
+
+    // Days of month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const ticketsOnDay = ticketsByDate[dateKey] || [];
+        const hasData = ticketsOnDay.length > 0;
+        const isToday = new Date().toDateString() === new Date(currentYear, currentMonth, day).toDateString();
+
+        let dayStyle = `
+            aspect-ratio: 1;
+            min-height: 80px;
+            border: 2px solid ${isToday ? 'var(--primary)' : '#e5e7eb'};
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            background: ${hasData ? 'linear-gradient(135deg, #dbeafe 0%, #fff 100%)' : 'var(--surface)'};
+            cursor: ${hasData ? 'pointer' : 'default'};
+            transition: all 0.2s;
+            position: relative;
+        `;
+
+        let dayContent = `
+            <div style="font-weight: ${isToday ? 'bold' : '500'}; 
+                        color: ${isToday ? 'var(--primary)' : 'var(--text-primary)'}; 
+                        margin-bottom: 0.25rem;">
+                ${day}
+            </div>
+        `;
+
+        if (hasData) {
+            const totalTrees = ticketsOnDay.reduce((sum, t) => sum + (t.quantity || 1), 0);
+            const fallenCount = ticketsOnDay.filter(t => t.damageType === 'fallen').length;
+
+            dayContent += `
+                <div style="font-size: 0.7rem; color: var(--primary); font-weight: 600; margin-bottom: 0.25rem;">
+                    ${ticketsOnDay.length} เคส
+                </div>
+                <div style="font-size: 0.65rem; color: var(--text-secondary);">
+                    ${totalTrees} ต้น
+                </div>
+                ${fallenCount > 0 ? `<div style="font-size: 0.65rem; color: #f59e0b;">⚠ ${fallenCount} ล้ม</div>` : ''}
+            `;
+        }
+
+        const clickHandler = hasData ? `onclick="downloadDailyReport('${dateKey}')"` : '';
+        const hoverStyle = hasData ? 'onmouseover="this.style.transform=\'scale(1.05)\'; this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.15)\';" onmouseout="this.style.transform=\'scale(1)\'; this.style.boxShadow=\'none\';"' : '';
+
+        calendarHTML += `
+            <div style="${dayStyle}" ${clickHandler} ${hoverStyle}>
+                ${dayContent}
+            </div>
+        `;
+    }
+
+    calendarHTML += `
+            </div>
+        </div>
+        
+        <div style="margin-top: 1.5rem; padding: 1rem; background: var(--primary-light); border-radius: 0.75rem; border-left: 4px solid var(--primary);">
+            <div style="display: flex; align-items: start; gap: 0.75rem;">
+                <span class="material-symbols-outlined" style="color: var(--primary); font-size: 1.25rem;">info</span>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6;">
+                    <strong style="color: var(--primary);">คลิกที่วันที่มีข้อมูล</strong> เพื่อดาวน์โหลดรายงาน Excel ของวันนั้น<br>
+                    • สีน้ำเงิน = มีข้อมูลวันนั้น<br>
+                    • ตัวเลข = จำนวนเคส / จำนวนต้นไม้<br>
+                    • ⚠ = มีต้นไม้โค่นล้ม
                 </div>
             </div>
         </div>
     `;
+
+    content.innerHTML = calendarHTML;
 }
 
-// Download report based on selected fiscal year
-async function downloadRangeReport() {
-    const fySelect = document.getElementById('report-fiscal-year');
-    if (!fySelect) {
-        showPopup('แจ้งเตือน', 'กรุณาเลือกปีงบประมาณ', 'warning');
+// Month navigation
+function changeMonth(delta) {
+    const { currentMonth, currentYear } = window.calendarState;
+
+    let newMonth = currentMonth + delta;
+    let newYear = currentYear;
+
+    if (newMonth > 11) {
+        newMonth = 0;
+        newYear++;
+    } else if (newMonth < 0) {
+        newMonth = 11;
+        newYear--;
+    }
+
+    window.calendarState.currentMonth = newMonth;
+    window.calendarState.currentYear = newYear;
+
+    renderCalendar();
+}
+window.changeMonth = changeMonth;
+
+
+
+// Download report for a specific day
+async function downloadDailyReport(dateStr) {
+    const date = new Date(dateStr);
+
+    // Format dates for headers
+    const thaiDate = date.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+    const today = new Date();
+    const todayThaiDate = today.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+    // Filter tickets for this specific day
+    const dayTickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr));
+
+    if (dayTickets.length === 0) {
+        alert('ไม่พบข้อมูลในวันนี้');
         return;
     }
 
-    const fy = parseInt(fySelect.value); // e.g. 2025
-    const startDate = `${fy}-10-01`;
-
-    // End date: Sep 30 of next year, or today if current fiscal year
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentFiscalYear = currentMonth >= 9 ? now.getFullYear() : now.getFullYear() - 1;
-
-    let endDate;
-    if (fy === currentFiscalYear) {
-        // Current fiscal year: use today's date
-        endDate = now.toISOString().split('T')[0];
-    } else {
-        // Past fiscal year: use Sep 30 of next year
-        endDate = `${fy + 1}-09-30`;
-    }
-
-    await exportToExcel(startDate, endDate);
-}
-window.downloadRangeReport = downloadRangeReport;
-
-/**
- * Excel Export Logic using ExcelJS
- * Now supports date ranges and shows incident dates
- */
-async function exportToExcel(startDateStr, endDateStr) {
-    const startDate = new Date(startDateStr);
-    const endDate = new Date(endDateStr);
-    const today = new Date();
-
-    // Format dates for headers
-    const startThaiDate = startDate.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
-    const endThaiDate = endDate.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
-    const todayThaiDate = today.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
-    // Determine fiscal year
-    const reportYear = endDate.getFullYear();
-    const reportMonth = endDate.getMonth();
-    const fiscalYearStart = reportMonth >= 9 ? reportYear : reportYear - 1;
-    const thaiYear = fiscalYearStart + 543;
-
-    // Filter tickets for the date range
-    const rangeTickets = MOCK_DATA.tickets.filter(t => {
-        const d = new Date(t.date);
-        return d >= startDate && d <= endDate;
-    }).sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date ascending
-
-    // Calculate Stats for range
-    const totalFallen = rangeTickets.filter(t => t.damageType === 'fallen').length;
-    const totalBroken = rangeTickets.filter(t => t.damageType === 'broken' || t.damageType === 'tilted').length;
-    const grandTotalItems = rangeTickets.reduce((sum, t) => sum + (t.quantity || 1), 0);
-
-    // Calculate Accumulated (from Oct 1st to end date)
-    const fiscalStart = new Date(`${fiscalYearStart}-10-01`);
-    const accTickets = MOCK_DATA.tickets.filter(t => {
-        const d = new Date(t.date);
-        return d >= fiscalStart && d <= endDate;
-    });
-    const accFallen = accTickets.filter(t => t.damageType === 'fallen').length;
-    const accBroken = accTickets.filter(t => t.damageType === 'broken' || t.damageType === 'tilted').length;
-
-    const fiscalStartLabel = `1 ตุลาคม ${thaiYear}`;
+    // Calculate statistics
+    const totalFallen = dayTickets.filter(t => t.damageType === 'fallen').length;
+    const totalBroken = dayTickets.filter(t => t.damageType === 'broken' || t.damageType === 'tilted').length;
+    const grandTotalItems = dayTickets.reduce((sum, t) => sum + (t.quantity || 1), 0);
 
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet(`รายงาน ${thaiYear}`);
+    const worksheet = workbook.addWorksheet(`รายงาน ${thaiDate}`);
 
-    // Set Column Widths (added date column)
+    // Setup worksheet
+    worksheet.pageSetup = {
+        paperSize: 9,
+        orientation: 'portrait',
+        fitToPage: true,
+        fitToWidth: 1
+    };
+
+    // Column widths
     worksheet.columns = [
-        { width: 8 },  // ลำดับ
-        { width: 15 }, // วันที่เกิดเหตุ (NEW)
-        { width: 28 }, // สถานที่เกิดเหตุ
-        { width: 25 }, // รูปภาพ
-        { width: 12 }, // จำนวน
-        { width: 38 }, // โค่นล้ม
-        { width: 38 }  // กิ่งหัก/ฉีก/เอน
+        { width: 5 },   // ลำดับ
+        { width: 18 },  // วันที่เกิดเหตุ
+        { width: 30 },  // สถานที่
+        { width: 20 },  // รูปภาพ
+        { width: 10 },  // จำนวน
+        { width: 25 },  // ต้นไม้/โค่นล้ม
+        { width: 25 }   // กิ่งหัก/เอน
     ];
 
-    // 1. Add PSM Logo - SKIPPED to avoid CORS/Fetch errors
-    /*
-    try {
-        const logoUrl = 'https://psm.tu.ac.th/wp-content/uploads/2025/07/cropped-SapSin_Triangle_Color.png';
-        const logoResponse = await fetch(logoUrl);
-        const logoBuffer = await logoResponse.arrayBuffer();
+    // Header Row 1: วันที่
+    const headerRow1 = worksheet.addRow(['', thaiDate, '', '', '', '', '']);
+    worksheet.mergeCells('B1:G1');
+    headerRow1.getCell(2).font = { name: 'Sarabun', size: 16, bold: true };
+    headerRow1.getCell(2).alignment = { vertical: 'middle', horizontal: 'center' };
+    headerRow1.height = 25;
 
-        const logoImageId = workbook.addImage({
-            buffer: logoBuffer,
-            extension: 'png',
-        });
+    // Header Row 2: วันที่จัดทำ
+    const headerRow2 = worksheet.addRow(['', `วันที่จัดทำรายงาน: ${todayThaiDate}`, '', '', '', '', '']);
+    worksheet.mergeCells('B2:G2');
+    headerRow2.getCell(2).font = { name: 'Sarabun', size: 11 };
+    headerRow2.getCell(2).alignment = { vertical: 'middle', horizontal: 'center' };
 
-        worksheet.addImage(logoImageId, {
-            tl: { col: 0.2, row: 0.2 },
-            ext: { width: 80, height: 80 }
-        });
-    } catch (e) {
-        console.warn('Could not load logo:', e);
-    }
-    */
-
-    // 2. Headers (Title & Subtitle)
-    const titleRow = worksheet.addRow(['รายงานสรุปต้นไม้โค่นล้ม หัก ฉีกขาด จากลมฝน']);
-    worksheet.mergeCells('A1:G1');
-    titleRow.font = { name: 'Sarabun', size: 16, bold: true };
-    titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
-    titleRow.height = 30;
-
-    // Show fiscal year or date range
-    const periodLabel = startThaiDate === endThaiDate
-        ? startThaiDate
-        : `ปีงบประมาณ ${thaiYear} (${startThaiDate} - ${endThaiDate})`;
-    const periodRow = worksheet.addRow([periodLabel]);
-    worksheet.mergeCells('A2:G2');
-    periodRow.font = { name: 'Sarabun', size: 14, bold: true };
-    periodRow.alignment = { vertical: 'middle', horizontal: 'center' };
-
-    // Report generation date
-    const genDateRow = worksheet.addRow([`วันที่จัดทำรายงาน: ${todayThaiDate}`]);
-    worksheet.mergeCells('A3:G3');
-    genDateRow.font = { name: 'Sarabun', size: 12, bold: true, color: { argb: 'FF0000FF' } };
-    genDateRow.alignment = { vertical: 'middle', horizontal: 'center' };
-
-    const locationRow = worksheet.addRow(['(ในพื้นที่ สำนักงานบริหารทรัพยากรสินทรัพย์และกีฬา)']);
-    worksheet.mergeCells('A4:G4');
-    locationRow.font = { name: 'Sarabun', size: 12, bold: true, color: { argb: 'FF0000FF' } };
-    locationRow.alignment = { vertical: 'middle', horizontal: 'center' };
+    // Header Row 3: องค์กร
+    const headerRow3 = worksheet.addRow(['', 'สำนักอาคารและสถานที่ มหาวิทยาลัยธรรมศาสตร์ ศูนย์รังสิต', '', '', '', '', '']);
+    worksheet.mergeCells('B3:G3');
+    headerRow3.getCell(2).font = { name: 'Sarabun', size: 12, bold: true };
+    headerRow3.getCell(2).alignment = { vertical: 'middle', horizontal: 'center' };
 
     worksheet.addRow([]); // Gap
 
-    // 3. Table Header Row - 7 columns with date column
-    const headerRow = worksheet.addRow(['ลำดับ', 'วันที่เกิดเหตุ', 'สถานที่เกิดเหตุ', 'รูปภาพ', 'จำนวน', 'ชนิดต้นไม้และสถานะ\nโค่นล้ม', 'กิ่งหัก/ฉีก/เอน']);
-    headerRow.height = 40;
-    headerRow.eachCell(cell => {
-        cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFCCCCCC' }
-        };
-        cell.border = {
-            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
-        };
-        cell.font = { name: 'Sarabun', size: 10, bold: true };
+    // Table header
+    const tableHeader = worksheet.addRow(['ลำดับ', 'วันที่เกิดเหตุ', 'สถานที่เกิดเหตุ', 'รูปภาพ', 'จำนวน', 'ชนิดต้นไม้และสถานะ\nโค่นล้ม', 'กิ่งหัก/ฉีก/เอน']);
+    tableHeader.eachCell((cell) => {
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4472C4' } };
+        cell.font = { name: 'Sarabun', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
         cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+        };
     });
-    // Color special headers
-    headerRow.getCell(6).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFA500' } }; // Orange
-    headerRow.getCell(7).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF90EE90' } }; // Green
+    tableHeader.height = 40;
 
-    // 4. Data Rows - all tickets in range
-    for (let i = 0; i < rangeTickets.length; i++) {
-        const t = rangeTickets[i];
-        const isFallen = t.damageType === 'fallen';
-        const statusText = `${t.treeType} / ${t.operation || 'อยู่ระหว่างดำเนินการ'}`;
+    // Data rows
+    for (let i = 0; i < dayTickets.length; i++) {
+        const t = dayTickets[i];
+        const qty = t.quantity || 1;
+        const fallen = t.damageType === 'fallen' ? 'โค่นล้ม' : '';
+        const broken = (t.damageType === 'broken' || t.damageType === 'tilted') ? (t.damageType === 'broken' ? 'กิ่งหัก' : 'เอียง') : '';
 
-        // Format incident date in Thai
-        const incidentDate = new Date(t.date);
-        const incidentDateStr = incidentDate.toLocaleDateString('th-TH', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        });
+        const ticketDate = new Date(t.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
 
         const row = worksheet.addRow([
             i + 1,
-            incidentDateStr,
-            t.zoneName + '\n' + t.title,
-            '', // Image Placeholder
-            `${t.quantity || 1} ต้น`,
-            isFallen ? statusText : '',
-            !isFallen ? statusText : ''
+            ticketDate,
+            t.zoneName || t.zone,
+            '',
+            qty + ' ต้น',
+            `${t.treeType}\n${fallen}`,
+            broken
         ]);
 
-        row.height = 100; // Large height for images
-        row.eachCell(cell => {
+        row.height = 90;
+        row.eachCell((cell, colNumber) => {
             cell.border = {
-                top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
             };
             cell.font = { name: 'Sarabun', size: 10 };
             cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
         });
-        row.getCell(3).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
-        row.getCell(6).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
-        row.getCell(7).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
 
-        // Add Image
+        // Add image if exists
         if (t.images && t.images.length > 0) {
             try {
                 const imgUrl = t.images[0];
                 let imageId;
 
                 if (imgUrl.startsWith('data:image/')) {
-                    // Handle Base64 Image safely using ExcelJS native support
-                    // Extract extension from data URI scheme (e.g. data:image/png;base64,...)
-                    const mimeType = imgUrl.split(';')[0].split(':')[1]; // image/png
-                    const ext = mimeType.split('/')[1]; // png
-
+                    const mimeType = imgUrl.split(';')[0].split(':')[1];
+                    const ext = mimeType.split('/')[1];
                     const validExtensions = ['png', 'jpeg', 'gif'];
                     const finalExt = ext === 'jpg' ? 'jpeg' : (validExtensions.includes(ext) ? ext : 'png');
-
-                    // Extract ONLY the base64 part (after "base64,")
                     const base64Data = imgUrl.split(',')[1];
 
                     imageId = workbook.addImage({
@@ -1437,7 +1590,6 @@ async function exportToExcel(startDateStr, endDateStr) {
                         extension: finalExt,
                     });
                 } else {
-                    // Handle URL Image
                     const response = await fetch(imgUrl);
                     if (!response.ok) throw new Error(`HTTP ${response.status} - ${response.statusText}`);
 
@@ -1447,8 +1599,6 @@ async function exportToExcel(startDateStr, endDateStr) {
                     }
 
                     const buffer = await response.arrayBuffer();
-
-                    // Determine extension from content-type or URL
                     let ext = 'png';
                     if (contentType) {
                         const type = contentType.split('/')[1];
@@ -1476,10 +1626,10 @@ async function exportToExcel(startDateStr, endDateStr) {
         }
     }
 
-    // 5. Summary Row - สรุปรวมในช่วงที่เลือก
-    const totalCases = rangeTickets.length;
+    // Summary row
+    const totalCases = dayTickets.length;
     const summaryStyle = (cell, colNumber) => {
-        if (colNumber > 1) {
+        if (colNumber > 0) {
             cell.border = {
                 top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
             };
@@ -1488,54 +1638,22 @@ async function exportToExcel(startDateStr, endDateStr) {
         }
     };
 
-    // Row: สรุปจำนวนต้นไม้
-    const treeSumRow = worksheet.addRow(['', '', 'สรุปรวมจำนวนต้นไม้ทั้งสิ้น', '', grandTotalItems + ' ต้น', '', '']);
+    const treeSumRow = worksheet.addRow(['', 'สรุปรวมจำนวนต้นไม้ทั้งสิ้น', '', '', grandTotalItems + ' ต้น', '', '']);
     worksheet.mergeCells(`B${treeSumRow.number}:D${treeSumRow.number}`);
     treeSumRow.eachCell(summaryStyle);
 
-    // Row: สรุปจำนวนเคส (โค่นล้ม / กิ่งหัก)
-    const caseSumRow = worksheet.addRow(['', '', 'สรุปจำนวนเคส', '', totalCases + ' เคส', totalFallen + ' เคส', totalBroken + ' เคส']);
+    const caseSumRow = worksheet.addRow(['', 'สรุปจำนวนเคส', '', '', totalCases + ' เคส', totalFallen + ' เคส', totalBroken + ' เคส']);
     worksheet.mergeCells(`B${caseSumRow.number}:D${caseSumRow.number}`);
     caseSumRow.eachCell(summaryStyle);
-    caseSumRow.getCell(6).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF2CC' } }; // Light orange
-    caseSumRow.getCell(7).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2EFDA' } }; // Light green
-
-    // 6. Accumulated Row - ยอดสะสมตั้งแต่ต้นปีงบประมาณ
-    const accTotalItems = accTickets.reduce((sum, t) => sum + (t.quantity || 1), 0);
-    const accTotalCases = accTickets.length;
-
-    worksheet.addRow([]); // Gap
-    const accHeaderRow = worksheet.addRow(['', '', `ยอดสะสมตั้งแต่ ${fiscalStartLabel} ถึงปัจจุบัน`, '', '', '', '']);
-    worksheet.mergeCells(`B${accHeaderRow.number}:G${accHeaderRow.number}`);
-    accHeaderRow.eachCell((cell, colNumber) => {
-        if (colNumber > 1) {
-            cell.border = {
-                top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
-            };
-            cell.font = { name: 'Sarabun', size: 12, bold: true, color: { argb: 'FF0000FF' } };
-            cell.alignment = { vertical: 'middle', horizontal: 'center' };
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCE6F1' } }; // Light blue
-        }
-    });
-
-    // Accumulated trees
-    const accTreeRow = worksheet.addRow(['', '', 'ยอดสะสมต้นไม้', '', accTotalItems + ' ต้น', '', '']);
-    worksheet.mergeCells(`B${accTreeRow.number}:D${accTreeRow.number}`);
-    accTreeRow.eachCell(summaryStyle);
-
-    // Accumulated cases by type
-    const accCaseRow = worksheet.addRow(['', '', 'ยอดสะสมเคส', '', accTotalCases + ' เคส', accFallen + ' เคส', accBroken + ' เคส']);
-    worksheet.mergeCells(`B${accCaseRow.number}:D${accCaseRow.number}`);
-    accCaseRow.eachCell(summaryStyle);
-    accCaseRow.getCell(6).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF2CC' } };
-    accCaseRow.getCell(7).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2EFDA' } };
+    caseSumRow.getCell(6).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF2CC' } };
+    caseSumRow.getCell(7).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2EFDA' } };
 
     // Generate Excel File
-    const fileName = `TU_Report_${startDateStr}_to_${endDateStr}.xlsx`;
+    const fileName = `TU_Report_${dateStr}.xlsx`;
     const excelBuffer = await workbook.xlsx.writeBuffer();
     saveAs(new Blob([excelBuffer]), fileName);
 }
-window.exportToExcel = exportToExcel;
+window.downloadDailyReport = downloadDailyReport;
 
 // Add navigation items to export
 window.openDrawer = openDrawer;
