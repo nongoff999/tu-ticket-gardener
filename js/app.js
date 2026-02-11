@@ -937,7 +937,7 @@ function renderAddTicket() {
 
                 <div class="form-group">
                     <label class="form-label">พิกัดสถานที่ (GPS)</label>
-                    <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
                         <button type="button" id="get-location-btn" class="btn" style="background: white; border: 1px solid var(--primary); color: var(--primary); display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.9rem;">
                             <span class="material-symbols-outlined" style="font-size: 1.25rem;">my_location</span>
                             บันทึกพิกัด GPS
@@ -945,6 +945,7 @@ function renderAddTicket() {
                         <div id="location-coords" style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace;">
                             (ยังไม่ได้บันทึก)
                         </div>
+                        <div id="map-link-container"></div>
                     </div>
                     <input type="hidden" id="ticket-lat">
                     <input type="hidden" id="ticket-lng">
@@ -1042,6 +1043,16 @@ function renderAddTicket() {
                 lngInput.value = lng;
                 coordsDisplay.innerHTML = `Lat: ${lat}<br>Long: ${lng}`;
                 coordsDisplay.style.color = '#10B981'; // Green
+
+                const mapLinkContainer = content.querySelector('#map-link-container');
+                if (mapLinkContainer) {
+                    mapLinkContainer.innerHTML = `
+                        <a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: #2563eb; text-decoration: none; background: #eff6ff; padding: 0.4rem 0.75rem; border-radius: 0.5rem; border: 1px solid #bfdbfe;">
+                            <span class="material-symbols-outlined" style="font-size: 1rem;">map</span>
+                            เปิด Google Maps
+                        </a>
+                    `;
+                }
 
                 this.disabled = false;
                 this.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.25rem;">check_circle</span> บันทึกแล้ว';
@@ -1342,6 +1353,29 @@ function renderEditTicket(params) {
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label">พิกัดสถานที่ (GPS)</label>
+                    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                        <button type="button" id="get-location-btn" class="btn" style="background: white; border: 1px solid var(--primary); color: var(--primary); display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.9rem;">
+                            <span class="material-symbols-outlined" style="font-size: 1.25rem;">my_location</span>
+                            อัปเดตพิกัด GPS
+                        </button>
+                        <div id="location-coords" style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace;">
+                            ${ticket.lat && ticket.lng ? `Lat: ${ticket.lat}<br>Long: ${ticket.lng}` : '(ยังไม่ได้บันทึก)'}
+                        </div>
+                        <div id="map-link-container">
+                            ${ticket.lat && ticket.lng ? `
+                                <a href="https://www.google.com/maps?q=${ticket.lat},${ticket.lng}" target="_blank" style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: #2563eb; text-decoration: none; background: #eff6ff; padding: 0.4rem 0.75rem; border-radius: 0.5rem; border: 1px solid #bfdbfe;">
+                                    <span class="material-symbols-outlined" style="font-size: 1rem;">map</span>
+                                    เปิด Google Maps
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <input type="hidden" id="edit-ticket-lat" value="${ticket.lat || ''}">
+                    <input type="hidden" id="edit-ticket-lng" value="${ticket.lng || ''}">
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">รูปภาพ <span class="required">*</span> <span class="image-count">(${ticket.images.length}/6)</span></label>
                     <input type="file" id="image-input" accept="image/*" multiple style="display: none;">
                     <div class="image-grid" id="image-grid">
@@ -1504,6 +1538,60 @@ function renderEditTicket(params) {
     const MAX_IMAGES = 6;
     initImageUpload(content, uploadedImages, MAX_IMAGES, ticket.images);
 
+    // GPS Location Functionality for Edit
+    const getLocationBtn = content.querySelector('#get-location-btn');
+    const coordsDisplay = content.querySelector('#location-coords');
+    const latInput = content.querySelector('#edit-ticket-lat');
+    const lngInput = content.querySelector('#edit-ticket-lng');
+
+    if (getLocationBtn) {
+        getLocationBtn.addEventListener('click', function () {
+            this.disabled = true;
+            this.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.25rem;">sync</span> กำลังบันทึก...';
+
+            if (!navigator.geolocation) {
+                showPopup('ไม่รองรับ GPS', 'เบราว์เซอร์ของคุณไม่รองรับการระบุพิกัด', 'error');
+                this.disabled = false;
+                this.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.25rem;">my_location</span> อัปเดตพิกัด GPS';
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude.toFixed(6);
+                    const lng = position.coords.longitude.toFixed(6);
+                    latInput.value = lat;
+                    lngInput.value = lng;
+                    coordsDisplay.innerHTML = `Lat: ${lat}<br>Long: ${lng}`;
+                    coordsDisplay.style.color = '#10B981'; // Green
+
+                    const mapLinkContainer = content.querySelector('#map-link-container');
+                    if (mapLinkContainer) {
+                        mapLinkContainer.innerHTML = `
+                            <a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: #2563eb; text-decoration: none; background: #eff6ff; padding: 0.4rem 0.75rem; border-radius: 0.5rem; border: 1px solid #bfdbfe;">
+                                <span class="material-symbols-outlined" style="font-size: 1rem;">map</span>
+                                เปิด Google Maps
+                            </a>
+                        `;
+                    }
+
+                    this.disabled = false;
+                    this.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.25rem;">check_circle</span> บันทึกแล้ว';
+                    this.style.borderColor = '#10B981';
+                    this.style.color = '#10B981';
+                },
+                (error) => {
+                    let msg = 'ไม่สามารถเข้าถึงตำแหน่งของคุณได้';
+                    if (error.code === 1) msg = 'กรุณาอนุญาตการเข้าถึงตำแหน่งที่ตั้ง';
+                    showPopup('เกิดข้อผิดพลาด', msg, 'error');
+                    this.disabled = false;
+                    this.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.25rem;">my_location</span> อัปเดตพิกัด GPS';
+                },
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+            );
+        });
+    }
+
     // Form submit
     const form = content.querySelector('#ticket-form');
     form.addEventListener('submit', function (e) {
@@ -1522,6 +1610,8 @@ function renderEditTicket(params) {
         const resultImpact = document.getElementById('edit-ticket-impact').value.trim();
         const zoneName = document.getElementById('edit-ticket-zoneName').value.trim();
         const notes = document.getElementById('edit-ticket-notes').value.trim();
+        const lat = document.getElementById('edit-ticket-lat').value;
+        const lng = document.getElementById('edit-ticket-lng').value;
 
         // Tags (Damage Type)
         const activeTag = form.querySelector('.tag.active');
@@ -1575,6 +1665,8 @@ function renderEditTicket(params) {
         ticket.impact = resultImpact;
         ticket.zoneName = zoneName;
         ticket.notes = notes;
+        ticket.lat = lat;
+        ticket.lng = lng;
         ticket.images = uploadedImages.map(img => img.url);
 
         // Update in Array (Reference is same, but good to be explicit if replacing object)
