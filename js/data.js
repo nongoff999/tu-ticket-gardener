@@ -31,26 +31,41 @@ async function loadData() {
         }
 
         // 2. Check LocalStorage
+        // 2. Check LocalStorage
         const localData = localStorage.getItem('tu_gardener_data');
         if (localData) {
-            MOCK_DATA = JSON.parse(localData);
-            console.log('📦 โหลดข้อมูลจาก LocalStorage:', MOCK_DATA.tickets.length, 'tickets');
+            const parsed = JSON.parse(localData);
 
-            // Sync to Firebase if enabled
-            if (typeof isFirebaseEnabled === 'function' && isFirebaseEnabled()) {
-                saveDataToFirebase(MOCK_DATA);
+            // Check if data is "old" (ID < 1000) - My new data starts at 1001
+            // If old, we ignore local storage and fetch fresh JSON
+            const hasOldTickets = parsed.tickets && parsed.tickets.some(t => t.id < 1000);
+
+            if (hasOldTickets) {
+                console.log('🧹 พบข้อมูลชุดเก่า (ID < 1000) - ทำการล้างและโหลดข้อมูลใหม่จากไฟล์ JSON');
+                localStorage.removeItem('tu_gardener_data');
+                // Proceed to fetch from JSON (Block 3)
+            } else {
+                MOCK_DATA = parsed;
+                console.log('📦 โหลดข้อมูลจาก LocalStorage:', MOCK_DATA.tickets.length, 'tickets');
+
+                // Sync to Firebase if enabled
+                if (typeof isFirebaseEnabled === 'function' && isFirebaseEnabled()) {
+                    saveDataToFirebase(MOCK_DATA);
+                }
+
+                dataLoaded = true;
+                return MOCK_DATA;
             }
-        } else {
-            // 3. If no local data, fetch from JSON
-            const response = await fetch('data/tickets.json');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            MOCK_DATA = await response.json();
-            // Save initial data to storage
-            saveData();
-            console.log('✅ โหลดข้อมูลจากไฟล์ JSON และบันทึกลง Storage');
         }
+        // 3. If no local data, fetch from JSON
+        const response = await fetch('data/tickets.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        MOCK_DATA = await response.json();
+        // Save initial data to storage
+        saveData();
+        console.log('✅ โหลดข้อมูลจากไฟล์ JSON และบันทึกลง Storage');
 
         dataLoaded = true;
         return MOCK_DATA;
