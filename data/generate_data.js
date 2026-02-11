@@ -63,61 +63,70 @@ const IMAGE_POOL = {
 };
 
 const tickets = [];
-const startDate = new Date('2026-01-01T08:00:00');
-const endDate = new Date('2026-02-11T17:00:00');
+const today = new Date('2026-02-11T17:00:00');
 
-for (let i = 1; i <= 60; i++) {
-    const status = getRandomItem(STATUSES);
-    const zone = getRandomItem(ZONES);
-    const tree = getRandomItem(TREE_TYPES);
-    const damage = getRandomItem(DAMAGES);
-    const date = getRandomDate(startDate, endDate);
+// Generate data for the last 30 days
+for (let d = 0; d < 30; d++) {
+    const currentDate = new Date(today);
+    currentDate.setDate(today.getDate() - d);
 
-    // Logic for fields based on status
-    let assignees = [];
-    let operation = "-";
-    let notes = "";
+    // Number of tickets per day: 1, 2, or 4 as requested
+    const dailyCounts = [1, 2, 4];
+    const ticketsToday = dailyCounts[Math.floor(Math.random() * dailyCounts.length)];
 
-    if (status !== 'new') {
-        // Assign 1-3 people
-        const count = Math.floor(Math.random() * 3) + 1;
-        const shuffled = [...ASSIGNEES_LIST].sort(() => 0.5 - Math.random());
-        assignees = shuffled.slice(0, count);
+    for (let tCount = 0; tCount < ticketsToday; tCount++) {
+        const ticketTime = new Date(currentDate);
+        ticketTime.setHours(8 + Math.floor(Math.random() * 9), Math.floor(Math.random() * 60)); // Random work hours
 
-        operation = getRandomItem(OPERATIONS);
-        if (Math.random() > 0.7) notes = "ดำเนินการตามแผน";
+        const status = getRandomItem(STATUSES);
+        const zone = getRandomItem(ZONES);
+        const tree = getRandomItem(TREE_TYPES);
+        const damage = getRandomItem(DAMAGES);
+
+        let assignees = [];
+        let operation = "-";
+        let notes = "";
+
+        if (status !== 'new') {
+            const count = Math.floor(Math.random() * 3) + 1;
+            const shuffled = [...ASSIGNEES_LIST].sort(() => 0.5 - Math.random());
+            assignees = shuffled.slice(0, count);
+
+            operation = getRandomItem(OPERATIONS);
+            if (Math.random() > 0.7) notes = "ดำเนินการตามแผน";
+        }
+
+        if (status === 'new') {
+            operation = "-";
+        }
+
+        // Select images from pool based on damage type
+        const pool = IMAGE_POOL[damage] || IMAGE_POOL['other'];
+        const shuffledPool = [...pool].sort(() => 0.5 - Math.random());
+        // Use 1-2 images per ticket to keep data manageable
+        const ticketImages = shuffledPool.slice(0, Math.floor(Math.random() * 2) + 1);
+
+        tickets.push({
+            id: 2000 + tickets.length,
+            title: `${tree} (${damage === 'accident' ? 'อุบัติเหตุ' : (damage === 'nature' ? 'อุบัติเหตุจากธรรมชาติ' : 'อื่นๆ')})`,
+            description: `พบปัญหา${tree}บริเวณ${zone.name} ต้องการการตรวจสอบ`,
+            category: damage,
+            status: status,
+            priority: Math.random() > 0.8 ? 'urgent' : 'normal',
+            zone: zone.id,
+            zoneName: zone.name,
+            treeType: tree,
+            damageType: damage,
+            circumference: Math.floor(Math.random() * 150) + 20,
+            quantity: Math.floor(Math.random() * 3) + 1,
+            impact: "-",
+            operation: operation,
+            date: ticketTime.toISOString().slice(0, 16).replace('T', ' '),
+            assignees: assignees,
+            images: ticketImages,
+            notes: notes
+        });
     }
-
-    // New tickets might have empty fields
-    if (status === 'new') {
-        operation = "-"; // Or empty string, logic handles it
-    }
-
-    // Select images from pool based on damage type
-    const pool = IMAGE_POOL[damage] || IMAGE_POOL['other'];
-    const shuffledPool = [...pool].sort(() => 0.5 - Math.random());
-    const ticketImages = shuffledPool.slice(0, Math.floor(Math.random() * 2) + 1); // 1 or 2 images
-
-    tickets.push({
-        id: 1000 + i,
-        title: `${tree} (${damage === 'accident' ? 'อุบัติเหตุ' : (damage === 'nature' ? 'อุบัติเหตุจากธรรมชาติ' : 'อื่นๆ')})`,
-        description: `พบปัญหา${tree}บริเวณ${zone.name} ต้องการการตรวจสอบ`,
-        category: damage,
-        status: status,
-        priority: Math.random() > 0.8 ? 'urgent' : 'normal',
-        zone: zone.id,
-        zoneName: zone.name,
-        treeType: tree,
-        damageType: damage,
-        circumference: damage === 'replant' ? 0 : Math.floor(Math.random() * 150) + 20,
-        quantity: Math.floor(Math.random() * 5) + 1,
-        impact: "-",
-        operation: operation,
-        date: date.toISOString().slice(0, 16).replace('T', ' '),
-        assignees: assignees,
-        images: ticketImages,
-        notes: notes
-    });
 }
 
 // Sort by date desc

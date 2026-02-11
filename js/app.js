@@ -763,9 +763,11 @@ function renderTicketDetail(params) {
     content.innerHTML = `
         <!-- Image Carousel -->
         <div class="detail-image">
-            <img src="${ticket.images[0]}" alt="${ticket.title}">
+            <div class="detail-image-scroll" id="detail-image-scroll">
+                ${ticket.images.map(img => `<img src="${img}" alt="${ticket.title}">`).join('')}
+            </div>
             <div class="detail-dots">
-                ${ticket.images.map((_, i) => `<div class="detail-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}
+                ${ticket.images.map((_, i) => `<div class="detail-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`).join('')}
             </div>
         </div>
 
@@ -893,6 +895,20 @@ function renderTicketDetail(params) {
 
         <div style="height: 6rem;"></div>
     `;
+
+    // Add scroll listener for dots
+    const scroller = document.getElementById('detail-image-scroll');
+    const dots = document.querySelectorAll('.detail-dot');
+
+    if (scroller && dots.length > 0) {
+        scroller.addEventListener('scroll', () => {
+            const index = Math.round(scroller.scrollLeft / scroller.offsetWidth);
+            dots.forEach((dot, i) => {
+                if (i === index) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        });
+    }
 }
 
 function renderAddTicket() {
