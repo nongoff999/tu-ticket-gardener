@@ -1008,10 +1008,14 @@ function renderAddTicket() {
                     </div>
                 </div>
 
-                <div style="padding: 1.5rem 0 2rem;">
-                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                <div class="sticky-footer">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined">save</span>
+                        บันทึกทิคเก็ต
+                    </button>
                 </div>
             </form>
+            <div style="height: 6rem;"></div>
         </div>
 
         <div class="safe-area-bottom"></div>
@@ -1247,33 +1251,6 @@ function renderEditTicket(params) {
 
     document.getElementById('page-title').textContent = 'EDIT TICKET';
 
-    // Generate Reporter Card HTML if data exists
-    let reporterCardHTML = '';
-    if (ticket.locationDetail && ticket.locationDetail.includes('Ticket By Name:')) {
-        const parts = ticket.locationDetail.split('Ticket By Name: ')[1].split(' เมื่อ ');
-        const name = parts[0];
-        const time = parts[1] || '';
-        reporterCardHTML = `
-            <div style="margin-bottom: 1.5rem;">
-                <div style="background: linear-gradient(to right, #f0f9ff, #e0f2fe); padding: 1rem; border-radius: 0.75rem; border: 1px solid #bae6fd; display: flex; align-items: center; gap: 1rem;">
-                    <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <span class="material-symbols-outlined">person</span>
-                    </div>
-                    <div>
-                        <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.125rem;">แจ้งโดย</div>
-                        <div style="font-weight: 600; color: #0c4a6e; font-size: 1rem;">${name}</div>
-                    </div>
-                    ${time ? `
-                    <div style="width: 1px; height: 24px; background: #bae6fd; margin: 0 0.5rem;"></div>
-                    <div>
-                        <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.125rem;">เมื่อ</div>
-                        <div style="font-weight: 500; color: #0c4a6e; font-size: 0.9rem;">${time}</div>
-                    </div>
-                    ` : ''}
-                </div>
-            </div>`;
-    }
-
     // Status Stepper Logic
     // Default to 'inProgress' if 'new' (User request: "ตอนแก้ไขให้เปิดมา ที่status ระหว่างดำเนินการ รอไว้เลย")
     const currentStatus = ticket.status === 'new' ? 'inProgress' : ticket.status;
@@ -1285,7 +1262,6 @@ function renderEditTicket(params) {
     const content = document.getElementById('main-content');
     content.innerHTML = `
         <div style="padding: 0 1rem;">
-            ${reporterCardHTML}
             <form id="ticket-form">
                 <div class="form-group">
                     <label class="form-label">Ticket Status <span class="required">*</span></label>
@@ -1407,18 +1383,22 @@ function renderEditTicket(params) {
                     <div class="image-grid" id="image-grid">
                         <div class="image-add" id="image-add-btn">
                             <span class="material-symbols-outlined" style="font-size: 1.5rem;">add</span>
-                            <span class="label">เพิ่มรูป</span>
+                    <span class="label">เพิ่มรูป</span>
                         </div>
                     </div>
                 </div>
 
-                <div style="padding: 1.5rem 0 2rem;">
-                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                <div class="sticky-footer">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined">save</span>
+                        บันทึกการแก้ไข
+                    </button>
                 </div>
             </form>
+            <div style="height: 1rem;"></div>
             
             ${renderTimeline(ticket)}
-
+            <div style="height: 6rem;"></div>
         </div>
 
         <div class="safe-area-bottom"></div>

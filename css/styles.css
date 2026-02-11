@@ -153,6 +153,35 @@ body,
         backdrop-filter: none !important;
     }
 
+    /* Sticky Footer / Floating Action Button Bar */
+    .sticky-footer {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 500px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 1rem 1.25rem;
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+        border-top: 1px solid var(--border);
+        z-index: 100;
+        display: flex;
+        gap: 1rem;
+        box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    @media (min-width: 1024px) {
+        .sticky-footer {
+            left: 280px;
+            transform: none;
+            max-width: calc(100% - 280px);
+            padding: 1.25rem 3rem;
+        }
+    }
+
     .drawer-overlay {
         display: none !important;
     }
