@@ -799,7 +799,7 @@ function renderTicketDetail(params) {
                 </div>
                 <div class="detail-info-item">
                     <span class="detail-info-label">Ticket Type</span>
-                    <span class="detail-info-value">${getCategoryName(ticket.category)}</span>
+                    <span class="detail-info-value">${getDamageTypeName(ticket.damageType)}</span>
                 </div>
                 ${ticket.lat && ticket.lng ? `
                 <div class="detail-info-item full" style="margin-top: 0.5rem; background: #f8fafc; padding: 0.75rem; border-radius: 0.5rem; border: 1px dashed #e2e8f0;">
@@ -1070,7 +1070,7 @@ function renderAddTicket() {
         const lng = content.querySelector('#ticket-lng').value;
         const description = content.querySelector('.form-textarea').value.trim();
         const isUrgent = content.querySelector('.priority-btn.urgent').classList.contains('active');
-        const selectedDamageType = content.querySelector('.damage-type-btn.active')?.dataset.type || 'broken';
+        const selectedDamageType = content.querySelector('.damage-type-btn.active')?.dataset.type || 'accident';
 
         const errors = [];
         if (!title) errors.push('ชื่อทิคเก็ต');
@@ -1098,7 +1098,7 @@ function renderAddTicket() {
             id: Math.floor(Math.random() * 100000), // Simple random ID
             title: title,
             description: description,
-            category: 'nature', // Default category for now
+            category: 'all', // Default category since other categories were removed
             status: 'new',
             priority: isUrgent ? 'urgent' : 'normal',
             zone: zoneId,
@@ -1299,7 +1299,7 @@ function renderEditTicket(params) {
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">คุณลักษณะ</label>
+                    <label class="form-label">Ticket Type</label>
                     <div class="tags-container">
                         ${MOCK_DATA.damageTypes.map(dt => `
                             <button type="button" class="tag ${ticket.damageType === dt.id ? 'active' : ''}" data-value="${dt.id}">

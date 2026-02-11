@@ -22,7 +22,7 @@ const Components = {
                     <h3 class="ticket-card-title">${ticket.title}</h3>
                     <p class="ticket-card-desc">${ticket.description}</p>
                     <div class="ticket-card-footer">
-                        <span class="ticket-card-category">${getCategoryName(ticket.category)}</span>
+                        <span class="ticket-card-category">${getDamageTypeName(ticket.damageType)}</span>
                         <span class="ticket-card-date">${formatDate(ticket.date)}</span>
                     </div>
                 </div>

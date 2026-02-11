@@ -28,8 +28,7 @@ const OPERATIONS = [
 
 const ASSIGNEES_LIST = ["สมชาย การดี", "สมศักดิ์ ดีมาก", "วิชัย ใจดี", "พีระพล แสนสุข"];
 const STATUSES = ["new", "inProgress", "pending", "completed"];
-const CATEGORIES = ["accident", "nature", "damage"];
-const DAMAGES = ["broken", "tilted", "fallen", "replant"];
+const DAMAGES = ["accident", "nature", "other"];
 
 function getRandomItem(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -72,9 +71,9 @@ for (let i = 1; i <= 60; i++) {
 
     tickets.push({
         id: 1000 + i,
-        title: `${tree} ${damage === 'fallen' ? 'โค่นล้ม' : (damage === 'broken' ? 'กิ่งหัก' : 'เอียง')}`,
+        title: `${tree} (${damage === 'accident' ? 'อุบัติเหตุ' : (damage === 'nature' ? 'อุบัติเหตุจากธรรมชาติ' : 'อื่นๆ')})`,
         description: `พบปัญหา${tree}บริเวณ${zone.name} ต้องการการตรวจสอบ`,
-        category: getRandomItem(CATEGORIES),
+        category: 'all',
         status: status,
         priority: Math.random() > 0.8 ? 'urgent' : 'normal',
         zone: zone.id,
@@ -107,18 +106,14 @@ const data = {
     user: { name: "สมชาย การดี", role: "หัวหน้าช่างสวน", avatar: null },
     stats: stats,
     categories: [
-        { id: "all", name: "ทั้งหมด" },
-        { id: "accident", name: "อุบัติเหตุ" },
-        { id: "nature", name: "อุบัติเหตุจากธรรมชาติ" },
-        { id: "damage", name: "อุปกรณ์ชำรุดเสียหาย" }
+        { id: "all", name: "ทั้งหมด" }
     ],
     treeTypes: TREE_TYPES,
     zones: ZONES,
     damageTypes: [
-        { id: "broken", name: "ฉีก / หัก", icon: "content_cut" },
-        { id: "tilted", name: "เอน / เอียง", icon: "height" },
-        { id: "fallen", name: "โค่นล้ม", icon: "landscape" },
-        { id: "replant", name: "ปลูกใหม่", icon: "eco" }
+        { id: "accident", name: "อุบัติเหตุ", icon: "emergency" },
+        { id: "nature", name: "อุบัติเหตุจากธรรมชาติ", icon: "nature_people" },
+        { id: "other", name: "อื่นๆ", icon: "more_horiz" }
     ],
     operations: OPERATIONS,
     tickets: tickets

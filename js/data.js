@@ -92,14 +92,15 @@ async function loadData() {
             user: { name: "สมชาย การดี", role: "หัวหน้าช่างสวน", avatar: null },
             stats: { total: 0, new: 0, inProgress: 0, pending: 0, completed: 0 },
             categories: [
-                { id: "all", name: "ทั้งหมด" },
-                { id: "accident", name: "อุบัติเหตุ" },
-                { id: "nature", name: "อุบัติเหตุจากธรรมชาติ" },
-                { id: "damage", name: "อุปกรณ์ชำรุดเสียหาย" }
+                { id: "all", name: "ทั้งหมด" }
             ],
             treeTypes: [],
             zones: [],
-            damageTypes: [],
+            damageTypes: [
+                { id: "accident", name: "อุบัติเหตุ", icon: "emergency" },
+                { id: "nature", name: "อุบัติเหตุจากธรรมชาติ", icon: "nature_people" },
+                { id: "other", name: "อื่นๆ", icon: "more_horiz" }
+            ],
             operations: [],
             tickets: []
         };
@@ -171,6 +172,12 @@ function getCategoryName(categoryId) {
     return category ? category.name : categoryId;
 }
 
+function getDamageTypeName(damageTypeId) {
+    if (!MOCK_DATA) return damageTypeId;
+    const dt = MOCK_DATA.damageTypes.find(d => d.id === damageTypeId);
+    return dt ? dt.name : damageTypeId;
+}
+
 function formatDate(dateStr) {
     const date = new Date(dateStr);
     const day = date.getDate().toString().padStart(2, '0');
@@ -202,6 +209,7 @@ window.getStatusLabel = getStatusLabel;
 window.getStatusClass = getStatusClass;
 window.getPriorityLabel = getPriorityLabel;
 window.getCategoryName = getCategoryName;
+window.getDamageTypeName = getDamageTypeName;
 window.formatDate = formatDate;
 window.formatShortDate = formatShortDate;
 
