@@ -942,9 +942,7 @@ function renderAddTicket() {
                             <span class="material-symbols-outlined" style="font-size: 1.25rem;">my_location</span>
                             บันทึกพิกัด GPS
                         </button>
-                        <div id="location-coords" style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace; white-space: nowrap;">
-                            (ยังไม่ได้บันทึก)
-                        </div>
+                        <input type="text" id="location-coords-display" class="form-input" style="flex: 1; min-width: 180px; font-family: monospace; background: #f1f5f9; cursor: not-allowed; font-size: 0.8rem; height: 2.5rem; padding: 0 0.75rem;" readonly placeholder="(ยังไม่ได้บันทึก)">
                         <div id="map-link-container" style="display: flex; align-items: center;"></div>
                     </div>
                     <input type="hidden" id="ticket-lat">
@@ -1020,7 +1018,7 @@ function renderAddTicket() {
 
     // GPS Location Functionality
     const getLocationBtn = content.querySelector('#get-location-btn');
-    const coordsDisplay = content.querySelector('#location-coords');
+    const coordsDisplay = content.querySelector('#location-coords-display');
     const latInput = content.querySelector('#ticket-lat');
     const lngInput = content.querySelector('#ticket-lng');
 
@@ -1041,8 +1039,10 @@ function renderAddTicket() {
                 const lng = position.coords.longitude.toFixed(6);
                 latInput.value = lat;
                 lngInput.value = lng;
-                coordsDisplay.innerHTML = `Lat: ${lat}, Long: ${lng}`;
+                coordsDisplay.value = `Lat: ${lat}, Long: ${lng}`;
                 coordsDisplay.style.color = '#10B981'; // Green
+                coordsDisplay.style.fontWeight = '700';
+                coordsDisplay.style.borderColor = '#10B981';
 
                 const mapLinkContainer = content.querySelector('#map-link-container');
                 if (mapLinkContainer) {
@@ -1359,9 +1359,7 @@ function renderEditTicket(params) {
                             <span class="material-symbols-outlined" style="font-size: 1.25rem;">my_location</span>
                             อัปเดตพิกัด GPS
                         </button>
-                        <div id="location-coords" style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace; white-space: nowrap;">
-                            ${ticket.lat && ticket.lng ? `Lat: ${ticket.lat}, Long: ${ticket.lng}` : '(ยังไม่ได้บันทึก)'}
-                        </div>
+                        <input type="text" id="location-coords-display" class="form-input" style="flex: 1; min-width: 180px; font-family: monospace; background: #f1f5f9; cursor: not-allowed; font-size: 0.8rem; height: 2.5rem; padding: 0 0.75rem; color: ${ticket.lat ? '#10B981' : 'inherit'}; border-color: ${ticket.lat ? '#10B981' : 'var(--border)'}; font-weight: ${ticket.lat ? '700' : 'normal'};" readonly value="${ticket.lat && ticket.lng ? `Lat: ${ticket.lat}, Long: ${ticket.lng}` : ''}" placeholder="(ยังไม่ได้บันทึก)">
                         <div id="map-link-container">
                             ${ticket.lat && ticket.lng ? `
                                 <a href="https://www.google.com/maps?q=${ticket.lat},${ticket.lng}" target="_blank" style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: #2563eb; text-decoration: none; background: #eff6ff; padding: 0.4rem 0.75rem; border-radius: 0.5rem; border: 1px solid #bfdbfe;">
@@ -1540,7 +1538,7 @@ function renderEditTicket(params) {
 
     // GPS Location Functionality for Edit
     const getLocationBtn = content.querySelector('#get-location-btn');
-    const coordsDisplay = content.querySelector('#location-coords');
+    const coordsDisplay = content.querySelector('#location-coords-display');
     const latInput = content.querySelector('#edit-ticket-lat');
     const lngInput = content.querySelector('#edit-ticket-lng');
 
@@ -1562,8 +1560,10 @@ function renderEditTicket(params) {
                     const lng = position.coords.longitude.toFixed(6);
                     latInput.value = lat;
                     lngInput.value = lng;
-                    coordsDisplay.innerHTML = `Lat: ${lat}, Long: ${lng}`;
+                    coordsDisplay.value = `Lat: ${lat}, Long: ${lng}`;
                     coordsDisplay.style.color = '#10B981'; // Green
+                    coordsDisplay.style.fontWeight = '700';
+                    coordsDisplay.style.borderColor = '#10B981';
 
                     const mapLinkContainer = content.querySelector('#map-link-container');
                     if (mapLinkContainer) {
