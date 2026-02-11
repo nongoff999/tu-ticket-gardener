@@ -67,6 +67,22 @@ async function loadData() {
         saveData();
         console.log('✅ โหลดข้อมูลจากไฟล์ JSON และบันทึกลง Storage');
 
+        console.log('==========================================');
+        console.log('📊 สรุปข้อมูลทิคเก็ตที่โหลดมา:');
+        console.table({
+            'ทั้งหมด': MOCK_DATA.stats.total,
+            'ใหม่ (new)': MOCK_DATA.stats.new,
+            'กำลังทำ (inProgress)': MOCK_DATA.stats.inProgress,
+            'รอดำเนินการ (pending)': MOCK_DATA.stats.pending,
+            'เสร็จสิ้น (completed)': MOCK_DATA.stats.completed
+        });
+
+        if (MOCK_DATA.tickets.length > 0) {
+            console.log('📅 ข้อมูลตั้งแต่:', MOCK_DATA.tickets[MOCK_DATA.tickets.length - 1].date);
+            console.log('📅 ถึงวันที่:', MOCK_DATA.tickets[0].date);
+        }
+        console.log('==========================================');
+
         dataLoaded = true;
         return MOCK_DATA;
     } catch (error) {

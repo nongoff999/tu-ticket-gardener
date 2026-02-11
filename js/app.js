@@ -196,6 +196,8 @@ window.closePopup = closePopup;
 
 // Page Renderers
 function renderDashboard() {
+    console.log('------------------------------------------');
+    console.log('🏠 กำลังแสดงผล Dashboard (หน้าหลัก)...');
     AppState.currentPage = 'dashboard';
     updateActiveNavItem('dashboard');
 
@@ -606,6 +608,8 @@ function getStatsForDate(dateStr) {
 }
 
 function renderMonitor() {
+    console.log('------------------------------------------');
+    console.log('👀 กำลังแสดงผล Garden Monitor (ติดตามงาน)...');
     AppState.currentPage = 'monitor';
     updateActiveNavItem('monitor');
 
@@ -655,6 +659,8 @@ function renderMonitor() {
 }
 
 function renderTicketList() {
+    console.log('------------------------------------------');
+    console.log('📋 กำลังแสดงผล Ticket List (รายการทั้งหมด)...');
     AppState.currentPage = 'tickets';
     updateActiveNavItem('tickets');
 
@@ -708,13 +714,20 @@ function renderTicketList() {
 }
 
 function renderTicketDetail(params) {
+    console.log('------------------------------------------');
     const ticketId = params[0] ? parseInt(params[0]) : null;
+    console.log(`🎫 กำลังเปิดดูรายละเอียดทิคเก็ต ID: ${ticketId}`);
     const ticket = MOCK_DATA.tickets.find(t => t.id === ticketId);
 
     if (!ticket) {
         router.navigate('/tickets');
         return;
     }
+
+    console.log('✅ พบข้อมูล:', ticket.title);
+    console.log(`- สถานะ: ${ticket.status}`);
+    console.log(`- ความเร่งด่วน: ${ticket.priority}`);
+    console.log(`- ผู้รับผิดชอบ: ${ticket.assignees.join(', ') || '-'}`);
 
     AppState.selectedTicket = ticket;
 
