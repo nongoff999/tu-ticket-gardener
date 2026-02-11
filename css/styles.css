@@ -1688,6 +1688,95 @@ body,
     padding: 1rem;
 }
 
+
 .pb-safe {
     padding-bottom: 8rem;
+}
+
+/* Status Stepper */
+.status-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+}
+
+.step-item.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.step-circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 2;
+    background-color: white;
+    /* Ensure it covers the line */
+}
+
+.step-item.active .step-circle {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: 0 4px 6px -1px var(--primary-light);
+    transform: scale(1.1);
+}
+
+.step-item.passed .step-circle {
+    background: var(--surface);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.step-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.step-item.active .step-label {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    margin: 0 -1rem;
+    /* Negative margin to connect */
+    position: relative;
+    top: -14px;
+    z-index: 1;
+}
+
+.step-line.passed {
+    background: var(--primary);
 }

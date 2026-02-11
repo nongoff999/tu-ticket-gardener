@@ -904,6 +904,7 @@ function renderAddTicket() {
 
             <form id="ticket-form">
                 <div class="form-group">
+                    <label class="form-label">ลำดับความสำคัญ <span class="required">*</span></label>
                     <div class="priority-toggle">
                         <button type="button" class="priority-btn normal active">ไม่เร่งด่วน</button>
                         <button type="button" class="priority-btn urgent">เร่งด่วน</button>
@@ -1072,20 +1073,67 @@ function renderEditTicket(params) {
 
     document.getElementById('page-title').textContent = 'EDIT TICKET';
 
-    const statusStep = ticket.status === 'new' ? 1 :
-        ticket.status === 'inProgress' ? 2 : 3;
+    // Generate Reporter Card HTML if data exists
+    let reporterCardHTML = '';
+    if (ticket.locationDetail && ticket.locationDetail.includes('Ticket By Name:')) {
+        const parts = ticket.locationDetail.split('Ticket By Name: ')[1].split(' เมื่อ ');
+        const name = parts[0];
+        const time = parts[1] || '';
+        reporterCardHTML = `
+            <div style="margin-bottom: 1.5rem;">
+                <div style="background: linear-gradient(to right, #f0f9ff, #e0f2fe); padding: 1rem; border-radius: 0.75rem; border: 1px solid #bae6fd; display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <span class="material-symbols-outlined">person</span>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.125rem;">แจ้งโดย</div>
+                        <div style="font-weight: 600; color: #0c4a6e; font-size: 1rem;">${name}</div>
+                    </div>
+                    ${time ? `
+                    <div style="width: 1px; height: 24px; background: #bae6fd; margin: 0 0.5rem;"></div>
+                    <div>
+                        <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.125rem;">เมื่อ</div>
+                        <div style="font-weight: 500; color: #0c4a6e; font-size: 0.9rem;">${time}</div>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>`;
+    }
+
+    // Status Stepper Logic
+    const isNew = ticket.status === 'new';
+    const isPro = ticket.status === 'inProgress';
+    const isComp = ticket.status === 'completed';
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
         <div style="padding: 0 1rem;">
+            ${reporterCardHTML}
             <form id="ticket-form">
                 <div class="form-group">
                     <label class="form-label">Ticket Status <span class="required">*</span></label>
-                    <select class="form-select">
-                        <option value="new" ${ticket.status === 'new' ? 'selected' : ''}>ทิคเก็ตใหม่</option>
-                        <option value="inProgress" ${ticket.status === 'inProgress' ? 'selected' : ''}>ระหว่างดำเนินการ</option>
-                        <option value="completed" ${ticket.status === 'completed' ? 'selected' : ''}>ปิดทิคเก็ต</option>
-                    </select>
+                    <div class="status-stepper">
+                        <!-- Step 1: New -->
+                        <div class="step-item ${isNew ? 'active' : 'passed disabled'}" data-value="new">
+                            <div class="step-circle">1</div>
+                            <div class="step-label">ทิคเก็ตใหม่</div>
+                        </div>
+                        <div class="step-line ${isPro || isComp ? 'active' : ''}"></div>
+                        
+                        <!-- Step 2: In Progress -->
+                        <div class="step-item ${isPro ? 'active' : (isComp ? 'passed disabled' : '')}" data-value="inProgress">
+                            <div class="step-circle">2</div>
+                            <div class="step-label">กำลังดำเนินการ</div>
+                        </div>
+                        <div class="step-line ${isComp ? 'active' : ''}"></div>
+                        
+                        <!-- Step 3: Completed -->
+                        <div class="step-item ${isComp ? 'active' : ''}" data-value="completed">
+                            <div class="step-circle">3</div>
+                            <div class="step-label">ปิดทิคเก็ต</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="edit-ticket-status" value="${ticket.status}">
                 </div>
 
                 <div class="form-group">
@@ -1202,6 +1250,46 @@ function renderEditTicket(params) {
         });
     });
 
+    // Status Stepper Logic
+    const stepper = content.querySelector('.status-stepper');
+    const statusInput = content.querySelector('#edit-ticket-status');
+    if (stepper) {
+        const steps = stepper.querySelectorAll('.step-item');
+        const lines = stepper.querySelectorAll('.step-line');
+
+        steps.forEach((step, index) => {
+            step.addEventListener('click', function () {
+                if (this.classList.contains('disabled') || this.classList.contains('active')) return;
+
+                const newValue = this.dataset.value;
+                statusInput.value = newValue;
+
+                // Reset standard classes
+                steps.forEach(s => s.className = 'step-item');
+                lines.forEach(l => l.classList.remove('active'));
+
+                // Apply Logic
+                if (newValue === 'new') {
+                    steps[0].classList.add('active');
+                    // Next steps
+                    steps[1].className = 'step-item';
+                    steps[2].className = 'step-item disabled'; // Sequential enforcement
+                } else if (newValue === 'inProgress') {
+                    steps[0].className = 'step-item passed disabled';
+                    steps[1].classList.add('active');
+                    steps[2].className = 'step-item';
+                    lines[0].classList.add('active');
+                } else if (newValue === 'completed') {
+                    steps[0].className = 'step-item passed disabled';
+                    steps[1].className = 'step-item passed disabled';
+                    steps[2].classList.add('active');
+                    lines[0].classList.add('active');
+                    lines[1].classList.add('active');
+                }
+            });
+        });
+    }
+
     // Tags
     const tags = content.querySelectorAll('.tag');
     tags.forEach(tag => {
@@ -1256,7 +1344,8 @@ function renderEditTicket(params) {
         }
 
         // Gather values using IDs to prevent index mapping issues
-        const status = form.querySelector('select').value;
+        // Gather values using IDs to prevent index mapping issues
+        const status = form.querySelector('#edit-ticket-status').value;
         const isUrgent = form.querySelector('.priority-btn.urgent').classList.contains('active');
         const title = document.getElementById('edit-ticket-title').value.trim();
         const description = document.getElementById('edit-ticket-description').value.trim();
