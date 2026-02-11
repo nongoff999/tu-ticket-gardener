@@ -1166,10 +1166,10 @@ function renderTimeline(ticket) {
                 </div>
                 <div style="flex: 1;">
                     <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
-                        รับงาน / เริ่มดำเนินการ
+                        เข้าดำเนินการโดย
                     </div>
                     <div style="font-size: 0.8rem; color: var(--text-secondary);">
-                        ${ticket.assignees && ticket.assignees.length > 0 ? `ผู้รับผิดชอบ: ${ticket.assignees.join(', ')}` : 'รอการมอบหมาย'}
+                        ${ticket.assignees && ticket.assignees.length > 0 ? ticket.assignees.join(', ') : 'รอการมอบหมาย'}
                         ${ticket.startedAt ? `<br>เริ่มเมื่อ: ${new Date(ticket.startedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}
                     </div>
                 </div>

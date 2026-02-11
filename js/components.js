@@ -38,7 +38,7 @@ const Components = {
         const padding = size === 'large' ? '0.25rem 0.75rem 0.25rem 0.25rem' : '0.15rem 0.5rem 0.15rem 0.15rem';
 
         if (!assignees || assignees.length === 0) {
-            return `<span style="font-size: ${size === 'large' ? '0.85rem' : '0.625rem'}; color: var(--text-muted); font-style: italic;">ยังไม่มีผู้รับผิดชอบ</span>`;
+            return `<span style="font-size: ${size === 'large' ? '0.85rem' : '0.625rem'}; color: var(--text-muted); font-style: italic;">รอการมอบหมาย</span>`;
         }
         return `
             <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; width: 100%;">
