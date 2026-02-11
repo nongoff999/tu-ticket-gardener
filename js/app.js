@@ -724,6 +724,33 @@ function renderTicketDetail(params) {
                 </div>
             </div>
 
+            ${(() => {
+            if (ticket.locationDetail && ticket.locationDetail.includes('Ticket By Name:')) {
+                const parts = ticket.locationDetail.split('Ticket By Name: ')[1].split(' เมื่อ ');
+                const name = parts[0];
+                const time = parts[1] || '';
+                return `
+                    <div style="background: linear-gradient(to right, #f0f9ff, #e0f2fe); padding: 1rem; border-radius: 0.75rem; border: 1px solid #bae6fd; display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <span class="material-symbols-outlined">person</span>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.125rem;">แจ้งโดย</div>
+                            <div style="font-weight: 600; color: #0c4a6e; font-size: 1rem;">${name}</div>
+                        </div>
+                        ${time ? `
+                        <div style="width: 1px; height: 24px; background: #bae6fd; margin: 0 0.5rem;"></div>
+                        <div>
+                            <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.125rem;">เมื่อ</div>
+                            <div style="font-weight: 500; color: #0c4a6e; font-size: 0.9rem;">${time}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    `;
+            }
+            return '';
+        })()}
+
             <!-- Timeline Section -->
             <div style="margin: 1.5rem 0; padding: 1rem; background: var(--surface); border-radius: 0.75rem; border-left: 4px solid var(--primary);">
                 <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">
@@ -742,13 +769,13 @@ function renderTicketDetail(params) {
                             </div>
                             <div style="font-size: 0.8rem; color: var(--text-secondary);">
                                 ${new Date(ticket.date).toLocaleDateString('th-TH', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    })} ${new Date(ticket.date).toLocaleTimeString('th-TH', {
-        hour: '2-digit',
-        minute: '2-digit'
-    })}
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        })} ${new Date(ticket.date).toLocaleTimeString('th-TH', {
+            hour: '2-digit',
+            minute: '2-digit'
+        })}
                             </div>
                         </div>
                     </div>
@@ -810,9 +837,9 @@ function renderTicketDetail(params) {
                     <span class="detail-info-label">สถานที่เกิดเหตุ :</span>
                     <span class="detail-info-value">${ticket.zoneName}</span>
                 </div>
-                ${ticket.locationDetail ? `
+                ${ticket.locationDetail && !ticket.locationDetail.includes('Ticket By Name:') ? `
                 <div class="detail-info-item full">
-                    <span class="detail-info-label">ระบุสถานที่ใกล้เกียง :</span>
+                    <span class="detail-info-label">ระบุสถานที่ใกล้เคียง :</span>
                     <span class="detail-info-value">${ticket.locationDetail}</span>
                 </div>
                 ` : ''}
@@ -884,7 +911,7 @@ function renderAddTicket() {
                 </div>
 
                 <div class="form-group" id="location-detail-group" style="display: none;">
-                    <label class="form-label">ระบุสถานที่ใกล้เกียง</label>
+                    <label class="form-label">ระบุสถานที่ใกล้เคียง</label>
                     <input type="text" id="location-detail" class="form-input" readonly style="background: var(--background); color: var(--text-secondary);" placeholder="เลือกโซนเพื่อดูข้อมูล">
                 </div>
 
