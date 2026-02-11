@@ -340,6 +340,9 @@ function renderDashboard() {
             </div>
         </div>
 
+        <!-- Calendar Report Section -->
+        <div id="dashboard-calendar-container" style="margin-top: 2rem;"></div>
+
         <div class="safe-area-bottom"></div>
     `;
 
@@ -361,6 +364,31 @@ function renderDashboard() {
             renderDashboard(); // Re-render with new period
         });
     });
+
+    // Add navigation button functionality (now in calendar)
+    const prevBtn = content.querySelector('#prev-period');
+    const nextBtn = content.querySelector('#next-period');
+
+    if (prevBtn && nextBtn) {
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent bubbling if calendar day click is triggered
+            navigatePeriod(-1);
+        });
+
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigatePeriod(1);
+        });
+    }
+
+    // Initialize calendar report at bottom
+    if (!window.calendarState) {
+        window.calendarState = {
+            currentMonth: new Date().getMonth(),
+            currentYear: new Date().getFullYear()
+        };
+    }
+    renderCalendar();
 }
 
 function navigatePeriod(direction) {
@@ -1525,7 +1553,12 @@ function renderCalendar() {
         </div>
     `;
 
-    content.innerHTML = calendarHTML;
+    const dashboardContainer = document.getElementById('dashboard-calendar-container');
+    if (dashboardContainer) {
+        dashboardContainer.innerHTML = calendarHTML;
+    } else if (AppState.currentPage === 'report-detail') {
+        content.innerHTML = calendarHTML;
+    }
 }
 
 // Month navigation
