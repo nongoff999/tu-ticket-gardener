@@ -1275,14 +1275,43 @@ function renderEditTicket(params) {
                 // Re-evaluate visuals based on selection, strictly preserving original 'locked' history
                 const originalStatus = ticket.status;
 
+                // User Request: "2 ไป 3 ได้ แต่ไป 1 ไม่ได้นะ มันผ่านไปแล้ว"
+                // Logic:
+                // If original is New: All enabled.
+                // If original is InProgress: New is locked. InProgress <-> Completed enabled.
+                // If original is Completed: New & InProgress locked. (Actually, if user edits a Completed ticket, can they go back to InProgress? Usually no, but user said "2 ไป 3 ได้". Maybe they mean during the *current edit* of a NEW ticket?)
+
+                // Wait, if I open a NEW ticket, it auto-jumps to InProgress.
+                // So originalStatus = 'new', currentStatus = 'inProgress'.
+                // User says: "Can go 2->3, but not 1".
+                // So even if original was New, once we are at 'InProgress' (which is default for edit), we shouldn't go back to New?
+                // The auto-jump logic set `currentStatus` to `inProgress`.
+                // So effectively, for Edit Ticket:
+                // - Step 1 (New) is ALWAYS disabled/locked because we are already "working on it".
+                // - We can only toggle between 2 (InProgress) and 3 (Completed).
+
+                // Exception: Unless we want to allow reverting a "Just Created" ticket back to New? 
+                // User said "มันผ่านไปแล้ว" (It's passed). So Step 1 is history.
+
                 steps.forEach(s => {
                     const val = s.dataset.value;
-                    // Determine if originally disabled (Cannot go back to saved state)
-                    // New -> No locks.
-                    // InProgress -> New is locked.
-                    // Completed -> New & InProgress locked.
-                    const isLocked = (originalStatus === 'inProgress' && val === 'new') ||
-                        (originalStatus === 'completed' && (val === 'new' || val === 'inProgress'));
+
+                    // Lock Step 1 (New) ALWAYS in Edit Mode (since we are auto-jumping to 2)
+                    // Lock Step 2 (InProgress) ONLY if original was Completed (Cannot reverse a closed ticket?) 
+                    // Wait, user said "2 ไป 3 ได้".
+                    // If original was Completed, is it locked?
+                    // "ระบบล็อคอัจฉริยะ" from previous turn.
+
+                    let isLocked = false;
+
+                    if (val === 'new') {
+                        isLocked = true; // Always lock New in Edit Mode
+                    } else if (val === 'inProgress') {
+                        // Lock InProgress only if original was Completed?
+                        if (originalStatus === 'completed') {
+                            isLocked = true;
+                        }
+                    }
 
                     let cls = 'step-item';
                     if (isLocked) cls += ' disabled';
