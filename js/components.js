@@ -59,13 +59,12 @@ const Components = {
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         ${ticket.assignees.length > 0 ? `
-                            <span style="font-size: 0.625rem; color: var(--text-muted);">เจ้าหน้าที่ ${ticket.assignees.length} คน</span>
-                        ` : ''}
+                            <span style="font-size: 0.625rem; color: var(--text-secondary); font-weight: 500;">ผู้รับผิดชอบ:</span>
+                            <span style="font-size: 0.625rem; color: var(--text-primary); font-weight: 600;">${ticket.assignees.join(', ')}</span>
+                        ` : `
+                            <span style="font-size: 0.625rem; color: var(--text-muted); font-style: italic;">ยังไม่มีผู้รับผิดชอบ</span>
+                        `}
                     </div>
-                    <a style="display: flex; align-items: center; font-size: 0.6875rem; font-weight: 500; color: var(--text-primary); cursor: pointer;">
-                        ดูรายละเอียด
-                        <span class="material-symbols-outlined" style="font-size: 1rem;">chevron_right</span>
-                    </a>
                 </div>
             </div>
         `;
