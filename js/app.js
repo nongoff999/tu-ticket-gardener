@@ -1156,7 +1156,7 @@ function renderTimeline(ticket) {
                 </div>
             </div>
             
-            ${ticket.startedAt ? ` 
+            ${ticket.startedAt || (ticket.assignees && ticket.assignees.length > 0) ? ` 
             <!-- Timeline Item: In Progress -->
             <div style="display: flex; gap: 0.75rem; align-items: start;">
                 <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
@@ -1164,11 +1164,11 @@ function renderTimeline(ticket) {
                 </div>
                 <div style="flex: 1;">
                     <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
-                        เริ่มดำเนินการ
+                        รับงาน / เริ่มดำเนินการ
                     </div>
                     <div style="font-size: 0.8rem; color: var(--text-secondary);">
-                        อัพเดตโดย ${ticket.startedBy || MOCK_DATA.user?.name || 'ผู้ใช้'}
-                        <br>${new Date(ticket.startedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        ${ticket.assignees && ticket.assignees.length > 0 ? `ผู้รับผิดชอบ: ${ticket.assignees.join(', ')}` : 'รอการมอบหมาย'}
+                        ${ticket.startedAt ? `<br>เริ่มเมื่อ: ${new Date(ticket.startedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}
                     </div>
                 </div>
             </div>
@@ -1182,11 +1182,11 @@ function renderTimeline(ticket) {
                 </div>
                 <div style="flex: 1;">
                     <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
-                        เสร็จสิ้น
+                        งานเสร็จสิ้น
                     </div>
                     <div style="font-size: 0.8rem; color: var(--text-secondary);">
-                        ปิดงานโดย ${ticket.completedBy || MOCK_DATA.user?.name || 'ผู้ใช้'}
-                        <br>${new Date(ticket.completedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        เสร็จสิ้นโดยทีมผู้รับผิดชอบ
+                        <br>เมื่อ: ${new Date(ticket.completedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </div>
                 </div>
             </div>
