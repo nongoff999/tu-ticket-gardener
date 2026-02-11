@@ -1267,31 +1267,45 @@ function renderEditTicket(params) {
 
         steps.forEach((step, index) => {
             step.addEventListener('click', function () {
-                if (this.classList.contains('disabled') || this.classList.contains('active')) return;
+                if (this.classList.contains('disabled')) return;
 
                 const newValue = this.dataset.value;
                 statusInput.value = newValue;
 
-                // Reset standard classes
-                steps.forEach(s => s.className = 'step-item');
-                lines.forEach(l => l.classList.remove('active'));
+                // Re-evaluate visuals based on selection, strictly preserving original 'locked' history
+                const originalStatus = ticket.status;
 
-                // Apply Logic
-                if (newValue === 'new') {
-                    steps[0].classList.add('active');
-                    // Next steps
-                    steps[1].className = 'step-item';
-                    steps[2].className = 'step-item disabled'; // Sequential enforcement
-                } else if (newValue === 'inProgress') {
-                    steps[0].className = 'step-item passed disabled';
-                    steps[1].classList.add('active');
-                    steps[2].className = 'step-item';
+                steps.forEach(s => {
+                    const val = s.dataset.value;
+                    // Determine if originally disabled (Cannot go back to saved state)
+                    // New -> No locks.
+                    // InProgress -> New is locked.
+                    // Completed -> New & InProgress locked.
+                    const isLocked = (originalStatus === 'inProgress' && val === 'new') ||
+                        (originalStatus === 'completed' && (val === 'new' || val === 'inProgress'));
+
+                    let cls = 'step-item';
+                    if (isLocked) cls += ' disabled';
+
+                    // Visual state based on CURRENT SELECTION (newValue)
+                    if (val === newValue) {
+                        cls += ' active';
+                    } else if (
+                        (newValue === 'inProgress' && val === 'new') ||
+                        (newValue === 'completed' && (val === 'new' || val === 'inProgress'))
+                    ) {
+                        cls += ' passed';
+                    }
+
+                    s.className = cls;
+                });
+
+                // Update lines
+                lines.forEach((l) => l.classList.remove('active'));
+                if (newValue === 'inProgress' || newValue === 'completed') {
                     lines[0].classList.add('active');
-                } else if (newValue === 'completed') {
-                    steps[0].className = 'step-item passed disabled';
-                    steps[1].className = 'step-item passed disabled';
-                    steps[2].classList.add('active');
-                    lines[0].classList.add('active');
+                }
+                if (newValue === 'completed') {
                     lines[1].classList.add('active');
                 }
             });
