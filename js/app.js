@@ -790,6 +790,7 @@ function renderTicketDetail(params) {
                             </div>
                             <div style="font-size: 0.8rem; color: var(--text-secondary);">
                                 อัพเดตโดย ${MOCK_DATA.user?.name || 'ผู้ใช้'}
+                                ${ticket.startedAt ? `<br>${new Date(ticket.startedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}
                             </div>
                         </div>
                     </div>
@@ -805,6 +806,7 @@ function renderTicketDetail(params) {
                             </div>
                             <div style="font-size: 0.8rem; color: var(--text-secondary);">
                                 ปิดงานโดย ${MOCK_DATA.user?.name || 'ผู้ใช้'}
+                                ${ticket.completedAt ? `<br>${new Date(ticket.completedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}
                             </div>
                         </div>
                     </div>
@@ -1101,9 +1103,12 @@ function renderEditTicket(params) {
     }
 
     // Status Stepper Logic
-    const isNew = ticket.status === 'new';
-    const isPro = ticket.status === 'inProgress';
-    const isComp = ticket.status === 'completed';
+    // Default to 'inProgress' if 'new' (User request: "ตอนแก้ไขให้เปิดมา ที่status ระหว่างดำเนินการ รอไว้เลย")
+    const currentStatus = ticket.status === 'new' ? 'inProgress' : ticket.status;
+
+    const isNew = currentStatus === 'new';
+    const isPro = currentStatus === 'inProgress';
+    const isComp = currentStatus === 'completed';
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
@@ -1123,7 +1128,7 @@ function renderEditTicket(params) {
                         <!-- Step 2: In Progress -->
                         <div class="step-item ${isPro ? 'active' : (isComp ? 'passed disabled' : '')}" data-value="inProgress">
                             <div class="step-circle">2</div>
-                            <div class="step-label">กำลังดำเนินการ</div>
+                            <div class="step-label">ระหว่างดำเนินการ</div>
                         </div>
                         <div class="step-line ${isComp ? 'active' : ''}"></div>
                         
@@ -1133,7 +1138,10 @@ function renderEditTicket(params) {
                             <div class="step-label">ปิดทิคเก็ต</div>
                         </div>
                     </div>
-                    <input type="hidden" id="edit-ticket-status" value="${ticket.status}">
+                    <div style="text-align: center; font-size: 0.8rem; color: #64748b; margin-top: -0.5rem; margin-bottom: 1rem;">
+                        (สามารถกดเลือกสถานะได้ด้วยตัวเอง)
+                    </div>
+                    <input type="hidden" id="edit-ticket-status" value="${currentStatus}">
                 </div>
 
                 <div class="form-group">
@@ -1370,6 +1378,22 @@ function renderEditTicket(params) {
         // Numbers
         const circumference = parseInt(document.getElementById('circumference').value) || 0;
         const quantity = parseInt(document.getElementById('quantity').value) || 1;
+
+        // Update Timestamps based on Status Change
+        const oldStatus = ticket.status;
+        const newStatus = status;
+        const nowStr = new Date().toISOString();
+
+        if (newStatus === 'inProgress' && (oldStatus === 'new' || !ticket.startedAt)) {
+            ticket.startedAt = nowStr;
+        } else if (newStatus === 'completed') {
+            if (oldStatus === 'new' || !ticket.startedAt) {
+                ticket.startedAt = nowStr; // Assume started same time if jumped
+            }
+            if (oldStatus !== 'completed' || !ticket.completedAt) {
+                ticket.completedAt = nowStr;
+            }
+        }
 
         // Update Ticket Object
         ticket.status = status;
