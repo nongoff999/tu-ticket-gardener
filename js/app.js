@@ -1915,8 +1915,8 @@ function renderReportList() {
                     <span class="material-symbols-outlined">summarize</span>
                 </div>
                 <div class="report-card-info">
-                    <h3>รายงานสรุปต้นไม้โค่นล้ม หัก ฉีกขาด จากลมฝน</h3>
-                    <p>สรุปรายการความเสียหายรายวัน พร้อมรูปภาพและสถิติสะสม</p>
+                    <h3>รายงานสรุปความเสียหายรายวัน</h3>
+                    <p>สรุปงานดูแลต้นไม้โค่นล้ม/หักรายวัน พร้อมรูปภาพ</p>
                 </div>
                 <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
             </div>
