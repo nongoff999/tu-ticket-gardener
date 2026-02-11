@@ -59,8 +59,12 @@
     <div class="app-container">
         <!-- Header -->
         <header class="app-header">
-            <button class="header-btn" onclick="openDrawer()">
+            <button class="header-btn" onclick="openDrawer()" id="menu-btn">
                 <span class="material-symbols-outlined" style="font-size: 1.75rem;">menu</span>
+            </button>
+            <button class="back-nav-btn" onclick="history.back()" id="back-btn" style="display: none;">
+                <span class="material-symbols-outlined">arrow_back</span>
+                <span class="back-text">Back</span>
             </button>
             <h1 id="page-title" class="outfit">TICKET DASHBOARD</h1>
             <div style="display: flex; gap: 0.5rem; align-items: center;">

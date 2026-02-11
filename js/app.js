@@ -159,6 +159,23 @@ function navigateTo(page) {
     router.navigate('/' + page);
 }
 
+function updateHeaderNav(isSubPage = false) {
+    const menuBtn = document.getElementById('menu-btn');
+    const backBtn = document.getElementById('back-btn');
+
+    if (!menuBtn || !backBtn) return;
+
+    if (isSubPage) {
+        // Show Back button, Hide Menu button
+        menuBtn.style.display = 'none';
+        backBtn.style.display = 'flex';
+    } else {
+        // Show Menu button, Hide Back button
+        menuBtn.style.display = 'flex';
+        backBtn.style.display = 'none';
+    }
+}
+
 // Global Popup Functions
 function showPopup(title, message, type = 'info', onConfirm = null) {
     const popup = document.getElementById('custom-popup');
@@ -196,6 +213,7 @@ window.closePopup = closePopup;
 
 // Page Renderers
 function renderDashboard() {
+    updateHeaderNav(false); // Dashboard is main page
     console.log('------------------------------------------');
     console.log('🏠 กำลังแสดงผล Dashboard (หน้าหลัก)...');
     AppState.currentPage = 'dashboard';
@@ -610,6 +628,7 @@ function getStatsForDate(dateStr) {
 }
 
 function renderMonitor() {
+    updateHeaderNav(true);
     console.log('------------------------------------------');
     console.log('👀 กำลังแสดงผล Garden Monitor (ติดตามงาน)...');
     AppState.currentPage = 'monitor';
@@ -661,6 +680,7 @@ function renderMonitor() {
 }
 
 function renderTicketList() {
+    updateHeaderNav(true);
     console.log('------------------------------------------');
     console.log('📋 กำลังแสดงผล Ticket List (รายการทั้งหมด)...');
     AppState.currentPage = 'tickets';
@@ -716,6 +736,7 @@ function renderTicketList() {
 }
 
 function renderTicketDetail(params) {
+    updateHeaderNav(true);
     console.log('------------------------------------------');
     const ticketId = params[0] ? parseInt(params[0]) : null;
     console.log(`🎫 กำลังเปิดดูรายละเอียดทิคเก็ต ID: ${ticketId}`);
@@ -743,9 +764,6 @@ function renderTicketDetail(params) {
         <!-- Image Carousel -->
         <div class="detail-image">
             <img src="${ticket.images[0]}" alt="${ticket.title}">
-            <button class="detail-back-btn" onclick="history.back()">
-                <span class="material-symbols-outlined">chevron_left</span>
-            </button>
             <div class="detail-dots">
                 ${ticket.images.map((_, i) => `<div class="detail-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}
             </div>
@@ -878,6 +896,7 @@ function renderTicketDetail(params) {
 }
 
 function renderAddTicket() {
+    updateHeaderNav(true);
     AppState.currentPage = 'add';
     updateActiveNavItem('add');
 
@@ -1199,6 +1218,7 @@ function renderTimeline(ticket) {
 }
 
 function renderEditTicket(params) {
+    updateHeaderNav(true);
     const ticketId = params[0] ? parseInt(params[0]) : null;
     const ticket = MOCK_DATA.tickets.find(t => t.id === ticketId);
 
@@ -1611,6 +1631,7 @@ function renderEditTicket(params) {
 }
 
 function renderCategorySelection() {
+    updateHeaderNav(true);
     AppState.currentPage = 'add-select';
     updateActiveNavItem('add-select');
 
@@ -1829,6 +1850,7 @@ window.removeUploadedImage = removeUploadedImage;
  */
 
 function renderReportList() {
+    updateHeaderNav(true);
     AppState.currentPage = 'reports';
     updateActiveNavItem('reports');
     document.getElementById('page-title').textContent = 'รายงาน';
@@ -1857,6 +1879,7 @@ function openReportDetail(type) {
 window.openReportDetail = openReportDetail;
 
 function renderReportDetail() {
+    updateHeaderNav(true);
     AppState.currentPage = 'report-detail';
     document.getElementById('page-title').textContent = 'รายงานสรุปต้นไม้โค่นล้มฯ';
 
