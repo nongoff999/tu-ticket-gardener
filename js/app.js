@@ -513,17 +513,38 @@ function generateChartSVG(period, dateStr) {
     const pointsToPath = (values) => {
         if (values.length === 0) return '';
 
-        const stepX = width / (values.length - 1);
-        let d = `M 0 ${height - (values[0] / maxValue * height)}`;
+        // 1. Convert values to coordinate points
+        const points = values.map((v, i) => {
+            const x = (i / (values.length - 1)) * width;
+            const y = height - (v / maxValue * height); // Invert Y because SVG 0 is top
+            return [x, y];
+        });
 
-        for (let i = 1; i < values.length; i++) {
-            const x = i * stepX;
-            const y = height - (values[i] / maxValue * height);
+        // 2. Helper to calculate control points for Bezier curve
+        const controlPoint = (current, previous, next, reverse) => {
+            const p = previous || current;
+            const n = next || current;
+            const smoothing = 0.2; // 0 (sharp) to 1 (very round)
 
-            // Straight line
-            d += ` L ${x} ${y}`;
-        }
-        return d;
+            const oX = n[0] - p[0];
+            const oY = n[1] - p[1];
+            const length = Math.sqrt(Math.pow(oX, 2) + Math.pow(oY, 2)) * smoothing;
+            const angle = Math.atan2(oY, oX) + (reverse ? Math.PI : 0);
+
+            const x = current[0] + Math.cos(angle) * length;
+            const y = current[1] + Math.sin(angle) * length;
+            return [x, y];
+        };
+
+        // 3. Generate Path logic
+        return points.reduce((acc, point, i, a) => {
+            if (i === 0) return `M ${point[0]},${point[1]}`;
+
+            const [cpsX, cpsY] = controlPoint(a[i - 1], a[i - 2], point, false);
+            const [cpeX, cpeY] = controlPoint(point, a[i - 1], a[i + 1], true);
+
+            return `${acc} C ${cpsX},${cpsY} ${cpeX},${cpeY} ${point[0]},${point[1]}`;
+        }, '');
     };
 
     const seriesColors = {
@@ -537,11 +558,12 @@ function generateChartSVG(period, dateStr) {
     let pathsHTML = '';
     const seriesOrder = ['total', 'new', 'inProgress', 'pending', 'completed']; // Render order
 
+    // Draw lines
     seriesOrder.forEach(key => {
         pathsHTML += `<path d="${pointsToPath(data.series[key])}" 
                            fill="none" 
                            stroke="${seriesColors[key]}" 
-                           stroke-width="1.5" 
+                           stroke-width="4" 
                            stroke-linecap="round" 
                            stroke-linejoin="round"
                            opacity="0.9"></path>`;
@@ -772,10 +794,12 @@ function renderTicketDetail(params) {
             </div>
 
             <div class="detail-info-grid" style="margin-top: 1.5rem;">
+                ${ticket.operation && ticket.operation !== '-' ? `
                 <div class="detail-info-item">
                     <span class="detail-info-label">การดำเนินงาน :</span>
                     <span class="detail-info-value">${ticket.operation}</span>
                 </div>
+                ` : ''}
                 <div class="detail-info-item">
                     <span class="detail-info-label">สถานที่เกิดเหตุ :</span>
                     <span class="detail-info-value">${ticket.zoneName}</span>
@@ -786,20 +810,26 @@ function renderTicketDetail(params) {
                     <span class="detail-info-value">${ticket.locationDetail}</span>
                 </div>
                 ` : ''}
+                ${ticket.treeType && ticket.treeType !== '-' ? `
                 <div class="detail-info-item">
                     <span class="detail-info-label">ชนิดพันธุ์ไม้ :</span>
                     <span class="detail-info-value">${ticket.treeType}</span>
                 </div>
+                ` : ''}
+                ${ticket.circumference && ticket.circumference != 0 ? `
                 <div class="detail-info-item">
                     <span class="detail-info-label">เส้นรอบวง :</span>
                     <span class="detail-info-value">${ticket.circumference} นิ้ว</span>
                 </div>
+                ` : ''}
+                ${ticket.assignees && ticket.assignees.length > 0 ? `
                 <div class="detail-info-item full">
                     <span class="detail-info-label">ผู้รับผิดชอบ :</span>
                     <div class="detail-info-value" style="margin-top: 0.5rem;">
                         ${Components.renderAssignees(ticket.assignees, 'large')}
                     </div>
                 </div>
+                ` : ''}
                 ${ticket.notes ? `
                 <div class="detail-info-item full">
                     <span class="detail-info-label">หมายเหตุ :</span>
