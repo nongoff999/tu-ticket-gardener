@@ -38,6 +38,30 @@ function getRandomDate(start, end) {
     return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
 
+const IMAGE_POOL = {
+    accident: [
+        "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800", // Tree/nature
+        "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800", // Tree
+        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800", // Forest
+        "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800", // Nature
+        "https://images.unsplash.com/photo-1425913397330-cf8af2ff40a1?w=800"  // Deep forest
+    ],
+    nature: [
+        "https://images.unsplash.com/photo-1511497584788-876760111969?w=800", // Sun in forest
+        "https://images.unsplash.com/photo-1448375240580-08527b1406c7?w=800", // Path in forest
+        "https://images.unsplash.com/photo-1501854140801-50d01674aa3e?w=800", // Wide nature
+        "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800", // Grass/Trees
+        "https://images.unsplash.com/photo-1513836279014-a89f7076ae46?w=800"  // Tall trees
+    ],
+    other: [
+        "https://images.unsplash.com/photo-1592150621344-79838b56da3d?w=800", // Foliage
+        "https://images.unsplash.com/photo-1589923188900-85dae523342b?w=800", // Garden/Plants
+        "https://images.unsplash.com/photo-1558905612-16715494d6d5?w=800", // Garden landscape
+        "https://images.unsplash.com/photo-1523306411751-bed41832b55c?w=800", // Small plant
+        "https://images.unsplash.com/photo-1458245201577-fc8a130b8829?w=800"  // Pruning shears
+    ]
+};
+
 const tickets = [];
 const startDate = new Date('2026-01-01T08:00:00');
 const endDate = new Date('2026-02-11T17:00:00');
@@ -69,6 +93,11 @@ for (let i = 1; i <= 60; i++) {
         operation = "-"; // Or empty string, logic handles it
     }
 
+    // Select images from pool based on damage type
+    const pool = IMAGE_POOL[damage] || IMAGE_POOL['other'];
+    const shuffledPool = [...pool].sort(() => 0.5 - Math.random());
+    const ticketImages = shuffledPool.slice(0, Math.floor(Math.random() * 2) + 1); // 1 or 2 images
+
     tickets.push({
         id: 1000 + i,
         title: `${tree} (${damage === 'accident' ? 'อุบัติเหตุ' : (damage === 'nature' ? 'อุบัติเหตุจากธรรมชาติ' : 'อื่นๆ')})`,
@@ -86,7 +115,7 @@ for (let i = 1; i <= 60; i++) {
         operation: operation,
         date: date.toISOString().slice(0, 16).replace('T', ' '),
         assignees: assignees,
-        images: ["https://images.unsplash.com/photo-1549419163-9d7a2283ce93?w=800"], // Placeholder
+        images: ticketImages,
         notes: notes
     });
 }
