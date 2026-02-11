@@ -231,37 +231,13 @@ function renderDashboard() {
         </div>
 
         <!-- Chart Card -->
+        <!-- Chart Card -->
         <div class="chart-card">
             <h2>รายงานจำนวนของทิคเก็ตราย${AppState.dashboardPeriod === 'DAY' ? 'วัน' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : 'เดือน'}</h2>
-            <div style="position: relative; height: 14rem;">
-                <svg viewBox="0 0 100 50" preserveAspectRatio="none" style="width: 100%; height: 100%;">
-                    <!-- ทิคเก็ตรายวัน/สัปดาห์/เดือน - Blue #0ea5e9 -->
-                    <path d="M 0 15 Q 12 18 25 17 T 45 20 T 65 15 T 85 18 T 100 16" 
-                          fill="none" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round" opacity="0.9"></path>
-                    <!-- ทิคเก็ตใหม่วันนี้ - Yellow #FBBF24 -->
-                    <path d="M 0 25 Q 12 22 25 28 T 45 30 T 65 25 T 85 28 T 100 32" 
-                          fill="none" stroke="#FBBF24" stroke-width="3" stroke-linecap="round" opacity="0.95"></path>
-                    <!-- ระหว่างดำเนินการ - Purple #a78bfa -->
-                    <path d="M 0 35 Q 12 32 25 33 T 45 38 T 65 33 T 85 35 T 100 38" 
-                          fill="none" stroke="#a78bfa" stroke-width="3" stroke-linecap="round" opacity="0.9"></path>
-                    <!-- ยังไม่ดำเนินการ - Pink #fb7185 -->
-                    <path d="M 0 40 Q 12 38 25 42 T 45 43 T 65 40 T 85 42 T 100 45" 
-                          fill="none" stroke="#fb7185" stroke-width="3" stroke-linecap="round" opacity="0.9"></path>
-                    <!-- เสร็จสิ้น - Green #10B981 -->
-                    <path d="M 0 45 Q 12 43 25 44 T 45 46 T 65 44 T 85 45 T 100 47" 
-                          fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round" opacity="0.95"></path>
-                </svg>
-            </div>
-            <div style="display: flex; justify-content: space-between; padding: 0 0.25rem; margin-top: 0.5rem;">
-                <span style="font-size: 0.625rem; color: var(--text-muted);">จ.</span>
-                <span style="font-size: 0.625rem; color: var(--text-muted);">อ.</span>
-                <span style="font-size: 0.625rem; color: var(--text-muted);">พ.</span>
-                <span style="font-size: 0.625rem; color: var(--text-muted);">พฤ.</span>
-                <span style="font-size: 0.625rem; color: var(--text-muted);">ศ.</span>
-                <span style="font-size: 0.625rem; color: var(--text-muted);">ส.</span>
-                <span style="font-size: 0.625rem; color: var(--text-muted);">อา.</span>
-            </div>
-            <div class="chart-legend" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
+            
+            ${generateChartSVG(AppState.dashboardPeriod, AppState.selectedDate)}
+            
+            <div class="chart-legend" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-top: 1rem;">
                 <div class="chart-legend-item">
                     <div class="chart-legend-color" style="background: #0ea5e9;"></div>
                     <span class="chart-legend-text">รายวัน/สัปดาห์/เดือน</span>
@@ -451,6 +427,149 @@ function getStatsForPeriod(period, dateStr) {
         pending: allPendingTickets.length, // นับสะสมตลอด
         completed: tickets.filter(t => t.status === 'completed').length
     };
+}
+
+function getChartData(period, dateStr) {
+    const data = {
+        labels: [],
+        series: {
+            total: [],
+            new: [],
+            inProgress: [],
+            pending: [],
+            completed: []
+        }
+    };
+
+    const date = new Date(dateStr);
+
+    if (period === 'DAY') {
+        // Hourly buckets (00, 04, 08, 12, 16, 20, 24)
+        for (let i = 0; i <= 24; i += 4) {
+            data.labels.push(`${i.toString().padStart(2, '0')}:00`);
+            // Mock data for hours - random variance based on time
+            // More activity during day (8-16)
+            const activityFactor = (i >= 8 && i <= 18) ? 1 : 0.2;
+            data.series.total.push(Math.floor(Math.random() * 5 * activityFactor));
+            data.series.new.push(Math.floor(Math.random() * 3 * activityFactor));
+            data.series.inProgress.push(Math.floor(Math.random() * 4 * activityFactor));
+            data.series.pending.push(Math.floor(Math.random() * 2 + 5)); // Base pending load
+            data.series.completed.push(Math.floor(Math.random() * 3 * activityFactor));
+        }
+    } else if (period === 'WEEK') {
+        const startOfWeek = new Date(date);
+        startOfWeek.setDate(date.getDate() - date.getDay());
+        const days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(startOfWeek);
+            d.setDate(startOfWeek.getDate() + i);
+            data.labels.push(days[i]);
+
+            // Random daily data
+            data.series.total.push(Math.floor(Math.random() * 10 + 2));
+            data.series.new.push(Math.floor(Math.random() * 5));
+            data.series.inProgress.push(Math.floor(Math.random() * 6));
+            data.series.pending.push(Math.floor(Math.random() * 5 + 10));
+            data.series.completed.push(Math.floor(Math.random() * 4));
+        }
+    } else if (period === 'MONTH') {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // Show labels every 5 days + last day
+        for (let i = 1; i <= daysInMonth; i++) {
+            if (i === 1 || i % 5 === 0 || i === daysInMonth) {
+                data.labels.push(i.toString());
+            } else {
+                data.labels.push('');
+            }
+
+            data.series.total.push(Math.floor(Math.random() * 10 + 2));
+            data.series.new.push(Math.floor(Math.random() * 5));
+            data.series.inProgress.push(Math.floor(Math.random() * 6));
+            data.series.pending.push(Math.floor(Math.random() * 5 + 10));
+            data.series.completed.push(Math.floor(Math.random() * 4));
+        }
+    }
+
+    return data;
+}
+
+function generateChartSVG(period, dateStr) {
+    const data = getChartData(period, dateStr);
+    const height = 150; // ViewBox height
+    const width = 300; // ViewBox width (wider for smooth curve)
+
+    // Find max value for scaling
+    const allValues = [
+        ...data.series.total, ...data.series.new,
+        ...data.series.inProgress, ...data.series.pending,
+        ...data.series.completed
+    ];
+    const maxValue = Math.max(...allValues, 10) * 1.2; // Add 20% padding
+
+    const pointsToPath = (values) => {
+        if (values.length === 0) return '';
+
+        const stepX = width / (values.length - 1);
+        let d = `M 0 ${height - (values[0] / maxValue * height)}`;
+
+        for (let i = 1; i < values.length; i++) {
+            const x = i * stepX;
+            const y = height - (values[i] / maxValue * height);
+
+            // Straight line
+            d += ` L ${x} ${y}`;
+        }
+        return d;
+    };
+
+    const seriesColors = {
+        total: '#0ea5e9',
+        new: '#FBBF24',
+        inProgress: '#a78bfa',
+        pending: '#fb7185',
+        completed: '#10B981'
+    };
+
+    let pathsHTML = '';
+    const seriesOrder = ['total', 'new', 'inProgress', 'pending', 'completed']; // Render order
+
+    seriesOrder.forEach(key => {
+        pathsHTML += `<path d="${pointsToPath(data.series[key])}" 
+                           fill="none" 
+                           stroke="${seriesColors[key]}" 
+                           stroke-width="1.5" 
+                           stroke-linecap="round" 
+                           stroke-linejoin="round"
+                           opacity="0.9"></path>`;
+    });
+
+    // Generate X-axis labels HTML
+    let labelsHTML = '';
+    data.labels.forEach((label, index) => {
+        if (!label) return;
+        const x = (index / (data.labels.length - 1)) * 100;
+        // Adjust text alignment based on position
+        let anchor = 'middle';
+        if (index === 0) anchor = 'start';
+        if (index === data.labels.length - 1) anchor = 'end';
+
+        labelsHTML += `<text x="${x}%" y="95%" font-size="8" fill="#6b7280" text-anchor="${anchor}">${label}</text>`;
+    });
+
+    return `
+        <div style="position: relative; height: 14rem; margin-bottom: 0.5rem;">
+            <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" style="width: 100%; height: 90%;">
+                ${pathsHTML}
+            </svg>
+            <svg viewBox="0 0 100 20" preserveAspectRatio="none" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 10%; overflow: visible;">
+                ${labelsHTML}
+            </svg>
+        </div>
+    `;
 }
 
 function getStatsForDate(dateStr) {
