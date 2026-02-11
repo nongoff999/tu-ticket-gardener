@@ -752,67 +752,8 @@ function renderTicketDetail(params) {
         })()}
 
             <!-- Timeline Section -->
-            <div style="margin: 1.5rem 0; padding: 1rem; background: var(--surface); border-radius: 0.75rem; border-left: 4px solid var(--primary);">
-                <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">
-                    ไทม์ไลน์ทิคเก็ต
-                    <span style="font-weight: 400; color: var(--text-secondary); font-size: 0.85rem;">ความเคลื่อนไหวของทิคเก็ต</span>
-                </h3>
-                <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    <!-- Timeline Item -->
-                    <div style="display: flex; gap: 0.75rem; align-items: start;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <span class="material-symbols-outlined" style="font-size: 1.25rem; color: white;">notification_important</span>
-                        </div>
-                        <div style="flex: 1;">
-                            <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
-                                เปิดทิคเก็ตใหม่โดย ${ticket.locationDetail ? ticket.locationDetail.replace('Ticket By Name: ', '') : MOCK_DATA.user?.name || 'ผู้ใช้'}
-                            </div>
-                            <div style="font-size: 0.8rem; color: var(--text-secondary);">
-                                ${new Date(ticket.date).toLocaleDateString('th-TH', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        })} ${new Date(ticket.date).toLocaleTimeString('th-TH', {
-            hour: '2-digit',
-            minute: '2-digit'
-        })}
-                            </div>
-                        </div>
-                    </div>
-                    ${ticket.status !== 'new' ? `
-                    <div style="display: flex; gap: 0.75rem; align-items: start;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <span class="material-symbols-outlined" style="font-size: 1.25rem; color: white;">settings_suggest</span>
-                        </div>
-                        <div style="flex: 1;">
-                            <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
-                                เริ่มดำเนินการ
-                            </div>
-                            <div style="font-size: 0.8rem; color: var(--text-secondary);">
-                                อัพเดตโดย ${MOCK_DATA.user?.name || 'ผู้ใช้'}
-                                ${ticket.startedAt ? `<br>${new Date(ticket.startedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}
-                            </div>
-                        </div>
-                    </div>
-                    ` : ''}
-                    ${ticket.status === 'completed' ? `
-                    <div style="display: flex; gap: 0.75rem; align-items: start;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #34d399 0%, #10b981 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <span class="material-symbols-outlined" style="font-size: 1.25rem; color: white;">task_alt</span>
-                        </div>
-                        <div style="flex: 1;">
-                            <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
-                                เสร็จสิ้น
-                            </div>
-                            <div style="font-size: 0.8rem; color: var(--text-secondary);">
-                                ปิดงานโดย ${MOCK_DATA.user?.name || 'ผู้ใช้'}
-                                ${ticket.completedAt ? `<br>${new Date(ticket.completedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}
-                            </div>
-                        </div>
-                    </div>
-                    ` : ''}
-                </div>
-            </div>
+            <!-- Timeline Section (Refactored) -->
+            ${renderTimeline(ticket)}
 
             <div class="detail-info-grid">
                 <div class="detail-info-item">
@@ -855,7 +796,14 @@ function renderTicketDetail(params) {
                 </div>
                 <div class="detail-info-item full">
                     <span class="detail-info-label">ผู้รับผิดชอบ :</span>
-                    <span class="detail-info-value">${ticket.assignees.length > 0 ? ticket.assignees.join(', ') : '-'}</span>
+                    <div class="detail-info-value" style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem;">
+                        ${ticket.assignees.length > 0 ? ticket.assignees.map(name => `
+                            <div style="display: flex; align-items: center; gap: 0.5rem; background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.25rem 0.75rem 0.25rem 0.25rem; border-radius: 2rem;">
+                                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=64" alt="${name}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
+                                <span style="font-size: 0.9rem; font-weight: 500; color: #334155;">${name}</span>
+                            </div>
+                        `).join('') : '-'}
+                    </div>
                 </div>
                 ${ticket.notes ? `
                 <div class="detail-info-item full">
@@ -873,7 +821,7 @@ function renderTicketDetail(params) {
             </button>
         </div>
 
-        <div style="height: 8rem;"></div>
+        <div style="height: 6rem;"></div>
     `;
 }
 
@@ -1056,10 +1004,78 @@ function renderAddTicket() {
         // Save to LocalStorage
         saveData();
 
-        showPopup('บันทึกสำเร็จ', 'บันทึกทิคเก็ตเรียบร้อยแล้ว', 'success', () => {
+        showPopup('บันทึกสำเร็จ', 'อัปเดตข้อมูลทิคเก็ตเรียบร้อยแล้ว', 'success', () => {
             router.navigate('/tickets');
         });
     });
+}
+
+function renderTimeline(ticket) {
+    // 1. Open Info
+    let openerName = MOCK_DATA.user?.name || 'ผู้ใช้';
+    if (ticket.locationDetail && ticket.locationDetail.includes('Ticket By Name:')) {
+        openerName = ticket.locationDetail.split('Ticket By Name: ')[1].split(' เมื่อ ')[0];
+    }
+
+    return `
+    <div style="margin: 1.5rem 0; padding: 1rem; background: var(--surface); border-radius: 0.75rem; border-left: 4px solid var(--primary);">
+        <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">
+            ไทม์ไลน์ความคืบหน้า
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <!-- Timeline Item: Open Ticket -->
+            <div style="display: flex; gap: 0.75rem; align-items: start;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <span class="material-symbols-outlined" style="font-size: 1.25rem; color: white;">notification_important</span>
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
+                        เปิดทิคเก็ตใหม่โดย ${openerName}
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                        ${new Date(ticket.date).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${new Date(ticket.date).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                </div>
+            </div>
+            
+            ${ticket.startedAt ? ` 
+            <!-- Timeline Item: In Progress -->
+            <div style="display: flex; gap: 0.75rem; align-items: start;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <span class="material-symbols-outlined" style="font-size: 1.25rem; color: white;">settings_suggest</span>
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
+                        เริ่มดำเนินการ
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                        อัพเดตโดย ${ticket.startedBy || MOCK_DATA.user?.name || 'ผู้ใช้'}
+                        <br>${new Date(ticket.startedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                </div>
+            </div>
+            ` : ''}
+            
+            ${ticket.completedAt ? ` 
+            <!-- Timeline Item: Completed -->
+            <div style="display: flex; gap: 0.75rem; align-items: start;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #34d399 0%, #10b981 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <span class="material-symbols-outlined" style="font-size: 1.25rem; color: white;">task_alt</span>
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
+                        เสร็จสิ้น
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                        ปิดงานโดย ${ticket.completedBy || MOCK_DATA.user?.name || 'ผู้ใช้'}
+                        <br>${new Date(ticket.completedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                </div>
+            </div>
+            ` : ''}
+        </div>
+    </div>
+    `;
 }
 
 function renderEditTicket(params) {
@@ -1244,6 +1260,9 @@ function renderEditTicket(params) {
                     <button type="submit" class="btn btn-primary">บันทึก</button>
                 </div>
             </form>
+            
+            ${renderTimeline(ticket)}
+
         </div>
 
         <div class="safe-area-bottom"></div>
@@ -1426,15 +1445,19 @@ function renderEditTicket(params) {
         const oldStatus = ticket.status;
         const newStatus = status;
         const nowStr = new Date().toISOString();
+        const userName = MOCK_DATA.user?.name || 'ผู้ใช้';
 
         if (newStatus === 'inProgress' && (oldStatus === 'new' || !ticket.startedAt)) {
             ticket.startedAt = nowStr;
+            ticket.startedBy = userName;
         } else if (newStatus === 'completed') {
             if (oldStatus === 'new' || !ticket.startedAt) {
                 ticket.startedAt = nowStr; // Assume started same time if jumped
+                ticket.startedBy = userName;
             }
             if (oldStatus !== 'completed' || !ticket.completedAt) {
                 ticket.completedAt = nowStr;
+                ticket.completedBy = userName;
             }
         }
 
