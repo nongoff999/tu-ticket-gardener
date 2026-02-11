@@ -884,6 +884,24 @@ function renderAddTicket() {
     const content = document.getElementById('main-content');
     content.innerHTML = `
         <div style="padding: 0 1rem;">
+            <!-- Reporter Card (Top) -->
+            <div style="margin-bottom: 1.5rem;">
+                <div style="background: linear-gradient(to right, #f0f9ff, #e0f2fe); padding: 1rem; border-radius: 0.75rem; border: 1px solid #bae6fd; display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <span class="material-symbols-outlined">person</span>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.125rem;">แจ้งโดย</div>
+                        <div style="font-weight: 600; color: #0c4a6e; font-size: 1rem;">${MOCK_DATA.user?.name || 'ผู้ใช้'}</div>
+                    </div>
+                    <div style="width: 1px; height: 24px; background: #bae6fd; margin: 0 0.5rem;"></div>
+                    <div>
+                        <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.125rem;">เมื่อ</div>
+                        <div style="font-weight: 500; color: #0c4a6e; font-size: 0.9rem;">${new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' })}</div>
+                    </div>
+                </div>
+            </div>
+
             <form id="ticket-form">
                 <div class="form-group">
                     <div class="priority-toggle">
@@ -911,10 +929,7 @@ function renderAddTicket() {
                 </div>
 
                 <div class="form-group" id="location-detail-group" style="display: none;">
-                    <!-- Reporter Info Container (Styled Card) -->
-                    <div id="reporter-info-container"></div>
-                    <!-- Hidden input for form submission -->
-                    <input type="hidden" id="location-detail">
+                    <!-- Hidden field removed as we generate it on submit -->
                 </div>
 
                 <div class="form-group">
@@ -972,48 +987,7 @@ function renderAddTicket() {
     const locationDetailInput = content.querySelector('#location-detail');
 
     zoneSelect.addEventListener('change', function () {
-        if (this.value) {
-            // Show location detail field (now matches styled card)
-            locationDetailGroup.style.display = 'block';
-
-            // Generate "Ticket By Name: [user] เมื่อ [date]" format
-            const userName = MOCK_DATA.user?.name || 'ผู้ใช้';
-            const now = new Date();
-            const thaiDate = now.toLocaleDateString('th-TH', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-            const time = now.toLocaleTimeString('th-TH', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-
-            // Set hidden value for submission
-            locationDetailInput.value = `Ticket By Name: ${userName} เมื่อ ${thaiDate} ${time}`;
-
-            // Render Beautiful Card
-            const reporterContainer = content.querySelector('#reporter-info-container');
-            reporterContainer.innerHTML = `
-                <div style="background: linear-gradient(to right, #f0f9ff, #e0f2fe); padding: 1rem; border-radius: 0.75rem; border: 1px solid #bae6fd; display: flex; align-items: center; gap: 1rem;">
-                    <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <span class="material-symbols-outlined">person</span>
-                    </div>
-                    <div>
-                        <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.125rem;">แจ้งโดย</div>
-                        <div style="font-weight: 600; color: #0c4a6e; font-size: 1rem;">${userName}</div>
-                    </div>
-                    <div style="width: 1px; height: 24px; background: #bae6fd; margin: 0 0.5rem;"></div>
-                    <div>
-                        <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.125rem;">เมื่อ</div>
-                        <div style="font-weight: 500; color: #0c4a6e; font-size: 0.9rem;">${time} น.</div>
-                    </div>
-                </div>
-            `;
-        } else {
-            locationDetailGroup.style.display = 'none';
-            locationDetailInput.value = '';
-        }
+        // Zone change logic removed as reporter info is now static at top
     });
 
     // Image upload functionality
@@ -1043,6 +1017,13 @@ function renderAddTicket() {
             return;
         }
 
+        // Generate "Ticket By Name: [user] เมื่อ [date] [time]" format on submit
+        const userName = MOCK_DATA.user?.name || 'ผู้ใช้';
+        const now = new Date();
+        const thaiDate = now.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const time = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        const fullLocationDetail = `Ticket By Name: ${userName} เมื่อ ${thaiDate} ${time}`;
+
         // Create new ticket object
         const newTicket = {
             id: Math.floor(Math.random() * 100000), // Simple random ID
@@ -1053,7 +1034,7 @@ function renderAddTicket() {
             priority: isUrgent ? 'urgent' : 'normal',
             zone: zoneId,
             zoneName: MOCK_DATA.zones.find(z => z.id === zoneId)?.name || zoneId,
-            locationDetail: locationDetail, // Save location detail
+            locationDetail: fullLocationDetail, // Set functionality string here
             treeType: '-',
             damageType: selectedDamageType,
             circumference: 0,
