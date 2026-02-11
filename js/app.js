@@ -581,17 +581,19 @@ function generateChartSVG(period, dateStr) {
         if (index === 0) anchor = 'start';
         if (index === data.labels.length - 1) anchor = 'end';
 
-        labelsHTML += `<text x="${x}%" y="95%" font-size="8" fill="#6b7280" text-anchor="${anchor}">${label}</text>`;
+        labelsHTML += `<text x="${x}" y="15" font-size="7" fill="#6b7280" text-anchor="${anchor}">${label}</text>`;
     });
 
     return `
         <div style="position: relative; height: 14rem; margin-bottom: 0.5rem;">
-            <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" style="width: 100%; height: 90%;">
+            <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" style="width: 100%; height: 90%; display: block;">
                 ${pathsHTML}
             </svg>
-            <svg viewBox="0 0 100 20" preserveAspectRatio="none" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 10%; overflow: visible;">
-                ${labelsHTML}
-            </svg>
+            <div style="height: 10%; width: 100%;">
+                <svg viewBox="0 0 100 20" style="width: 100%; height: 100%; overflow: visible; display: block;">
+                    ${labelsHTML}
+                </svg>
+            </div>
         </div>
     `;
 }
