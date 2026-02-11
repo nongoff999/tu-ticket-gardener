@@ -853,13 +853,11 @@ function renderTicketDetail(params) {
                     <span class="detail-info-value">${ticket.notes}</span>
                 </div>
                 ` : ''}
-            </div>
-        </div>
 
-        <!-- Timeline Section -->
-        <div style="padding: 0 1rem; margin-top: 1rem;">
-            ${renderTimeline(ticket)}
-        </div>
+                <div style="margin-top: 1.5rem;">
+                    ${renderTimeline(ticket)}
+                </div>
+            </div>
 
         <!-- Sticky Footer for Edit Button -->
         <div class="sticky-footer">
