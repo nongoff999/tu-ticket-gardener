@@ -245,26 +245,24 @@ body,
 }
 
 .back-nav-btn {
+    width: 2.5rem;
+    height: 2.5rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-    color: white;
+    justify-content: center;
+    background: var(--primary-light);
+    color: var(--primary);
     border: none;
-    border-radius: 12px;
+    border-radius: 50%;
     cursor: pointer;
-    font-family: 'Outfit', sans-serif;
-    font-weight: 600;
-    font-size: 0.875rem;
-    box-shadow: 0 4px 10px -2px rgba(225, 29, 72, 0.3);
+    box-shadow: 0 2px 5px rgba(2, 132, 199, 0.1);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .back-nav-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 15px -3px rgba(225, 29, 72, 0.4);
-    filter: brightness(1.1);
+    background: var(--primary);
+    color: white;
+    transform: scale(1.05);
 }
 
 .back-nav-btn:active {
@@ -272,18 +270,14 @@ body,
 }
 
 .back-nav-btn .material-symbols-outlined {
-    font-size: 1.4rem;
+    font-size: 1.75rem;
 }
 
 /* Keep back button consistent across devices */
 @media (max-width: 1023px) {
     .back-nav-btn {
-        padding: 0.4rem 0.75rem;
-        border-radius: 10px;
-    }
-
-    .back-nav-btn .back-text {
-        font-size: 0.8rem;
+        width: 2.25rem;
+        height: 2.25rem;
     }
 }
 
