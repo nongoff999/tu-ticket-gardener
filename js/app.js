@@ -336,9 +336,6 @@ function renderDashboard() {
             </div>
         </div>
 
-        <!-- Calendar Report Section -->
-        <div id="dashboard-calendar-container" style="margin-top: 2rem;"></div>
-
         <div class="safe-area-bottom"></div>
     `;
 
@@ -377,14 +374,7 @@ function renderDashboard() {
         });
     }
 
-    // Initialize calendar report at bottom
-    if (!window.calendarState) {
-        window.calendarState = {
-            currentMonth: new Date().getMonth(),
-            currentYear: new Date().getFullYear()
-        };
-    }
-    renderCalendar();
+
 }
 
 function navigatePeriod(direction) {
@@ -1850,9 +1840,27 @@ function renderReportList() {
                 <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
             </div>
         </div>
+
+        <div id="reports-calendar-container" style="margin-top: 2rem; padding: 0 1rem;"></div>
+        
+        <div style="height: 5rem;"></div>
     `;
+
+    // Initialize calendar report
+    if (!window.calendarState) {
+        window.calendarState = {
+            currentMonth: new Date().getMonth(),
+            currentYear: new Date().getFullYear()
+        };
+    }
+    renderCalendar();
 }
 
+function openReportDetail(type) {
+    AppState.selectedReport = type;
+    router.navigate('/report-detail');
+}
+window.openReportDetail = openReportDetail;
 
 function renderYearlyAnalysis() {
     document.getElementById('page-title').textContent = 'วิเคราะห์เชิงสถิติรายปี';
@@ -2189,8 +2197,12 @@ function renderCalendar() {
     `;
 
     const dashboardContainer = document.getElementById('dashboard-calendar-container');
+    const reportsContainer = document.getElementById('reports-calendar-container');
+
     if (dashboardContainer) {
         dashboardContainer.innerHTML = calendarHTML;
+    } else if (reportsContainer) {
+        reportsContainer.innerHTML = calendarHTML;
     } else if (AppState.currentPage === 'report-detail') {
         content.innerHTML = calendarHTML;
     }
