@@ -799,6 +799,18 @@ function renderTicketDetail(params) {
                     <span class="detail-info-label">Ticket Type</span>
                     <span class="detail-info-value">${getCategoryName(ticket.category)}</span>
                 </div>
+                ${ticket.lat && ticket.lng ? `
+                <div class="detail-info-item full" style="margin-top: 0.5rem; background: #f8fafc; padding: 0.75rem; border-radius: 0.5rem; border: 1px dashed #e2e8f0;">
+                    <span class="detail-info-label">พิกัด GPS :</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem;">
+                        <span class="detail-info-value" style="font-family: monospace; font-size: 0.85rem;">${ticket.lat}, ${ticket.lng}</span>
+                        <a href="https://www.google.com/maps?q=${ticket.lat},${ticket.lng}" target="_blank" class="btn" style="padding: 0.25rem 0.75rem; font-size: 0.75rem; background: #34a853; color: white; display: flex; align-items: center; gap: 0.25rem;">
+                            <span class="material-symbols-outlined" style="font-size: 1rem;">map</span>
+                            ดูบนแผนที่
+                        </a>
+                    </div>
+                </div>
+                ` : ''}
             </div>
 
             <div class="detail-description">
@@ -910,15 +922,31 @@ function renderAddTicket() {
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">สถานที่เกิดเหตุ (โซน) <span class="required">*</span></label>
+                    <label class="form-label">โซนพื้นที่ <span class="required">*</span></label>
                     <select id="ticket-zone" class="form-select">
                         <option value="" disabled selected>เลือกโซน</option>
-                        ${MOCK_DATA.zones.map(z => `<option value="${z.id}">${z.name}</option>`).join('')}
+                        ${MOCK_DATA.zones.map(z => `<option value="${z.id}">${z.name.split(' (')[0]}</option>`).join('')}
                     </select>
                 </div>
 
-                <div class="form-group" id="location-detail-group" style="display: none;">
-                    <!-- Hidden field removed as we generate it on submit -->
+                <div class="form-group">
+                    <label class="form-label">สถานที่เกิดเหตุ (พิมพ์ระบุ) <span class="required">*</span></label>
+                    <input type="text" id="ticket-location-name" class="form-input" placeholder="เช่น หน้าตึกคณะ, ใกล้เสาไฟ, ข้างโรงอาหาร...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">พิกัดสถานที่ (GPS)</label>
+                    <div style="display: flex; gap: 0.75rem; align-items: center;">
+                        <button type="button" id="get-location-btn" class="btn" style="background: white; border: 1px solid var(--primary); color: var(--primary); display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.9rem;">
+                            <span class="material-symbols-outlined" style="font-size: 1.25rem;">my_location</span>
+                            บันทึกพิกัด GPS
+                        </button>
+                        <div id="location-coords" style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace;">
+                            (ยังไม่ได้บันทึก)
+                        </div>
+                    </div>
+                    <input type="hidden" id="ticket-lat">
+                    <input type="hidden" id="ticket-lng">
                 </div>
 
                 <div class="form-group">
@@ -984,6 +1012,50 @@ function renderAddTicket() {
     const MAX_IMAGES = 6;
     initImageUpload(content, uploadedImages, MAX_IMAGES);
 
+    // GPS Location Functionality
+    const getLocationBtn = content.querySelector('#get-location-btn');
+    const coordsDisplay = content.querySelector('#location-coords');
+    const latInput = content.querySelector('#ticket-lat');
+    const lngInput = content.querySelector('#ticket-lng');
+
+    getLocationBtn.addEventListener('click', function () {
+        this.disabled = true;
+        this.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.25rem;">sync</span> กำลังบันทึก...';
+
+        if (!navigator.geolocation) {
+            showPopup('ไม่รองรับ GPS', 'เบราว์เซอร์ของคุณไม่รองรับการระบุพิกัด', 'error');
+            this.disabled = false;
+            this.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.25rem;">my_location</span> บันทึกพิกัด GPS';
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude.toFixed(6);
+                const lng = position.coords.longitude.toFixed(6);
+                latInput.value = lat;
+                lngInput.value = lng;
+                coordsDisplay.innerHTML = `Lat: ${lat}<br>Long: ${lng}`;
+                coordsDisplay.style.color = '#10B981'; // Green
+
+                this.disabled = false;
+                this.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.25rem;">check_circle</span> บันทึกแล้ว';
+                this.style.borderColor = '#10B981';
+                this.style.color = '#10B981';
+                console.log('📍 Captured GPS:', lat, lng);
+            },
+            (error) => {
+                let msg = 'ไม่สามารถเข้าถึงตำแหน่งของคุณได้';
+                if (error.code === 1) msg = 'กรุณาอนุญาตการเข้าถึงตำแหน่งที่ตั้ง';
+                showPopup('เกิดข้อผิดพลาด', msg, 'error');
+
+                this.disabled = false;
+                this.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.25rem;">my_location</span> บันทึกพิกัด GPS';
+            },
+            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+        );
+    });
+
     // Form submit
     const form = content.querySelector('#ticket-form');
     form.addEventListener('submit', function (e) {
@@ -991,14 +1063,17 @@ function renderAddTicket() {
 
         const title = content.querySelector('#ticket-title').value.trim();
         const zoneId = content.querySelector('#ticket-zone').value;
+        const locationName = content.querySelector('#ticket-location-name').value.trim();
+        const lat = content.querySelector('#ticket-lat').value;
+        const lng = content.querySelector('#ticket-lng').value;
         const description = content.querySelector('.form-textarea').value.trim();
         const isUrgent = content.querySelector('.priority-btn.urgent').classList.contains('active');
         const selectedDamageType = content.querySelector('.damage-type-btn.active')?.dataset.type || 'broken';
-        const locationDetail = content.querySelector('#location-detail').value || '';
 
         const errors = [];
         if (!title) errors.push('ชื่อทิคเก็ต');
-        if (!zoneId) errors.push('ชื่อสถานที่');
+        if (!zoneId) errors.push('โซนพื้นที่');
+        if (!locationName) errors.push('สถานที่เกิดเหตุ (ระบุชัดเจน)');
         if (uploadedImages.length === 0) errors.push('รูปภาพ (อย่างน้อย 1 รูป)');
 
         if (errors.length > 0) {
@@ -1014,6 +1089,9 @@ function renderAddTicket() {
         const fullLocationDetail = `Ticket By Name: ${userName} เมื่อ ${thaiDate} ${time}`;
 
         // Create new ticket object
+        const zoneObj = MOCK_DATA.zones.find(z => z.id === zoneId);
+        const combinedZoneName = `${zoneObj?.name.split(' (')[0] || ''} - ${locationName}`;
+
         const newTicket = {
             id: Math.floor(Math.random() * 100000), // Simple random ID
             title: title,
@@ -1022,8 +1100,10 @@ function renderAddTicket() {
             status: 'new',
             priority: isUrgent ? 'urgent' : 'normal',
             zone: zoneId,
-            zoneName: MOCK_DATA.zones.find(z => z.id === zoneId)?.name || zoneId,
+            zoneName: combinedZoneName,
             locationDetail: fullLocationDetail, // Set functionality string here
+            lat: lat || null,
+            lng: lng || null,
             treeType: '-',
             damageType: selectedDamageType,
             circumference: 0,
