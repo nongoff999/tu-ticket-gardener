@@ -781,8 +781,6 @@ function renderTicketDetail(params) {
                 </div>
             </div>
 
-            <!-- Timeline Section -->
-            ${renderTimeline(ticket)}
 
             <div class="detail-info-grid">
                 <div class="detail-info-item">
@@ -858,10 +856,16 @@ function renderTicketDetail(params) {
             </div>
         </div>
 
-        <!-- Edit Button -->
-        <div class="detail-footer">
-            <button class="btn btn-primary" onclick="router.navigate('/edit/${ticket.id}')">
-                Edit Ticket
+        <!-- Timeline Section -->
+        <div style="padding: 0 1rem; margin-top: 1rem;">
+            ${renderTimeline(ticket)}
+        </div>
+
+        <!-- Sticky Footer for Edit Button -->
+        <div class="sticky-footer">
+            <button class="btn btn-primary" onclick="router.navigate('/edit/${ticket.id}')" style="width: 100%; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <span class="material-symbols-outlined">edit_note</span>
+                แก้ไขข้อมูลทิคเก็ต
             </button>
         </div>
 
