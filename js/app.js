@@ -223,30 +223,33 @@ function renderDashboard() {
             ${Components.statCard('เสร็จสิ้น', stats.completed, 'green', 'task_alt')}
         </div>
 
-        <!-- Period Tabs with Navigation -->
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 1rem 1.5rem;">
-            <button class="period-nav-btn" id="prev-period">
-                <span class="material-symbols-outlined" style="font-size: 1.25rem;">chevron_left</span>
-            </button>
-            <div class="period-tabs" style="flex: 1;">
-                <button class="period-tab ${AppState.dashboardPeriod === 'DAY' ? 'active' : ''}" data-period="DAY">DAY</button>
-                <button class="period-tab ${AppState.dashboardPeriod === 'WEEK' ? 'active' : ''}" data-period="WEEK">WEEK</button>
-                <button class="period-tab ${AppState.dashboardPeriod === 'MONTH' ? 'active' : ''}" data-period="MONTH">MONTH</button>
-            </div>
-            <button class="period-nav-btn" id="next-period">
-                <span class="material-symbols-outlined" style="font-size: 1.25rem;">chevron_right</span>
-            </button>
+        <!-- Period Tabs -->
+        <div class="period-tabs">
+            <button class="period-tab ${AppState.dashboardPeriod === 'DAY' ? 'active' : ''}" data-period="DAY">DAY</button>
+            <button class="period-tab ${AppState.dashboardPeriod === 'WEEK' ? 'active' : ''}" data-period="WEEK">WEEK</button>
+            <button class="period-tab ${AppState.dashboardPeriod === 'MONTH' ? 'active' : ''}" data-period="MONTH">MONTH</button>
         </div>
 
         <!-- Chart Card -->
         <div class="chart-card">
             <h2>รายงานจำนวนของทิคเก็ตราย${AppState.dashboardPeriod === 'DAY' ? 'วัน' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : 'เดือน'}</h2>
-            <div style="position: relative; height: 12rem;">
+            <div style="position: relative; height: 14rem;">
                 <svg viewBox="0 0 100 50" preserveAspectRatio="none" style="width: 100%; height: 100%;">
-                    <path d="M 0 30 Q 15 25 25 28 T 45 35 T 65 22 T 85 28 T 100 35" 
-                          fill="none" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round"></path>
-                    <path d="M 0 42 Q 15 40 25 38 T 45 35 T 65 40 T 85 38 T 100 45" 
-                          fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round"></path>
+                    <!-- ทิคเก็ตรายวัน/สัปดาห์/เดือน - Blue #0ea5e9 -->
+                    <path d="M 0 15 Q 12 18 25 17 T 45 20 T 65 15 T 85 18 T 100 16" 
+                          fill="none" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round" opacity="0.9"></path>
+                    <!-- ทิคเก็ตใหม่วันนี้ - Yellow #FBBF24 -->
+                    <path d="M 0 25 Q 12 22 25 28 T 45 30 T 65 25 T 85 28 T 100 32" 
+                          fill="none" stroke="#FBBF24" stroke-width="3" stroke-linecap="round" opacity="0.95"></path>
+                    <!-- ระหว่างดำเนินการ - Purple #a78bfa -->
+                    <path d="M 0 35 Q 12 32 25 33 T 45 38 T 65 33 T 85 35 T 100 38" 
+                          fill="none" stroke="#a78bfa" stroke-width="3" stroke-linecap="round" opacity="0.9"></path>
+                    <!-- ยังไม่ดำเนินการ - Pink #fb7185 -->
+                    <path d="M 0 40 Q 12 38 25 42 T 45 43 T 65 40 T 85 42 T 100 45" 
+                          fill="none" stroke="#fb7185" stroke-width="3" stroke-linecap="round" opacity="0.9"></path>
+                    <!-- เสร็จสิ้น - Green #10B981 -->
+                    <path d="M 0 45 Q 12 43 25 44 T 45 46 T 65 44 T 85 45 T 100 47" 
+                          fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round" opacity="0.95"></path>
                 </svg>
             </div>
             <div style="display: flex; justify-content: space-between; padding: 0 0.25rem; margin-top: 0.5rem;">
@@ -258,14 +261,26 @@ function renderDashboard() {
                 <span style="font-size: 0.625rem; color: var(--text-muted);">ส.</span>
                 <span style="font-size: 0.625rem; color: var(--text-muted);">อา.</span>
             </div>
-            <div class="chart-legend">
+            <div class="chart-legend" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
+                <div class="chart-legend-item">
+                    <div class="chart-legend-color" style="background: #0ea5e9;"></div>
+                    <span class="chart-legend-text">รายวัน/สัปดาห์/เดือน</span>
+                </div>
                 <div class="chart-legend-item">
                     <div class="chart-legend-color" style="background: #FBBF24;"></div>
-                    <span class="chart-legend-text">ทิคเก็ตเปิดใหม่</span>
+                    <span class="chart-legend-text">ใหม่วันนี้</span>
+                </div>
+                <div class="chart-legend-item">
+                    <div class="chart-legend-color" style="background: #a78bfa;"></div>
+                    <span class="chart-legend-text">ระหว่างดำเนินการ</span>
+                </div>
+                <div class="chart-legend-item">
+                    <div class="chart-legend-color" style="background: #fb7185;"></div>
+                    <span class="chart-legend-text">ยังไม่ดำเนินการ</span>
                 </div>
                 <div class="chart-legend-item">
                     <div class="chart-legend-color" style="background: #10B981;"></div>
-                    <span class="chart-legend-text">ทิคเก็ตที่ปิด</span>
+                    <span class="chart-legend-text">เสร็จสิ้น</span>
                 </div>
             </div>
         </div>
@@ -345,18 +360,6 @@ function renderDashboard() {
             AppState.dashboardPeriod = newPeriod;
             renderDashboard(); // Re-render with new period
         });
-    });
-
-    // Add navigation button functionality
-    const prevBtn = content.querySelector('#prev-period');
-    const nextBtn = content.querySelector('#next-period');
-
-    prevBtn.addEventListener('click', () => {
-        navigatePeriod(-1);
-    });
-
-    nextBtn.addEventListener('click', () => {
-        navigatePeriod(1);
     });
 }
 
