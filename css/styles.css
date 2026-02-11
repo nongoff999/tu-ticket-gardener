@@ -649,9 +649,7 @@ body,
 
 .weekly-calendar-container {
     padding: 1rem 1.5rem;
-    background: linear-gradient(to bottom, var(--primary), #0ea5e9);
     margin-bottom: 2rem;
-    border-radius: 0 0 2rem 2rem;
 }
 
 .weekly-calendar {
@@ -933,6 +931,32 @@ body,
     transform: scale(1.02);
 }
 
+.period-nav-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.period-nav-btn:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: scale(1.05);
+}
+
+.period-nav-btn:active {
+    transform: scale(0.95);
+}
+
 /* ==========================================
    Charts
    ========================================== */
@@ -1080,7 +1104,8 @@ body,
 
 .damage-type-btn {
     padding: 0.75rem 1.5rem;
-    border-radius: 9999px; /* Full rounded */
+    border-radius: 9999px;
+    /* Full rounded */
     font-size: 0.875rem;
     font-weight: 500;
     border: 1px solid var(--border);

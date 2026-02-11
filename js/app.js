@@ -201,8 +201,13 @@ function renderDashboard() {
 
     document.getElementById('page-title').textContent = 'TICKET DASHBOARD';
 
-    // Calculate dynamic stats for selected date
-    const stats = getStatsForDate(AppState.selectedDate);
+    // Initialize period if not set
+    if (!AppState.dashboardPeriod) {
+        AppState.dashboardPeriod = 'DAY';
+    }
+
+    // Calculate dynamic stats based on period
+    const stats = getStatsForPeriod(AppState.dashboardPeriod, AppState.selectedDate);
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
@@ -211,23 +216,31 @@ function renderDashboard() {
 
         <!-- Stats Grid -->
         <div class="stats-grid" style="margin-top: -1rem;">
-            ${Components.statCard('ทิคเก็ตทั้งหมด', stats.total, 'blue', 'dashboard')}
+            ${Components.statCard(`ทิคเก็ตราย${AppState.dashboardPeriod === 'DAY' ? 'วัน' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : 'เดือน'}`, stats.total, 'blue', 'dashboard')}
             ${Components.statCard('ทิคเก็ตใหม่วันนี้', stats.new, 'yellow', 'notification_important')}
             ${Components.statCard('ระหว่างดำเนินการ', stats.inProgress, 'purple', 'settings_suggest')}
             ${Components.statCard('ยังไม่ดำเนินการ', stats.pending, 'pink', 'pending_actions')}
             ${Components.statCard('เสร็จสิ้น', stats.completed, 'green', 'task_alt')}
         </div>
 
-        <!-- Period Tabs -->
-        <div class="period-tabs">
-            <button class="period-tab active">DAY</button>
-            <button class="period-tab">WEEK</button>
-            <button class="period-tab">MONTH</button>
+        <!-- Period Tabs with Navigation -->
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 1rem 1.5rem;">
+            <button class="period-nav-btn" id="prev-period">
+                <span class="material-symbols-outlined" style="font-size: 1.25rem;">chevron_left</span>
+            </button>
+            <div class="period-tabs" style="flex: 1;">
+                <button class="period-tab ${AppState.dashboardPeriod === 'DAY' ? 'active' : ''}" data-period="DAY">DAY</button>
+                <button class="period-tab ${AppState.dashboardPeriod === 'WEEK' ? 'active' : ''}" data-period="WEEK">WEEK</button>
+                <button class="period-tab ${AppState.dashboardPeriod === 'MONTH' ? 'active' : ''}" data-period="MONTH">MONTH</button>
+            </div>
+            <button class="period-nav-btn" id="next-period">
+                <span class="material-symbols-outlined" style="font-size: 1.25rem;">chevron_right</span>
+            </button>
         </div>
 
         <!-- Chart Card -->
         <div class="chart-card">
-            <h2>รายงานจำนวนของทิคเก็ตรายสัปดาห์</h2>
+            <h2>รายงานจำนวนของทิคเก็ตราย${AppState.dashboardPeriod === 'DAY' ? 'วัน' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : 'เดือน'}</h2>
             <div style="position: relative; height: 12rem;">
                 <svg viewBox="0 0 100 50" preserveAspectRatio="none" style="width: 100%; height: 100%;">
                     <path d="M 0 30 Q 15 25 25 28 T 45 35 T 65 22 T 85 28 T 100 35" 
@@ -328,10 +341,85 @@ function renderDashboard() {
     const periodTabs = content.querySelectorAll('.period-tab');
     periodTabs.forEach(tab => {
         tab.addEventListener('click', function () {
-            periodTabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
+            const newPeriod = this.dataset.period;
+            AppState.dashboardPeriod = newPeriod;
+            renderDashboard(); // Re-render with new period
         });
     });
+
+    // Add navigation button functionality
+    const prevBtn = content.querySelector('#prev-period');
+    const nextBtn = content.querySelector('#next-period');
+
+    prevBtn.addEventListener('click', () => {
+        navigatePeriod(-1);
+    });
+
+    nextBtn.addEventListener('click', () => {
+        navigatePeriod(1);
+    });
+}
+
+function navigatePeriod(direction) {
+    const currentDate = new Date(AppState.selectedDate);
+
+    if (AppState.dashboardPeriod === 'DAY') {
+        currentDate.setDate(currentDate.getDate() + direction);
+    } else if (AppState.dashboardPeriod === 'WEEK') {
+        currentDate.setDate(currentDate.getDate() + (direction * 7));
+    } else if (AppState.dashboardPeriod === 'MONTH') {
+        currentDate.setMonth(currentDate.getMonth() + direction);
+    }
+
+    AppState.selectedDate = currentDate.toISOString().split('T')[0];
+    renderDashboard();
+}
+
+function getStatsForPeriod(period, dateStr) {
+    const date = new Date(dateStr);
+    let tickets = [];
+
+    if (period === 'DAY') {
+        // Same day tickets
+        tickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr));
+    } else if (period === 'WEEK') {
+        // Get week range
+        const startOfWeek = new Date(date);
+        startOfWeek.setDate(date.getDate() - date.getDay()); // Start from Sunday
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+        tickets = MOCK_DATA.tickets.filter(t => {
+            const ticketDate = new Date(t.date);
+            return ticketDate >= startOfWeek && ticketDate <= endOfWeek;
+        });
+    } else if (period === 'MONTH') {
+        // Same month tickets
+        const year = date.getFullYear();
+        const month = date.getMonth();
+
+        tickets = MOCK_DATA.tickets.filter(t => {
+            const ticketDate = new Date(t.date);
+            return ticketDate.getFullYear() === year && ticketDate.getMonth() === month;
+        });
+    }
+
+    // สำหรับ "ยังไม่ดำเนินการ" = ทิคเก็ตที่ยังไม่มีใครเข้าไปจัดการเลย (status = pending)
+    // นับสะสมจากอดีตจนถึงวันนี้
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // Set to end of today for inclusive comparison
+    const allPendingTickets = MOCK_DATA.tickets.filter(t => {
+        const ticketDate = new Date(t.date);
+        return ticketDate <= today && t.status === 'pending';
+    });
+
+    return {
+        total: tickets.length,
+        new: tickets.filter(t => t.status === 'new').length,
+        inProgress: tickets.filter(t => t.status === 'inProgress').length,
+        pending: allPendingTickets.length, // นับสะสมตลอด
+        completed: tickets.filter(t => t.status === 'completed').length
+    };
 }
 
 function getStatsForDate(dateStr) {
