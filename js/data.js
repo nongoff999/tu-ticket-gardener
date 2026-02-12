@@ -46,6 +46,23 @@ async function loadData() {
                 // Proceed to fetch from JSON (Block 3)
             } else {
                 MOCK_DATA = parsed;
+
+                // Force update categories and damageTypes to ensure latest schema
+                MOCK_DATA.categories = [
+                    { id: "all", name: "ทั้งหมด" },
+                    { id: "fallen", name: "โค่นล้ม" },
+                    { id: "broken", name: "กิ่งหัก/ฉีก" },
+                    { id: "tilted", name: "ลำต้นเอียง" },
+                    { id: "other", name: "อื่นๆ" }
+                ];
+
+                MOCK_DATA.damageTypes = [
+                    { id: "fallen", name: "โค่นล้ม", icon: "forest" },
+                    { id: "broken", name: "กิ่งหัก/ฉีก", icon: "content_cut" },
+                    { id: "tilted", name: "ลำต้นเอียง", icon: "u_turn_right" },
+                    { id: "other", name: "อื่นๆ", icon: "more_horiz" }
+                ];
+
                 console.log('📦 โหลดข้อมูลจาก LocalStorage:', MOCK_DATA.tickets.length, 'tickets');
 
                 // Sync to Firebase if enabled

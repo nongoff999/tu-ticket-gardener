@@ -931,8 +931,12 @@ function renderTicketDetail(params) {
             </div>
 
         <!-- Sticky Footer for Edit Button -->
-        <div class="sticky-footer">
-            <button class="btn btn-primary" onclick="router.navigate('/edit/${ticket.id}')" style="width: 100%; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+        <!-- Sticky Footer for Actions -->
+        <div class="sticky-footer" style="display: flex; gap: 0.75rem;">
+            <button class="btn" onclick="deleteTicket(${ticket.id})" style="width: auto; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #fee2e2; color: #ef4444; flex: 0 0 auto; padding: 0 1.25rem;">
+                <span class="material-symbols-outlined">delete</span>
+            </button>
+            <button class="btn btn-primary" onclick="router.navigate('/edit/${ticket.id}')" style="flex: 1; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                 <span class="material-symbols-outlined">edit_note</span>
                 แก้ไขข้อมูลทิคเก็ต
             </button>
@@ -2807,3 +2811,21 @@ window.closeDrawer = closeDrawer;
 window.navigateTo = navigateTo;
 window.showTicketDetail = showTicketDetail;
 window.removeUploadedImage = removeUploadedImage;
+
+// Delete Ticket Function
+window.deleteTicket = function (id) {
+    if (confirm('ยืนยันที่จะลบทิคเก็ตนี้หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้')) {
+        const index = MOCK_DATA.tickets.findIndex(t => t.id === id);
+        if (index > -1) {
+            MOCK_DATA.tickets.splice(index, 1);
+            saveData();
+            showPopup('ลบข้อมูลสำเร็จ', 'ทิคเก็ตถูกลบออกจากระบบแล้ว', 'success', () => {
+                // Navigate back to history or dashboard
+                // Check history length to decide? For now, Dashboard is safe.
+                router.navigate('/dashboard');
+            });
+        } else {
+            showPopup('เกิดข้อผิดพลาด', 'ไม่พบข้อมูลทิคเก็ตในระบบ', 'error');
+        }
+    }
+};
