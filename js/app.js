@@ -1974,23 +1974,49 @@ function openReportDetail(type) {
 }
 window.openReportDetail = openReportDetail;
 
-function renderYearlyAnalysis() {
+function renderYearlyAnalysis(selectedYear) {
     document.getElementById('page-title').textContent = 'วิเคราะห์เชิงสถิติรายปี';
     const content = document.getElementById('main-content');
 
-    // Aggregate Data
-    const yearlyTrend = getYearlyPerformanceData();
-    const topZones = getYearlyZoneData();
     const now = new Date();
-    const currentYear = now.getFullYear() + 543;
+    const currentYearAD = now.getFullYear();
+    const yearToUse = selectedYear ? parseInt(selectedYear) : currentYearAD;
+    const yearToUseThai = yearToUse + 543;
+
+    // Available years: Current Year and Previous Year for demo
+    const availableYears = [currentYearAD, currentYearAD - 1];
+
+    // Filter tickets for the selected year
+    const ticketsInYear = MOCK_DATA.tickets.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getFullYear() === yearToUse;
+    });
+
+    // Aggregate Data based on selected year
+    const yearlyTrend = getYearlyPerformanceData(yearToUse);
+    const topZones = getYearlyZoneData(yearToUse);
+
+    const totalInYear = ticketsInYear.length;
+    const completedInYear = ticketsInYear.filter(t => t.status === 'completed').length;
 
     content.innerHTML = `
         <div style="padding: 1rem;">
+            <!-- Year Selector -->
+            <div style="background: white; padding: 1rem; border-radius: 1rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="material-symbols-outlined" style="color: var(--primary);">calendar_month</span>
+                    <span style="font-weight: 600; color: var(--text-primary);">เลือกปีงบประมาณ</span>
+                </div>
+                <select onchange="renderYearlyAnalysis(this.value)" style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid var(--border); font-family: inherit; font-size: 0.9rem; font-weight: 600; color: var(--text-primary); outline: none; background: #f8fafc;">
+                    ${availableYears.map(y => `<option value="${y}" ${y === yearToUse ? 'selected' : ''}>พ.ศ. ${y + 543}</option>`).join('')}
+                </select>
+            </div>
+
             <!-- Performance Trend (Annual Line Chart) -->
             <div style="background: white; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); border: 1px solid var(--border);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                     <div>
-                        <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--text-primary);">แนวโน้มทิคเก็ตรายเดือนปี ${currentYear}</h3>
+                        <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--text-primary);">แนวโน้มทิคเก็ตรายเดือนปี ${yearToUseThai}</h3>
                         <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">จำนวนทิคเก็ตรวม vs ทิคเก็ตที่แก้ไขสำเร็จ</p>
                     </div>
                 </div>
@@ -2012,7 +2038,7 @@ function renderYearlyAnalysis() {
             <!-- Top Zones (Horizontal Bar Chart) -->
             <div style="background: white; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); border: 1px solid var(--border);">
                 <div style="margin-bottom: 1.5rem;">
-                    <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--text-primary);">8 โซนที่เกิดเหตุสูงสุดปี ${currentYear}</h3>
+                    <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--text-primary);">8 โซนที่เกิดเหตุสูงสุดปี ${yearToUseThai}</h3>
                     <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">วิเคราะห์ตามปริมาณทิคเก็ตสะสม</p>
                 </div>
                 
@@ -2023,12 +2049,12 @@ function renderYearlyAnalysis() {
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
                 <div style="background: #f0f9ff; padding: 1.25rem; border-radius: 1.25rem; border: 1px solid #bae6fd; display: flex; flex-direction: column; align-items: center; text-align: center;">
                     <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.5rem; font-weight: 600;">ทิคเก็ตรวมปีนี้</div>
-                    <div style="font-size: 1.5rem; font-weight: 800; color: #0ea5e9;">${totalThisYear}</div>
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #0ea5e9;">${totalInYear}</div>
                     <div style="font-size: 0.75rem; color: #0c4a6e; opacity: 0.7;">ทิคเก็ต</div>
                 </div>
                 <div style="background: #ecfdf4; padding: 1.25rem; border-radius: 1.25rem; border: 1px solid #a7f3d0; display: flex; flex-direction: column; align-items: center; text-align: center;">
                     <div style="font-size: 0.75rem; color: #047857; margin-bottom: 0.5rem; font-weight: 600;">สำเร็จรวมปีนี้</div>
-                    <div style="font-size: 1.75rem; font-weight: 800; color: #064e3b;">${MOCK_DATA.tickets.filter(t => t.status === 'completed').length}</div>
+                    <div style="font-size: 1.75rem; font-weight: 800; color: #064e3b;">${completedInYear}</div>
                     <div style="font-size: 0.75rem; color: #064e3b; opacity: 0.7;">ดำเนินการเรียบร้อย</div>
                 </div>
             </div>
@@ -2036,9 +2062,10 @@ function renderYearlyAnalysis() {
             <div style="height: 4rem;"></div>
         </div>
     `;
+    window.renderYearlyAnalysis = renderYearlyAnalysis; // Make sure it's globally available
 }
 
-function getYearlyPerformanceData() {
+function getYearlyPerformanceData(year) {
     const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
     const data = {
         labels: months,
@@ -2048,28 +2075,32 @@ function getYearlyPerformanceData() {
         }
     };
 
-    const now = new Date();
+    // Filter by year if provided, else use current year
+    const targetYear = year || new Date().getFullYear();
+
     MOCK_DATA.tickets.forEach(t => {
         const d = new Date(t.date);
-        if (d.getFullYear() === now.getFullYear()) {
+        if (d.getFullYear() === targetYear) {
             const m = d.getMonth();
             data.series.total[m]++;
-            if (t.status === 'completed') data.series.completed[m]++;
+            if (t.status === 'completed') {
+                data.series.completed[m]++;
+            }
         }
     });
 
     return data;
 }
 
-function getYearlyZoneData() {
+function getYearlyZoneData(year) {
     const zones = {};
-    const now = new Date();
+    const targetYear = year || new Date().getFullYear();
 
     MOCK_DATA.tickets.forEach(t => {
         const d = new Date(t.date);
-        if (d.getFullYear() === now.getFullYear()) {
-            const zone = t.zoneName || 'ไม่ระบุ';
-            zones[zone] = (zones[zone] || 0) + 1;
+        if (d.getFullYear() === targetYear) {
+            const z = t.zoneName || t.zone || 'ไม่ระบุ';
+            zones[z] = (zones[z] || 0) + 1;
         }
     });
 
