@@ -1364,6 +1364,16 @@ function renderEditTicket(params) {
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label">ผู้รับผิดชอบ</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="edit-ticket-assignee" class="form-input" value="${ticket.assignee || ''}" placeholder="ระบุชื่อผู้รับผิดชอบ" style="flex: 1;">
+                        <button type="button" class="btn" onclick="document.getElementById('edit-ticket-assignee').value = ''" style="background: #fee2e2; color: #ef4444; width: auto; padding: 0 1rem;">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">Ticket Name <span class="required">*</span></label>
                     <input type="text" id="edit-ticket-title" class="form-input" value="${ticket.title}">
                 </div>
@@ -1741,6 +1751,7 @@ function renderEditTicket(params) {
 
         // Update Ticket Object
         ticket.status = status;
+        ticket.assignee = document.getElementById('edit-ticket-assignee').value.trim();
         ticket.priority = isUrgent ? 'urgent' : 'normal';
         ticket.title = title;
         ticket.description = description;
