@@ -1990,15 +1990,15 @@ function renderYearlyAnalysis() {
             <div style="background: white; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); border: 1px solid var(--border);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                     <div>
-                        <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--text-primary);">แนวโน้มเคสรายเดือนปี ${currentYear}</h3>
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">จำนวนเคสรวม vs เคสที่แก้ไขสำเร็จ</p>
+                        <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--text-primary);">แนวโน้มทิคเก็ตรายเดือนปี ${currentYear}</h3>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">จำนวนทิคเก็ตรวม vs ทิคเก็ตที่แก้ไขสำเร็จ</p>
                     </div>
                 </div>
                 
                 <div style="display: flex; gap: 1rem; font-size: 0.7rem; margin-bottom: 1rem; justify-content: flex-end;">
                     <div style="display: flex; align-items: center; gap: 0.35rem;">
                         <div style="width: 8px; height: 8px; border-radius: 50%; background: #0ea5e9;"></div>
-                        <span>เคสทั้งหมด</span>
+                        <span>ทิคเก็ตทั้งหมด</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.35rem;">
                         <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></div>
@@ -2022,9 +2022,9 @@ function renderYearlyAnalysis() {
             <!-- Summary Stats -->
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
                 <div style="background: #f0f9ff; padding: 1.25rem; border-radius: 1.25rem; border: 1px solid #bae6fd; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                    <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.5rem; font-weight: 600;">เคสรวมปีนี้</div>
-                    <div style="font-size: 1.75rem; font-weight: 800; color: #0c4a6e;">${MOCK_DATA.tickets.length}</div>
-                    <div style="font-size: 0.75rem; color: #0c4a6e; opacity: 0.7;">ทิคเก็ตแจ้งซ่อม</div>
+                    <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.5rem; font-weight: 600;">ทิคเก็ตรวมปีนี้</div>
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #0ea5e9;">${totalThisYear}</div>
+                    <div style="font-size: 0.75rem; color: #0c4a6e; opacity: 0.7;">ทิคเก็ต</div>
                 </div>
                 <div style="background: #ecfdf4; padding: 1.25rem; border-radius: 1.25rem; border: 1px solid #a7f3d0; display: flex; flex-direction: column; align-items: center; text-align: center;">
                     <div style="font-size: 0.75rem; color: #047857; margin-bottom: 0.5rem; font-weight: 600;">สำเร็จรวมปีนี้</div>
@@ -2143,7 +2143,7 @@ function generateHorizontalBarChartSVG(zones) {
                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                     <div style="display: flex; justify-content: space-between; font-size: 0.875rem; font-weight: 500;">
                         <span style="color: var(--text-primary);">${name}</span>
-                        <span style="color: var(--primary); font-weight: 700;">${count} <small style="font-weight: 400; color: #94a3b8;">เคส</small></span>
+                        <span style="color: var(--primary); font-weight: 700;">${count} <small style="font-weight: 400; color: #94a3b8;">ทิคเก็ต</small></span>
                     </div>
                     <div style="height: 12px; background: #f1f5f9; border-radius: 6px; position: relative; overflow: hidden;">
                         <div style="position: absolute; left: 0; top: 0; height: 100%; background: linear-gradient(to right, #0ea5e9, #0284c7); width: ${(count / maxVal) * 100}%; border-radius: 6px; transition: width 1s ease-out;"></div>
@@ -2373,7 +2373,7 @@ function renderCalendar() {
 
             dayContent += `
                 <div style="font-size: 0.7rem; color: var(--primary); font-weight: 600; margin-bottom: 0.25rem;">
-                    ${ticketsOnDay.length} เคส
+                    ${ticketsOnDay.length} ทิคเก็ต
                 </div>
                 <div style="font-size: 0.65rem; color: var(--text-secondary);">
                     ${totalTrees} ต้น
@@ -2402,7 +2402,7 @@ function renderCalendar() {
                 <div style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6;">
                     <strong style="color: var(--primary);">คลิกที่วันที่มีข้อมูล</strong> เพื่อดูรายงานสรุปประจำวัน<br>
                     • สีน้ำเงิน = มีข้อมูลวันนั้น<br>
-                    • ตัวเลข = จำนวนเคส / จำนวนต้นไม้<br>
+                    • ตัวเลข = จำนวนทิคเก็ต / จำนวนต้นไม้<br>
                     • ⚠ = มีต้นไม้โค่นล้ม
                 </div>
             </div>
@@ -2678,7 +2678,7 @@ async function downloadDailyReport(dateStr) {
     treeSumRow.height = 30;
 
     // 2. Total Cases Summary Row (Optional but helpful, formatted similarly)
-    const caseSumRow = worksheet.addRow(['สรุปจำนวนเคส', '', '', dayTickets.length + ' เคส', dayTickets.filter(t => t.damageType === 'fallen').length + ' เคส', dayTickets.filter(t => t.damageType !== 'fallen').length + ' เคส']);
+    const caseSumRow = worksheet.addRow(['สรุปจำนวนทิคเก็ต', '', '', dayTickets.length + ' ทิคเก็ต', dayTickets.filter(t => t.damageType === 'fallen').length + ' ทิคเก็ต', dayTickets.filter(t => t.damageType !== 'fallen').length + ' ทิคเก็ต']);
     worksheet.mergeCells(`A${caseSumRow.number}:C${caseSumRow.number}`);
 
     [1, 4, 5, 6].forEach(col => {
