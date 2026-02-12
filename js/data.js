@@ -93,15 +93,17 @@ async function loadData() {
             stats: { total: 0, new: 0, inProgress: 0, pending: 0, completed: 0 },
             categories: [
                 { id: "all", name: "ทั้งหมด" },
-                { id: "accident", name: "อุบัติเหตุ" },
-                { id: "nature", name: "อุบัติเหตุจากธรรมชาติ" },
+                { id: "fallen", name: "โค่นล้ม" },
+                { id: "broken", name: "กิ่งหัก/ฉีก" },
+                { id: "tilted", name: "ลำต้นเอียง" },
                 { id: "other", name: "อื่นๆ" }
             ],
             treeTypes: [],
             zones: [],
             damageTypes: [
-                { id: "accident", name: "อุบัติเหตุ", icon: "emergency" },
-                { id: "nature", name: "อุบัติเหตุจากธรรมชาติ", icon: "nature_people" },
+                { id: "fallen", name: "โค่นล้ม", icon: "forest" },
+                { id: "broken", name: "กิ่งหัก/ฉีก", icon: "content_cut" },
+                { id: "tilted", name: "ลำต้นเอียง", icon: "u_turn_right" },
                 { id: "other", name: "อื่นๆ", icon: "more_horiz" }
             ],
             operations: [],
