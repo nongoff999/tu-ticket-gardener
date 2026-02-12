@@ -2188,20 +2188,16 @@ function renderDailySummaryReport(dateStr) {
 
     content.innerHTML = `
         <div class="report-detail-container">
-            <!-- Summary Actions -->
-            <div class="report-actions">
-                <button onclick="downloadDailyReport('${dateStr}')" class="btn-report btn-report-excel">
-                    <span class="material-symbols-outlined">download</span>
-                    ดาวน์โหลดรายละเอียด (Excel)
-                </button>
-                <button onclick="window.print()" class="btn-report btn-report-download">
-                    <span class="material-symbols-outlined">print</span>
-                    พิมพ์รายงานสรุป (PDF)
-                </button>
+            <!-- 1. Date Selector (MOVE TO TOP) -->
+            <div style="background: white; padding: 1.5rem; border-radius: 1rem; box-shadow: var(--shadow-md); margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="font-size: 1rem; font-weight: 700;">เลือกวันที่ต้องการดูรายงาน</h3>
+                </div>
+                <input type="date" value="${dateStr}" onchange="AppState.selectedDate = this.value; renderDailySummaryReport(this.value)" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-family: inherit;">
             </div>
 
-            <!-- Report Paper UI -->
-            <div class="report-paper" id="report-paper">
+            <!-- 2. Report Paper (STAY IN MIDDLE) -->
+            <div class="report-paper" id="report-paper" style="margin-bottom: 2rem;">
                 <div class="report-paper-logo" style="right: 1.5rem; top: 1.5rem;">
                     <img src="https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-02-ไม่มีธรรมจักร-scaled.png" alt="TU PSM Logo" style="height: 70px; object-fit: contain;">
                 </div>
@@ -2254,12 +2250,16 @@ function renderDailySummaryReport(dateStr) {
                 </div>
             </div>
 
-            <!-- Date Selector for convenience -->
-            <div style="margin-top: 2rem; background: white; padding: 1.5rem; border-radius: 1rem; box-shadow: var(--shadow-md);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h3 style="font-size: 1rem; font-weight: 700;">เลือกวันที่ต้องการดูรายงาน</h3>
-                </div>
-                <input type="date" value="${dateStr}" onchange="AppState.selectedDate = this.value; renderDailySummaryReport(this.value)" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-family: inherit;">
+            <!-- 3. Summary Actions (MOVE TO BOTTOM) -->
+            <div class="report-actions">
+                <button onclick="downloadDailyReport('${dateStr}')" class="btn-report btn-report-excel">
+                    <span class="material-symbols-outlined">download</span>
+                    ดาวน์โหลดรายละเอียด (Excel)
+                </button>
+                <button onclick="window.print()" class="btn-report btn-report-download">
+                    <span class="material-symbols-outlined">print</span>
+                    พิมพ์รายงานสรุป (PDF)
+                </button>
             </div>
 
             <div style="height: 5rem;"></div>
