@@ -2276,16 +2276,7 @@ function renderDailySummaryReport(dateStr) {
                         </ul>
                     </div>
                     
-                    ${otherTrees.length > 0 ? `
-                    <div class="report-paper-section">
-                        <div class="report-paper-section-title">3. รายการอื่นๆ จำนวน ${otherTrees.length} รายการ</div>
-                        <ul class="report-paper-list">
-                            ${otherTrees.map(t => `
-                                <li>${t.title} บริเวณ${t.zoneName || t.zone}</li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                    ` : ''}
+
                 </div>
 
                 <div class="report-paper-footer">
