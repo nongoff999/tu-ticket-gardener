@@ -2219,10 +2219,11 @@ function renderDailySummaryReport(dateStr) {
     const dayTickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr));
 
     // Group by damage type
+    // Match Excel logic: Filter everything not 'fallen' into the "Broken/Tilted" group
     const fallenTrees = dayTickets.filter(t => t.damageType === 'fallen');
-    const brokenTrees = dayTickets.filter(t => t.damageType === 'broken' || t.damageType === 'tilted');
-    const otherTrees = dayTickets.filter(t => t.damageType !== 'fallen' && t.damageType !== 'broken' && t.damageType !== 'tilted');
+    const brokenTrees = dayTickets.filter(t => t.damageType !== 'fallen');
 
+    // Calculate quantities
     const totalFallenQuantity = fallenTrees.reduce((sum, t) => sum + (t.quantity || 1), 0);
     const totalBrokenQuantity = brokenTrees.reduce((sum, t) => sum + (t.quantity || 1), 0);
 
