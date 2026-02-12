@@ -293,59 +293,8 @@ function renderDashboard() {
         </div>
 
         <!-- Donut Chart Card -->
-        <div class="chart-card">
-            <h2>รายงานจำนวนต้นไม้ที่โค่นล้ม</h2>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem 0.75rem; margin-bottom: 1.5rem;">
-                <div style="display: flex; align-items: center; gap: 0.375rem;">
-                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: #BAE6FD;"></div>
-                    <span style="font-size: 0.625rem;">ต้นนนทรี</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 0.375rem;">
-                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: #A7F3D0;"></div>
-                    <span style="font-size: 0.625rem;">ต้นพฤกษ์</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 0.375rem;">
-                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: #FDE68A;"></div>
-                    <span style="font-size: 0.625rem;">ต้นอินทนิล</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 0.375rem;">
-                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: #FECDD3;"></div>
-                    <span style="font-size: 0.625rem;">ต้นมะฮอกกานี</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 0.375rem;">
-                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: #C7D2FE;"></div>
-                    <span style="font-size: 0.625rem;">ต้นสน</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 0.375rem;">
-                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: #E2E8F0;"></div>
-                    <span style="font-size: 0.625rem;">อื่นๆ</span>
-                </div>
-            </div>
-            <div style="display: flex; justify-content: center; align-items: center; padding: 1rem;">
-                <svg viewBox="0 0 100 100" style="width: 14rem; height: 14rem;">
-                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#F1F5F9" stroke-width="12"></circle>
-                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#BAE6FD" stroke-width="12" 
-                            stroke-dasharray="80 251.2" stroke-dashoffset="0" 
-                            style="transform: rotate(-90deg); transform-origin: 50% 50%;"></circle>
-                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#A7F3D0" stroke-width="12"
-                            stroke-dasharray="60 251.2" stroke-dashoffset="-80"
-                            style="transform: rotate(-90deg); transform-origin: 50% 50%;"></circle>
-                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#FDE68A" stroke-width="12"
-                            stroke-dasharray="40 251.2" stroke-dashoffset="-140"
-                            style="transform: rotate(-90deg); transform-origin: 50% 50%;"></circle>
-                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#FECDD3" stroke-width="12"
-                            stroke-dasharray="30 251.2" stroke-dashoffset="-180"
-                            style="transform: rotate(-90deg); transform-origin: 50% 50%;"></circle>
-                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#C7D2FE" stroke-width="12"
-                            stroke-dasharray="41.2 251.2" stroke-dashoffset="-210"
-                            style="transform: rotate(-90deg); transform-origin: 50% 50%;"></circle>
-                </svg>
-                <div style="position: absolute; display: flex; flex-direction: column; align-items: center;">
-                    <span style="font-size: 1.875rem; font-weight: 700;">${stats.total}</span>
-                    <span style="font-size: 0.625rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">Total</span>
-                </div>
-            </div>
-        </div>
+        <!-- Donut Chart Card (Dynamic) -->
+        ${renderFallenTreesSection(AppState.dashboardPeriod, AppState.selectedDate)}
 
         <div class="safe-area-bottom"></div>
     `;
@@ -2829,3 +2778,121 @@ window.deleteTicket = function (id) {
         }
     }
 };
+
+/* Fallen Tree Report Logic */
+function getFallenTreeStats(period, dateStr) {
+    const tickets = MOCK_DATA.tickets;
+    const date = new Date(dateStr);
+    let filtered = [];
+
+    // Filter by period
+    if (period === 'DAY') {
+        filtered = tickets.filter(t => t.date.startsWith(dateStr));
+    } else if (period === 'WEEK') {
+        const startOfWeek = new Date(date);
+        startOfWeek.setDate(date.getDate() - date.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 7);
+        filtered = tickets.filter(t => {
+            const d = new Date(t.date);
+            return d >= startOfWeek && d < endOfWeek;
+        });
+    } else if (period === 'MONTH') {
+        const y = date.getFullYear();
+        const m = date.getMonth();
+        filtered = tickets.filter(t => {
+            const d = new Date(t.date);
+            return d.getFullYear() === y && d.getMonth() === m;
+        });
+    }
+
+    // Filter only fallen (โค่นล้ม)
+    filtered = filtered.filter(t => t.category === 'fallen' || t.damageType === 'fallen');
+
+    // Group by treeType
+    const groups = {};
+    let total = 0;
+
+    filtered.forEach(t => {
+        const type = t.treeType || 'ไม่ระบุ';
+        const qty = t.quantity || 1;
+        groups[type] = (groups[type] || 0) + qty; // Sum quantity
+        total += qty;
+    });
+
+    const items = Object.entries(groups).map(([name, count]) => ({ name, count }));
+    items.sort((a, b) => b.count - a.count);
+
+    return { total, items };
+}
+
+function renderFallenTreesSection(period, dateStr) {
+    const stats = getFallenTreeStats(period, dateStr);
+
+    if (stats.total === 0) {
+        return `
+        <div class="chart-card">
+            <h2>รายงานจำนวนต้นไม้ที่โค่นล้ม</h2>
+            <div style="padding: 2rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 14rem;">
+                <span class="material-symbols-outlined" style="font-size: 3rem; margin-bottom: 0.5rem; opacity: 0.5;">forest</span>
+                <p>ไม่มีข้อมูลต้นไม้โค่นล้มในช่วงเวลานี้</p>
+            </div>
+        </div>
+        `;
+    }
+
+    const colors = ['#3bb143', '#facc15', '#f472b6', '#60a5fa', '#a78bfa', '#fb923c', '#94a3b8'];
+
+    // Assign Colors & Calculate Percentages
+    let cumulativePercent = 0;
+    const radius = 40;
+    const circumference = 2 * Math.PI * radius; // ~251.327
+
+    const circlesHtml = stats.items.map((item, index) => {
+        const color = colors[index % colors.length];
+        item.color = color;
+
+        const percent = item.count / stats.total;
+        const dashArray = percent * circumference;
+        const offset = cumulativePercent * circumference;
+        const space = circumference - dashArray;
+
+        const circle = `
+            <circle cx="50" cy="50" r="${radius}" fill="transparent" stroke="${color}" stroke-width="12"
+                    stroke-dasharray="${dashArray} ${space}" 
+                    stroke-dashoffset="-${offset}"
+                    style="transform: rotate(-90deg); transform-origin: 50% 50%; transition: all 0.5s ease;"></circle>
+        `;
+        cumulativePercent += percent;
+        return circle;
+    }).join('');
+
+    const legendHtml = stats.items.map(item => `
+        <div style="display: flex; align-items: center; gap: 0.375rem;">
+            <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: ${item.color};"></div>
+            <span style="font-size: 0.75rem; color: var(--text-primary); font-weight: 500;">${item.name} (${item.count})</span>
+        </div>
+    `).join('');
+
+    const periodLabel = period === 'DAY' ? 'วันนี้' : period === 'WEEK' ? 'สัปดาห์นี้' : 'เดือนนี้';
+
+    return `
+        <div class="chart-card">
+            <h2>รายงานจำนวนต้นไม้ที่โค่นล้ม (${periodLabel})</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem 0.75rem; margin-bottom: 1.5rem;">
+                ${legendHtml}
+            </div>
+            <div style="position: relative; width: 14rem; height: 14rem; margin: 0 auto; display: flex; justify-content: center; align-items: center;">
+                <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+                    <circle cx="50" cy="50" r="${radius}" fill="transparent" stroke="#F1F5F9" stroke-width="12"></circle>
+                    ${circlesHtml}
+                </svg>
+                <div style="position: absolute; display: flex; flex-direction: column; align-items: center; pointer-events: none;">
+                    <span style="font-size: 2.25rem; font-weight: 800; color: var(--text-primary); line-height: 1;">${stats.total}</span>
+                    <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">ต้น</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
