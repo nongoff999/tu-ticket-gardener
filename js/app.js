@@ -2210,8 +2210,8 @@ function renderDailySummaryReport(dateStr) {
 
             <!-- 2. Report Paper (STAY IN MIDDLE) -->
             <div class="report-paper" id="report-paper" style="margin-bottom: 2rem;">
-                <div class="report-paper-logo" style="right: 1.5rem; top: 1.5rem;">
-                    <img src="https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-02-ไม่มีธรรมจักร-scaled.png" alt="TU PSM Logo" style="height: 70px; object-fit: contain;">
+                <div class="report-paper-logo" style="left: 1.5rem; top: 1.5rem;">
+                    <img src="https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-01-มีธรรมจักร-scaled.png" alt="TU PSM Logo" style="height: 70px; object-fit: contain;">
                 </div>
 
                 <div class="report-paper-header">
@@ -2493,11 +2493,12 @@ async function downloadDailyReport(dateStr) {
     ];
 
     // --- Header Section ---
+    const darkBlueColor = { argb: 'FF002060' };
 
     // Header Row 1: Title
     const headerRow1 = worksheet.addRow(['', 'รายงานสรุปต้นไม้โค่นล้ม หัก ฉีกขาด จากลมฝน', '', '', '', '']);
     worksheet.mergeCells('B1:F1');
-    headerRow1.getCell(2).font = { name: 'Sarabun', size: 18, bold: true, color: { argb: 'FFC00000' } };
+    headerRow1.getCell(2).font = { name: 'Sarabun', size: 18, bold: true, color: darkBlueColor };
     headerRow1.getCell(2).alignment = { vertical: 'middle', horizontal: 'center' };
     headerRow1.height = 35;
 
@@ -2505,20 +2506,20 @@ async function downloadDailyReport(dateStr) {
     const thaiFullDateForExcel = date.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     const headerRow2 = worksheet.addRow(['', thaiFullDateForExcel, '', '', '', '']);
     worksheet.mergeCells('B2:F2');
-    headerRow2.getCell(2).font = { name: 'Sarabun', size: 14, bold: true };
+    headerRow2.getCell(2).font = { name: 'Sarabun', size: 14, bold: true, color: darkBlueColor };
     headerRow2.getCell(2).alignment = { vertical: 'middle', horizontal: 'center' };
     headerRow2.height = 25;
 
     // Header Row 3: Organization
     const headerRow3 = worksheet.addRow(['', '(ในพื้นที่ สำนักงานบริหารทรัพย์สินและกีฬา)', '', '', '', '']);
     worksheet.mergeCells('B3:F3');
-    headerRow3.getCell(2).font = { name: 'Sarabun', size: 12, bold: true, color: { argb: 'FF595959' } };
+    headerRow3.getCell(2).font = { name: 'Sarabun', size: 12, bold: true, color: darkBlueColor };
     headerRow3.getCell(2).alignment = { vertical: 'middle', horizontal: 'center' };
     headerRow3.height = 20;
 
     // Add Logo (Top Left)
     try {
-        const logoUrl = 'https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-02-ไม่มีธรรมจักร-scaled.png';
+        const logoUrl = 'https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-01-มีธรรมจักร-scaled.png';
         const logoResponse = await fetch(logoUrl);
         const logoBuffer = await logoResponse.arrayBuffer();
         const logoId = workbook.addImage({
@@ -2526,7 +2527,7 @@ async function downloadDailyReport(dateStr) {
             extension: 'png',
         });
         worksheet.addImage(logoId, {
-            tl: { col: 0.2, row: 0.1 },
+            tl: { col: 0.1, row: 0.1 },
             ext: { width: 80, height: 80 }
         });
     } catch (e) {
@@ -2550,10 +2551,10 @@ async function downloadDailyReport(dateStr) {
     worksheet.mergeCells('D5:D6');
 
     // Style Header Row 1 & 2
-    const greyFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } };
-    const blueFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFBDD7EE' } };
-    const orangeFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF8CBAD' } };
-    const greenFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2EFDA' } };
+    const greyFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFBFBFBF' } }; // Darker Grey
+    const blueFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF8DB4E2' } }; // Standard Excel Blue
+    const orangeFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFABF8F' } }; // Standard Excel Orange
+    const greenFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFC6E0B4' } }; // Standard Excel Green
 
     const headerCellStyle = {
         font: { name: 'Sarabun', size: 10, bold: true },
@@ -2658,41 +2659,36 @@ async function downloadDailyReport(dateStr) {
     }
 
     // --- Summary Section ---
-    const summaryHeaderStyle = {
+    const summaryCommonStyle = {
         font: { name: 'Sarabun', size: 11, bold: true },
-        alignment: { vertical: 'middle', horizontal: 'right' },
-        border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+        alignment: { vertical: 'middle', horizontal: 'center' },
+        border: {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
+        }
     };
 
-    const summaryValueStyle = {
-        ...summaryHeaderStyle,
-        alignment: { vertical: 'middle', horizontal: 'center' }
-    };
+    // 1. Total Trees Summary Row
+    const treeSumRow = worksheet.addRow(['สรุปรวมจำนวนต้นไม้ทั้งสิ้น', '', '', grandTotalTrees + ' ต้น', totalFallenQty + ' ต้น', totalBrokenQty + ' ต้น']);
+    worksheet.mergeCells(`A${treeSumRow.number}:C${treeSumRow.number}`);
 
-    // 1. Total Trees Summary
-    const treeSumRow = worksheet.addRow(['', 'สรุปรวมจำนวนต้นไม้ทั้งสิ้น', '', '', grandTotalTrees + ' ต้น', '']);
-    worksheet.mergeCells(`B${treeSumRow.number}:D${treeSumRow.number}`);
-    worksheet.mergeCells(`E${treeSumRow.number}:F${treeSumRow.number}`);
-    treeSumRow.getCell(2).style = summaryHeaderStyle;
-    treeSumRow.getCell(5).style = summaryValueStyle;
-    treeSumRow.height = 25;
+    // Apply styles to all cells in the row
+    [1, 4, 5, 6].forEach(col => {
+        treeSumRow.getCell(col).style = summaryCommonStyle;
+    });
+    treeSumRow.height = 30;
 
-    // 2. Total Cases Summary
-    const caseSumRow = worksheet.addRow(['', 'สรุปจำนวนเคส', '', '', dayTickets.length + ' เคส', dayTickets.filter(t => t.damageType === 'fallen').length + ' เคส', dayTickets.filter(t => t.damageType !== 'fallen').length + ' เคส']);
-    worksheet.mergeCells(`B${caseSumRow.number}:D${caseSumRow.number}`);
-    caseSumRow.getCell(2).style = summaryHeaderStyle;
-    caseSumRow.getCell(5).style = summaryValueStyle;
+    // 2. Total Cases Summary Row (Optional but helpful, formatted similarly)
+    const caseSumRow = worksheet.addRow(['สรุปจำนวนเคส', '', '', dayTickets.length + ' เคส', dayTickets.filter(t => t.damageType === 'fallen').length + ' เคส', dayTickets.filter(t => t.damageType !== 'fallen').length + ' เคส']);
+    worksheet.mergeCells(`A${caseSumRow.number}:C${caseSumRow.number}`);
 
-    // Style Fallen/Broken count cells
-    const fallenCountCell = caseSumRow.getCell(6);
-    fallenCountCell.style = summaryValueStyle;
-    fallenCountCell.fill = orangeFill;
+    [1, 4, 5, 6].forEach(col => {
+        caseSumRow.getCell(col).style = summaryCommonStyle;
+    });
 
-    const brokenCountCell = caseSumRow.getCell(7);
-    brokenCountCell.style = summaryValueStyle;
-    brokenCountCell.fill = greenFill;
-
-    caseSumRow.height = 25;
+    // Add color highlights back to case summary
+    caseSumRow.getCell(5).fill = orangeFill;
+    caseSumRow.getCell(6).fill = greenFill;
+    caseSumRow.height = 30;
 
     // Generate File
     const fileName = `TU_Maintenance_Report_${dateStr}.xlsx`;
