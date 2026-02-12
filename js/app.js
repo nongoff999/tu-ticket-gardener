@@ -2210,81 +2210,55 @@ function renderDailySummaryReport(dateStr) {
 
             <!-- 2. Report Paper (STAY IN MIDDLE) -->
             <div class="report-paper" id="report-paper" style="margin-bottom: 2rem;">
-                <div style="display: flex; align-items: flex-start; margin-bottom: 1.5rem; position: relative;">
-                    <div class="report-paper-logo" style="margin-right: 1.5rem;">
-                        <img src="https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-02-ไม่มีธรรมจักร-scaled.png" alt="TU PSM Logo" style="height: 80px; object-fit: contain;">
-                    </div>
-                    <div class="report-paper-header" style="flex: 1; text-align: center; margin-right: 80px;">
-                        <h1 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 0.25rem; color: #000;">รายงานสรุปต้นไม้โค่นล้ม หัก ฉีกขาด จากลมฝน</h1>
-                        <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 0.25rem; color: #000;">${thaiFullDate.replace('ที่ ', 'ที่  ')}</h2>
-                        <p style="font-size: 1.2rem; font-weight: 700; color: #000;">(ในพื้นที่ สำนักงานบริหารทรัพย์สินและกีฬา)</p>
-                    </div>
+                <div class="report-paper-logo" style="right: 1.5rem; top: 1.5rem;">
+                    <img src="https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-02-ไม่มีธรรมจักร-scaled.png" alt="TU PSM Logo" style="height: 70px; object-fit: contain;">
                 </div>
 
-                <style>
-                    .report-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; color: #000; border: 2px solid #000; font-family: 'Sarabun', sans-serif; }
-                    .report-table th, .report-table td { border: 1px solid #000; padding: 0.5rem; vertical-align: middle; line-height: 1.3; }
-                    .report-table th { background-color: #d1d5db; font-weight: 800; text-align: center; font-size: 0.85rem; }
-                    .report-table .header-blue { background-color: #93c5fd; }
-                    .report-table .header-orange { background-color: #ff9d4d; }
-                    .report-table .header-green { background-color: #c0f28a; }
-                    .report-table .tree-img { width: 100px; height: 75px; object-fit: cover; border-radius: 2px; display: block; margin: 0 auto; border: 1px solid #ddd; }
-                    .report-table .text-center { text-align: center; }
-                    .report-table .summary-row td { background-color: #f8fafc; font-weight: 900; border-top: 2px solid #000; }
-                    @media print {
-                        .report-actions, .report-detail-container > div:first-child, .sticky-footer, .safe-area-bottom, #header, #navigation { display: none !important; }
-                        .report-paper { padding: 0 !important; box-shadow: none !important; margin: 0 !important; }
-                        body { background: white !important; }
-                    }
-                </style>
+                <div class="report-paper-header">
+                    <h1 style="color: #c00000;">รายงานสรุป</h1>
+                    <h2 style="color: #c00000;">ต้นไม้ โค่นล้ม หัก ฉีกขาด จากลมฝน</h2>
+                    <h3>${thaiFullDate}</h3>
+                    <p style="font-weight: bold; color: #595959;">(ในพื้นที่ สำนักงานบริหารทรัพย์สินและกีฬา)</p>
+                </div>
 
-                <div class="report-table-container">
-                    <table class="report-table">
-                        <thead>
-                            <tr>
-                                <th rowspan="2" style="width: 40px;">ลำดับ</th>
-                                <th rowspan="2">สถานที่เกิดเหตุ</th>
-                                <th rowspan="2" style="width: 120px;">รูปภาพ</th>
-                                <th rowspan="2" style="width: 60px;">จำนวน</th>
-                                <th colspan="2" class="header-blue">ชนิดต้นไม้และสถานะ</th>
-                            </tr>
-                            <tr>
-                                <th class="header-orange">โค่นล้ม</th>
-                                <th class="header-green">กิ่งหัก/ฉีก/เอน</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${dayTickets.map((t, index) => {
-        const isFallen = t.damageType === 'fallen';
-        const isBroken = t.damageType === 'broken' || t.damageType === 'tilted';
-        const statusInfo = `${t.treeType || 'ต้นไม้'} / ${t.status === 'completed' ? 'ดำเนินการแก้ไขเรียบร้อย' : (t.operation || 'อยู่ระหว่างดำเนินการ')}`;
+                <div class="report-paper-body">
+                    <div class="report-paper-section">
+                        <div class="report-paper-section-title">1. ต้นไม้ลำต้น ฉีกขาด/หัก/เอียง จำนวน ${totalBrokenQuantity} ต้น ดำเนินการตัดแต่งกิ่งและเก็บเคลียร์</div>
+                        <ul class="report-paper-list">
+                            ${brokenTrees.map(t => `
+                                <li>${t.treeType} บริเวณ${t.zoneName || t.zone} (จำนวน ${t.quantity || 1} ต้น)</li>
+                            `).join('') || '<li>ไม่พบรายการ</li>'}
+                        </ul>
+                    </div>
 
-        return `
-                                    <tr>
-                                        <td class="text-center">${index + 1}</td>
-                                        <td>${t.locationName || t.zoneName || t.zone}</td>
-                                        <td><img src="${t.images?.[0] || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=1000'}" class="tree-img"></td>
-                                        <td class="text-center">${t.quantity || 1} ต้น</td>
-                                        <td>${isFallen ? statusInfo : ''}</td>
-                                        <td>${isBroken ? statusInfo : ''}</td>
-                                    </tr>
-                                `;
-    }).join('') || '<tr><td colspan="6" class="text-center" style="padding: 2rem;">ไม่พบข้อมูลในวันนี้</td></tr>'}
-                        </tbody>
-                        ${dayTickets.length > 0 ? `
-                        <tfoot>
-                            <tr class="summary-row">
-                                <td colspan="4" class="text-right" style="text-align: right; padding-right: 1rem;">สรุปจำนวนรวมทั้งสิ้น</td>
-                                <td class="text-center">${totalFallenQuantity}</td>
-                                <td class="text-center">${totalBrokenQuantity}</td>
-                            </tr>
-                        </tfoot>
-                        ` : ''}
-                    </table>
+                    <div class="report-paper-section">
+                        <div class="report-paper-section-title">2. ต้นไม้โค่น/ล้ม จำนวน ${totalFallenQuantity} ต้น ดังนี้</div>
+                        <ul class="report-paper-list">
+                            ${fallenTrees.length > 0 ? fallenTrees.map(t => `
+                                <li>${t.treeType} บริเวณ${t.zoneName || t.zone} (จำนวน ${t.quantity || 1} ต้น)
+                                    <ul class="report-paper-sublist">
+                                        <li>สถานะ: ${t.status === 'completed' ? 'ดำเนินการตัดทอนและนำออกเรียบร้อย' : 'อยู่ระหว่างดำเนินการ'}</li>
+                                        ${t.notes ? `<li>หมายเหตุ: ${t.notes}</li>` : ''}
+                                    </ul>
+                                </li>
+                            `).join('') : '<li>ไม่พบรายการ</li>'}
+                        </ul>
+                    </div>
+                    
+                    ${otherTrees.length > 0 ? `
+                    <div class="report-paper-section">
+                        <div class="report-paper-section-title">3. รายการอื่นๆ จำนวน ${otherTrees.length} รายการ</div>
+                        <ul class="report-paper-list">
+                            ${otherTrees.map(t => `
+                                <li>${t.title} บริเวณ${t.zoneName || t.zone}</li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
                 </div>
 
                 <div class="report-paper-footer">
-                    * หมายเหตุ: ข้อมูลอัปเดตอัตโนมัติจากระบบ TU Ticket Gardener รายงานประทับเวลา: ${new Date().toLocaleTimeString('th-TH')}
+                    * หมายเหตุ: ข้อมูลอัปเดตอัตโนมัติจากระบบ TU Ticket Gardener (ตามภาพและรายละเอียดที่แนบมาในไฟล์ Excel)
                 </div>
             </div>
 
@@ -2514,33 +2488,36 @@ async function downloadDailyReport(dateStr) {
 
     // Column widths
     worksheet.columns = [
-        { width: 5 },   // ลำดับ
-        { width: 18 },  // วันที่เกิดเหตุ
-        { width: 30 },  // สถานที่
-        { width: 20 },  // รูปภาพ
-        { width: 10 },  // จำนวน
-        { width: 25 },  // ต้นไม้/โค่นล้ม
-        { width: 25 }   // กิ่งหัก/เอน
+        { width: 8 },   // ลำดับ
+        { width: 20 },  // วันที่เกิดเหตุ
+        { width: 35 },  // สถานที่เกิดเหตุ
+        { width: 25 },  // รูปภาพ
+        { width: 12 },  // จำนวน
+        { width: 30 },  // ชนิดต้นไม้
+        { width: 30 }   // รายละเอียดความเสียหาย
     ];
 
-    // Header Row 1: วันที่
-    const headerRow1 = worksheet.addRow(['', thaiDate, '', '', '', '', '']);
-    worksheet.mergeCells('B1:G1');
-    headerRow1.getCell(2).font = { name: 'Sarabun', size: 16, bold: true };
+    // Header Row 1: Title
+    const headerRow1 = worksheet.addRow(['', 'รายงานสรุปต้นไม้โค่นล้ม หัก ฉีกขาด จากลมฝน', '', '', '', '', '']);
+    worksheet.mergeCells(`B${headerRow1.number}:G${headerRow1.number}`);
+    headerRow1.getCell(2).font = { name: 'Sarabun', size: 18, bold: true, color: { argb: 'FFC00000' } }; // Dark red for emphasis
     headerRow1.getCell(2).alignment = { vertical: 'middle', horizontal: 'center' };
-    headerRow1.height = 25;
+    headerRow1.height = 35;
 
-    // Header Row 2: วันที่จัดทำ
-    const headerRow2 = worksheet.addRow(['', `วันที่จัดทำรายงาน: ${todayThaiDate}`, '', '', '', '', '']);
-    worksheet.mergeCells('B2:G2');
-    headerRow2.getCell(2).font = { name: 'Sarabun', size: 11 };
+    // Header Row 2: Date
+    const thaiFullDateForExcel = date.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const headerRow2 = worksheet.addRow(['', thaiFullDateForExcel, '', '', '', '', '']);
+    worksheet.mergeCells(`B${headerRow2.number}:G${headerRow2.number}`);
+    headerRow2.getCell(2).font = { name: 'Sarabun', size: 14, bold: true };
     headerRow2.getCell(2).alignment = { vertical: 'middle', horizontal: 'center' };
+    headerRow2.height = 25;
 
-    // Header Row 3: องค์กร
-    const headerRow3 = worksheet.addRow(['', 'สำนักอาคารและสถานที่ มหาวิทยาลัยธรรมศาสตร์ ศูนย์รังสิต', '', '', '', '', '']);
-    worksheet.mergeCells('B3:G3');
-    headerRow3.getCell(2).font = { name: 'Sarabun', size: 12, bold: true };
+    // Header Row 3: Organization
+    const headerRow3 = worksheet.addRow(['', '(ในพื้นที่ สำนักงานบริหารทรัพย์สินและกีฬา)', '', '', '', '', '']);
+    worksheet.mergeCells(`B${headerRow3.number}:G${headerRow3.number}`);
+    headerRow3.getCell(2).font = { name: 'Sarabun', size: 12, bold: true, color: { argb: 'FF595959' } };
     headerRow3.getCell(2).alignment = { vertical: 'middle', horizontal: 'center' };
+    headerRow3.height = 20;
 
     worksheet.addRow([]); // Gap
 
