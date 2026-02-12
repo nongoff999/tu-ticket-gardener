@@ -1813,7 +1813,7 @@ function renderCategorySelection() {
             <div class="category-grid">
                 <!-- Security Card (Disabled/Inactive for now) -->
                 <div class="category-card disabled" onclick="showPopup('ยังไม่เปิดให้บริการ', 'ระบบ Security Ticket อยู่ระหว่างการพัฒนา', 'info')">
-                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdO2g1xFQm3R6XxkcDCdtIeGNzjvOoJfBvVQLD83ZcFO5XWgXjeku3lEGyRj7uhq5Nd-bGircOU2gh3zzOrOkmJgMLuk06iabUg_7vGqaSF5F2C-dusDicJOeDXjJ8Q63xXOG_ECI1XXl9r2aYbfjzxTRAp0ZVjmTdSX7arUobX47umUMnEWAW0HYiFkIJz_wZSOonXQD5edlr6X38g2T_OZMVi5yfSU82SrzJtXOR1jQts57MnBVhyinzkrPvOZ3VksmbVmyqDMU" 
+                    <img src="images/security_officer.jpg" 
                          alt="Professional Security Officer" class="category-card-img">
                     <div class="category-card-overlay">
                         <p class="category-subtitle">TICKET</p>
