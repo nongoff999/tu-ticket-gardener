@@ -36,12 +36,12 @@ async function loadData() {
         if (localData) {
             const parsed = JSON.parse(localData);
 
-            // Check if data is "old" (ID < 1000) - My new data starts at 1001
+            // Check if data is "old" (ID >= 2000) - We want to switch to new curated data (ID 1000+)
             // If old, we ignore local storage and fetch fresh JSON
-            const hasOldTickets = parsed.tickets && parsed.tickets.some(t => t.id < 1000);
+            const hasOldTickets = parsed.tickets && parsed.tickets.some(t => t.id >= 2000);
 
             if (hasOldTickets) {
-                console.log('🧹 พบข้อมูลชุดเก่า (ID < 1000) - ทำการล้างและโหลดข้อมูลใหม่จากไฟล์ JSON');
+                console.log('🧹 พบข้อมูลชุดเก่า (ID >= 2000) - ทำการล้างและโหลดข้อมูลใหม่จากไฟล์ JSON');
                 localStorage.removeItem('tu_gardener_data');
                 // Proceed to fetch from JSON (Block 3)
             } else {
