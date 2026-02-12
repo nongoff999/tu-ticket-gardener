@@ -2470,11 +2470,6 @@ async function downloadDailyReport(dateStr) {
         return;
     }
 
-    // Calculate statistics
-    const totalFallen = dayTickets.filter(t => t.damageType === 'fallen').length;
-    const totalBroken = dayTickets.filter(t => t.damageType === 'broken' || t.damageType === 'tilted').length;
-    const grandTotalItems = dayTickets.reduce((sum, t) => sum + (t.quantity || 1), 0);
-
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet(`รายงาน ${thaiDate}`);
 
@@ -2483,168 +2478,224 @@ async function downloadDailyReport(dateStr) {
         paperSize: 9,
         orientation: 'portrait',
         fitToPage: true,
-        fitToWidth: 1
+        fitToWidth: 1,
+        margins: { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5, header: 0.3, footer: 0.3 }
     };
 
     // Column widths
     worksheet.columns = [
-        { width: 8 },   // ลำดับ
-        { width: 20 },  // วันที่เกิดเหตุ
-        { width: 35 },  // สถานที่เกิดเหตุ
-        { width: 25 },  // รูปภาพ
-        { width: 12 },  // จำนวน
-        { width: 30 },  // ชนิดต้นไม้
-        { width: 30 }   // รายละเอียดความเสียหาย
+        { width: 8 },   // A: ลำดับ
+        { width: 35 },  // B: สถานที่เกิดเหตุ
+        { width: 25 },  // C: รูปภาพ
+        { width: 12 },  // D: จำนวน
+        { width: 30 },  // E: โค่นล้ม
+        { width: 30 }   // F: กิ่งหัก/ฉีก/เอน
     ];
 
+    // --- Header Section ---
+
     // Header Row 1: Title
-    const headerRow1 = worksheet.addRow(['', 'รายงานสรุปต้นไม้โค่นล้ม หัก ฉีกขาด จากลมฝน', '', '', '', '', '']);
-    worksheet.mergeCells(`B${headerRow1.number}:G${headerRow1.number}`);
-    headerRow1.getCell(2).font = { name: 'Sarabun', size: 18, bold: true, color: { argb: 'FFC00000' } }; // Dark red for emphasis
+    const headerRow1 = worksheet.addRow(['', 'รายงานสรุปต้นไม้โค่นล้ม หัก ฉีกขาด จากลมฝน', '', '', '', '']);
+    worksheet.mergeCells('B1:F1');
+    headerRow1.getCell(2).font = { name: 'Sarabun', size: 18, bold: true, color: { argb: 'FFC00000' } };
     headerRow1.getCell(2).alignment = { vertical: 'middle', horizontal: 'center' };
     headerRow1.height = 35;
 
     // Header Row 2: Date
     const thaiFullDateForExcel = date.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    const headerRow2 = worksheet.addRow(['', thaiFullDateForExcel, '', '', '', '', '']);
-    worksheet.mergeCells(`B${headerRow2.number}:G${headerRow2.number}`);
+    const headerRow2 = worksheet.addRow(['', thaiFullDateForExcel, '', '', '', '']);
+    worksheet.mergeCells('B2:F2');
     headerRow2.getCell(2).font = { name: 'Sarabun', size: 14, bold: true };
     headerRow2.getCell(2).alignment = { vertical: 'middle', horizontal: 'center' };
     headerRow2.height = 25;
 
     // Header Row 3: Organization
-    const headerRow3 = worksheet.addRow(['', '(ในพื้นที่ สำนักงานบริหารทรัพย์สินและกีฬา)', '', '', '', '', '']);
-    worksheet.mergeCells(`B${headerRow3.number}:G${headerRow3.number}`);
+    const headerRow3 = worksheet.addRow(['', '(ในพื้นที่ สำนักงานบริหารทรัพย์สินและกีฬา)', '', '', '', '']);
+    worksheet.mergeCells('B3:F3');
     headerRow3.getCell(2).font = { name: 'Sarabun', size: 12, bold: true, color: { argb: 'FF595959' } };
     headerRow3.getCell(2).alignment = { vertical: 'middle', horizontal: 'center' };
     headerRow3.height = 20;
 
-    worksheet.addRow([]); // Gap
+    // Add Logo (Top Left)
+    try {
+        const logoUrl = 'https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-02-ไม่มีธรรมจักร-scaled.png';
+        const logoResponse = await fetch(logoUrl);
+        const logoBuffer = await logoResponse.arrayBuffer();
+        const logoId = workbook.addImage({
+            buffer: logoBuffer,
+            extension: 'png',
+        });
+        worksheet.addImage(logoId, {
+            tl: { col: 0.2, row: 0.1 },
+            ext: { width: 80, height: 80 }
+        });
+    } catch (e) {
+        console.warn('Could not load logo for Excel:', e);
+    }
 
-    // Table header
-    const tableHeader = worksheet.addRow(['ลำดับ', 'วันที่เกิดเหตุ', 'สถานที่เกิดเหตุ', 'รูปภาพ', 'จำนวน', 'ชนิดต้นไม้และสถานะ\nโค่นล้ม', 'กิ่งหัก/ฉีก/เอน']);
-    tableHeader.eachCell((cell) => {
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4472C4' } };
-        cell.font = { name: 'Sarabun', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
-        cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        cell.border = {
-            top: { style: 'thin' },
-            left: { style: 'thin' },
-            bottom: { style: 'thin' },
-            right: { style: 'thin' }
-        };
+    worksheet.addRow([]); // Blank Row
+
+    // --- Table Header Section (Merged) ---
+    // Row 5: Top part of merged headers
+    const tableHeader1 = worksheet.addRow(['ลำดับ', 'สถานที่เกิดเหตุ', 'รูปภาพ', 'จำนวน', 'ชนิดต้นไม้และสถานะ', '']);
+    worksheet.mergeCells('E5:F5'); // Merge "ชนิดต้นไม้และสถานะ" across E and F
+
+    // Row 6: Bottom part for sub-columns
+    const tableHeader2 = worksheet.addRow(['', '', '', '', 'โค่นล้ม', 'กิ่งหัก/ฉีก/เอน']);
+
+    // Merge cells for single-row headers in column A, B, C, D
+    worksheet.mergeCells('A5:A6');
+    worksheet.mergeCells('B5:B6');
+    worksheet.mergeCells('C5:C6');
+    worksheet.mergeCells('D5:D6');
+
+    // Style Header Row 1 & 2
+    const greyFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } };
+    const blueFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFBDD7EE' } };
+    const orangeFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF8CBAD' } };
+    const greenFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2EFDA' } };
+
+    const headerCellStyle = {
+        font: { name: 'Sarabun', size: 10, bold: true },
+        alignment: { vertical: 'middle', horizontal: 'center', wrapText: true },
+        border: {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
+        }
+    };
+
+    // Apply styles to A5:D6 (Grey)
+    ['A', 'B', 'C', 'D'].forEach(col => {
+        const cell = worksheet.getCell(`${col}5`);
+        cell.style = headerCellStyle;
+        cell.fill = greyFill;
     });
-    tableHeader.height = 40;
 
-    // Data rows
+    // Apply style to E5:F5 (Blue - Main Header)
+    const mainTreeHeader = worksheet.getCell('E5');
+    mainTreeHeader.style = headerCellStyle;
+    mainTreeHeader.fill = blueFill;
+
+    // Apply style to E6 (Orange - Fallen)
+    const fallenHeader = worksheet.getCell('E6');
+    fallenHeader.style = headerCellStyle;
+    fallenHeader.fill = orangeFill;
+
+    // Apply style to F6 (Green - Broken)
+    const brokenHeader = worksheet.getCell('F6');
+    brokenHeader.style = headerCellStyle;
+    brokenHeader.fill = greenFill;
+
+    worksheet.getRow(5).height = 25;
+    worksheet.getRow(6).height = 25;
+
+    // --- Data Rows ---
+    let totalFallenQty = 0;
+    let totalBrokenQty = 0;
+    let grandTotalTrees = 0;
+
     for (let i = 0; i < dayTickets.length; i++) {
         const t = dayTickets[i];
         const qty = t.quantity || 1;
-        const fallen = t.damageType === 'fallen' ? 'โค่นล้ม' : '';
-        const broken = (t.damageType === 'broken' || t.damageType === 'tilted') ? (t.damageType === 'broken' ? 'กิ่งหัก' : 'เอียง') : '';
+        grandTotalTrees += qty;
 
-        const ticketDate = new Date(t.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+        let fallenVal = '';
+        let brokenVal = '';
+
+        const actionText = t.operation && t.operation !== '-' ? ` / ${t.operation}` : '';
+        const info = `${t.treeType}${actionText}`;
+
+        if (t.damageType === 'fallen') {
+            fallenVal = info;
+            totalFallenQty += qty;
+        } else {
+            brokenVal = info;
+            totalBrokenQty += qty;
+        }
 
         const row = worksheet.addRow([
             i + 1,
-            ticketDate,
             t.zoneName || t.zone,
-            '',
+            '', // Image placeholder
             qty + ' ต้น',
-            `${t.treeType}\n${fallen}`,
-            broken
+            fallenVal,
+            brokenVal
         ]);
 
-        row.height = 90;
-        row.eachCell((cell, colNumber) => {
-            cell.border = {
-                top: { style: 'thin' },
-                left: { style: 'thin' },
-                bottom: { style: 'thin' },
-                right: { style: 'thin' }
+        row.height = 100;
+        row.eachCell((cell) => {
+            cell.style = {
+                font: { name: 'Sarabun', size: 10 },
+                alignment: { vertical: 'middle', horizontal: 'center', wrapText: true },
+                border: {
+                    top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
+                }
             };
-            cell.font = { name: 'Sarabun', size: 10 };
-            cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
         });
 
-        // Add image if exists
+        // Add image to column C
         if (t.images && t.images.length > 0) {
             try {
                 const imgUrl = t.images[0];
                 let imageId;
 
                 if (imgUrl.startsWith('data:image/')) {
-                    const mimeType = imgUrl.split(';')[0].split(':')[1];
-                    const ext = mimeType.split('/')[1];
-                    const validExtensions = ['png', 'jpeg', 'gif'];
-                    const finalExt = ext === 'jpg' ? 'jpeg' : (validExtensions.includes(ext) ? ext : 'png');
                     const base64Data = imgUrl.split(',')[1];
-
-                    imageId = workbook.addImage({
-                        base64: base64Data,
-                        extension: finalExt,
-                    });
+                    imageId = workbook.addImage({ base64: base64Data, extension: 'png' });
                 } else {
                     const response = await fetch(imgUrl);
-                    if (!response.ok) throw new Error(`HTTP ${response.status} - ${response.statusText}`);
-
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.startsWith('image/')) {
-                        throw new Error(`Invalid content-type: ${contentType}`);
-                    }
-
                     const buffer = await response.arrayBuffer();
-                    let ext = 'png';
-                    if (contentType) {
-                        const type = contentType.split('/')[1];
-                        if (['jpeg', 'jpg', 'png', 'gif'].includes(type)) {
-                            ext = type === 'jpeg' ? 'jpg' : type;
-                        }
-                    }
-
-                    const validExtensions = ['png', 'jpeg', 'gif'];
-                    const finalExt = ext === 'jpg' ? 'jpeg' : (validExtensions.includes(ext) ? ext : 'png');
-
-                    imageId = workbook.addImage({
-                        buffer: buffer,
-                        extension: finalExt,
-                    });
+                    imageId = workbook.addImage({ buffer: buffer, extension: 'png' });
                 }
 
                 worksheet.addImage(imageId, {
-                    tl: { col: 3.1, row: row.number - 1.1 },
-                    ext: { width: 140, height: 110 }
+                    tl: { col: 2.1, row: row.number - 0.9 },
+                    ext: { width: 160, height: 120 }
                 });
             } catch (e) {
-                console.warn('Could not load image for Excel:', e);
+                console.error('Image error:', e);
             }
         }
     }
 
-    // Summary row
-    const totalCases = dayTickets.length;
-    const summaryStyle = (cell, colNumber) => {
-        if (colNumber > 0) {
-            cell.border = {
-                top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' }
-            };
-            cell.font = { name: 'Sarabun', size: 11, bold: true };
-            cell.alignment = { vertical: 'middle', horizontal: 'center' };
-        }
+    // --- Summary Section ---
+    const summaryHeaderStyle = {
+        font: { name: 'Sarabun', size: 11, bold: true },
+        alignment: { vertical: 'middle', horizontal: 'right' },
+        border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
     };
 
-    const treeSumRow = worksheet.addRow(['', 'สรุปรวมจำนวนต้นไม้ทั้งสิ้น', '', '', grandTotalItems + ' ต้น', '', '']);
+    const summaryValueStyle = {
+        ...summaryHeaderStyle,
+        alignment: { vertical: 'middle', horizontal: 'center' }
+    };
+
+    // 1. Total Trees Summary
+    const treeSumRow = worksheet.addRow(['', 'สรุปรวมจำนวนต้นไม้ทั้งสิ้น', '', '', grandTotalTrees + ' ต้น', '']);
     worksheet.mergeCells(`B${treeSumRow.number}:D${treeSumRow.number}`);
-    treeSumRow.eachCell(summaryStyle);
+    worksheet.mergeCells(`E${treeSumRow.number}:F${treeSumRow.number}`);
+    treeSumRow.getCell(2).style = summaryHeaderStyle;
+    treeSumRow.getCell(5).style = summaryValueStyle;
+    treeSumRow.height = 25;
 
-    const caseSumRow = worksheet.addRow(['', 'สรุปจำนวนเคส', '', '', totalCases + ' เคส', totalFallen + ' เคส', totalBroken + ' เคส']);
+    // 2. Total Cases Summary
+    const caseSumRow = worksheet.addRow(['', 'สรุปจำนวนเคส', '', '', dayTickets.length + ' เคส', dayTickets.filter(t => t.damageType === 'fallen').length + ' เคส', dayTickets.filter(t => t.damageType !== 'fallen').length + ' เคส']);
     worksheet.mergeCells(`B${caseSumRow.number}:D${caseSumRow.number}`);
-    caseSumRow.eachCell(summaryStyle);
-    caseSumRow.getCell(6).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF2CC' } };
-    caseSumRow.getCell(7).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2EFDA' } };
+    caseSumRow.getCell(2).style = summaryHeaderStyle;
+    caseSumRow.getCell(5).style = summaryValueStyle;
 
-    // Generate Excel File
-    const fileName = `TU_Report_${dateStr}.xlsx`;
+    // Style Fallen/Broken count cells
+    const fallenCountCell = caseSumRow.getCell(6);
+    fallenCountCell.style = summaryValueStyle;
+    fallenCountCell.fill = orangeFill;
+
+    const brokenCountCell = caseSumRow.getCell(7);
+    brokenCountCell.style = summaryValueStyle;
+    brokenCountCell.fill = greenFill;
+
+    caseSumRow.height = 25;
+
+    // Generate File
+    const fileName = `TU_Maintenance_Report_${dateStr}.xlsx`;
     const excelBuffer = await workbook.xlsx.writeBuffer();
     saveAs(new Blob([excelBuffer]), fileName);
 }
