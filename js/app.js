@@ -872,6 +872,37 @@ function renderTicketDetail(params) {
                 else dot.classList.remove('active');
             });
         });
+
+        // Add click listener for dots
+        dots.forEach((dot, i) => {
+            dot.addEventListener('click', () => {
+                scroller.scrollTo({
+                    left: scroller.offsetWidth * i,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Auto-slide logic
+        let autoSlideTimer = setInterval(() => {
+            if (!scroller.isConnected) {
+                clearInterval(autoSlideTimer);
+                return;
+            }
+            const currentIndex = Math.round(scroller.scrollLeft / scroller.offsetWidth);
+            const nextIndex = (currentIndex + 1) % dots.length;
+
+            if (dots.length > 1) {
+                scroller.scrollTo({
+                    left: scroller.offsetWidth * nextIndex,
+                    behavior: 'smooth'
+                });
+            }
+        }, 4000);
+
+        // Stop auto-slide on interaction
+        scroller.addEventListener('touchstart', () => clearInterval(autoSlideTimer), { passive: true });
+        dots.forEach(dot => dot.addEventListener('click', () => clearInterval(autoSlideTimer)));
     }
 }
 
