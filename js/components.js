@@ -173,6 +173,48 @@ const Components = {
                 `;
             }
 
+        } else if (period === 'WEEK') {
+            const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+            const range = [-2, -1, 0, 1, 2];
+
+            // Normalize to Sunday start
+            const startOfSelectedWeek = new Date(selectedDate);
+            startOfSelectedWeek.setDate(selectedDate.getDate() - selectedDate.getDay());
+            startOfSelectedWeek.setHours(0, 0, 0, 0);
+
+            for (let i of range) {
+                const wStart = new Date(startOfSelectedWeek);
+                wStart.setDate(startOfSelectedWeek.getDate() + (i * 7));
+
+                const wEnd = new Date(wStart);
+                wEnd.setDate(wStart.getDate() + 6);
+
+                const dateStr = wStart.toISOString().split('T')[0];
+                const isActive = i === 0;
+
+                // Check if Today is in this week
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const isCurrentWeek = (today >= wStart && today <= wEnd);
+
+                // Format: "1 - 7"
+                const rangeLabel = `${wStart.getDate()} - ${wEnd.getDate()}`;
+                // Month label: "ม.ค. 67" (Taken from End date usually better if spanning, or Start?)
+                // Let's use End date month for brevity, or mixed format if needed. 
+                // Simple: Month of Start Date
+                const mStr = thaiMonths[wStart.getMonth()];
+                const yStr = (wStart.getFullYear() + 543).toString().slice(-2);
+
+                html += `
+                    <div class="calendar-day ${isActive ? 'active' : ''} ${isCurrentWeek ? 'today' : ''}" data-date="${dateStr}" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; cursor: pointer; border-radius: 0.5rem; padding: 0.5rem 0; transition: all 0.2s; min-height: 3.5rem;">
+                        <span class="day-name" style="font-size: 0.7rem; color: var(--text-secondary);">${mStr} ${yStr}</span>
+                        <div style="font-size: 0.9rem; font-weight: 600; ${isActive ? 'color: var(--primary);' : 'color: var(--text-primary);'}">
+                            ${rangeLabel}
+                        </div>
+                    </div>
+                `;
+            }
+
         } else {
             // Week/Day View
             const days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
