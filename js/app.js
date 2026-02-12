@@ -2144,6 +2144,11 @@ function renderReportDetail() {
         return;
     }
 
+    if (AppState.selectedReport === 'summary') {
+        renderDailySummaryReport(AppState.selectedDate);
+        return;
+    }
+
     document.getElementById('page-title').textContent = 'รายงานสรุปต้นไม้โค่นล้มฯ';
 
     const content = document.getElementById('main-content');
@@ -2158,6 +2163,113 @@ function renderReportDetail() {
 
     renderCalendar();
 }
+
+function renderDailySummaryReport(dateStr) {
+    document.getElementById('page-title').textContent = 'สรุปความเสียหายรายวัน';
+    const content = document.getElementById('main-content');
+
+    const date = new Date(dateStr);
+    const dayNames = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+    const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+
+    const thaiDayName = dayNames[date.getDay()];
+    const thaiFullDate = `${thaiDayName}ที่ ${date.getDate()} ${thaiMonths[date.getMonth()]} ${date.getFullYear() + 543}`;
+
+    // Filter tickets for this day
+    const dayTickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr));
+
+    // Group by damage type
+    const fallenTrees = dayTickets.filter(t => t.damageType === 'fallen');
+    const brokenTrees = dayTickets.filter(t => t.damageType === 'broken' || t.damageType === 'tilted');
+    const otherTrees = dayTickets.filter(t => t.damageType !== 'fallen' && t.damageType !== 'broken' && t.damageType !== 'tilted');
+
+    const totalFallenQuantity = fallenTrees.reduce((sum, t) => sum + (t.quantity || 1), 0);
+    const totalBrokenQuantity = brokenTrees.reduce((sum, t) => sum + (t.quantity || 1), 0);
+
+    content.innerHTML = `
+        <div class="report-detail-container">
+            <!-- Summary Actions -->
+            <div class="report-actions">
+                <button onclick="downloadDailyReport('${dateStr}')" class="btn-report btn-report-excel">
+                    <span class="material-symbols-outlined">download</span>
+                    ดาวน์โหลดรายละเอียด (Excel)
+                </button>
+                <button onclick="window.print()" class="btn-report btn-report-download">
+                    <span class="material-symbols-outlined">print</span>
+                    พิมพ์รายงานสรุป (PDF)
+                </button>
+            </div>
+
+            <!-- Report Paper UI -->
+            <div class="report-paper" id="report-paper">
+                <div class="report-paper-logo">
+                    <img src="https://itdept.psm.tu.ac.th/tu-ticket/assets/img/tu-logo.png" alt="TU Logo" style="height: 48px; object-fit: contain;">
+                    <div style="background: #84cc16; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; height: 48px; min-width: 64px; text-align: center; line-height: 1.2;">
+                        ทรัพย์<br>สิน
+                    </div>
+                </div>
+
+                <div class="report-paper-header">
+                    <h1>รายงานสรุป</h1>
+                    <h2>ต้นไม้ โค่นล้ม หัก ฉีกขาด จากลมฝน</h2>
+                    <h3>${thaiFullDate}</h3>
+                    <p>(ในพื้นที่มหาวิทยาลัยธรรมศาสตร์ ศูนย์รังสิต)</p>
+                </div>
+
+                <div class="report-paper-body">
+                    <div class="report-paper-section">
+                        <div class="report-paper-section-title">1. ต้นไม้ลำต้น ฉีกขาด/หัก/เอียง จำนวน ${totalBrokenQuantity} ต้น ดำเนินการตัดแต่งกิ่งและเก็บเคลียร์</div>
+                        <ul class="report-paper-list">
+                            ${brokenTrees.map(t => `
+                                <li>${t.treeType} บริเวณ${t.zoneName || t.zone} (จำนวน ${t.quantity || 1} ต้น)</li>
+                            `).join('') || '<li>ไม่พบรายการ</li>'}
+                        </ul>
+                    </div>
+
+                    <div class="report-paper-section">
+                        <div class="report-paper-section-title">2. ต้นไม้โค่น/ล้ม จำนวน ${totalFallenQuantity} ต้น ดังนี้</div>
+                        <ul class="report-paper-list">
+                            ${fallenTrees.length > 0 ? fallenTrees.map(t => `
+                                <li>${t.treeType} บริเวณ${t.zoneName || t.zone} (จำนวน ${t.quantity || 1} ต้น)
+                                    <ul class="report-paper-sublist">
+                                        <li>สถานะ: ${t.status === 'completed' ? 'ดำเนินการตัดทอนและนำออกเรียบร้อย' : 'อยู่ระหว่างดำเนินการ'}</li>
+                                        ${t.notes ? `<li>หมายเหตุ: ${t.notes}</li>` : ''}
+                                    </ul>
+                                </li>
+                            `).join('') : '<li>ไม่พบรายการ</li>'}
+                        </ul>
+                    </div>
+                    
+                    ${otherTrees.length > 0 ? `
+                    <div class="report-paper-section">
+                        <div class="report-paper-section-title">3. รายการอื่นๆ จำนวน ${otherTrees.length} รายการ</div>
+                        <ul class="report-paper-list">
+                            ${otherTrees.map(t => `
+                                <li>${t.title} บริเวณ${t.zoneName || t.zone}</li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
+                </div>
+
+                <div class="report-paper-footer">
+                    * หมายเหตุ: ข้อมูลอัปเดตอัตโนมัติจากระบบ TU Ticket Gardener (ตามภาพและรายละเอียดที่แนบมาในไฟล์ Excel)
+                </div>
+            </div>
+
+            <!-- Date Selector for convenience -->
+            <div style="margin-top: 2rem; background: white; padding: 1.5rem; border-radius: 1rem; box-shadow: var(--shadow-md);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="font-size: 1rem; font-weight: 700;">เลือกวันที่ต้องการดูรายงาน</h3>
+                </div>
+                <input type="date" value="${dateStr}" onchange="AppState.selectedDate = this.value; renderDailySummaryReport(this.value)" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-family: inherit;">
+            </div>
+
+            <div style="height: 5rem;"></div>
+        </div>
+    `;
+}
+
 
 function renderCalendar() {
     const { currentMonth, currentYear } = window.calendarState;
