@@ -2242,7 +2242,7 @@ function renderDailySummaryReport(dateStr) {
             <!-- 2. Report Paper (STAY IN MIDDLE) -->
             <div class="report-paper" id="report-paper" style="margin-bottom: 2rem;">
                 <div class="report-paper-logo" style="left: 1.5rem; top: 1.5rem;">
-                    <img src="https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-01-มีธรรมจักร-scaled.png" alt="TU PSM Logo" style="height: 70px; object-fit: contain;">
+                    <img src="https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-02-ไม่มีธรรมจักร-scaled.png" alt="TU PSM Logo" style="height: 70px; object-fit: contain;">
                 </div>
 
                 <div class="report-paper-header">
@@ -2550,7 +2550,7 @@ async function downloadDailyReport(dateStr) {
 
     // Add Logo (Top Left)
     try {
-        const logoUrl = 'https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-01-มีธรรมจักร-scaled.png';
+        const logoUrl = 'https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-02-ไม่มีธรรมจักร-scaled.png';
         const logoResponse = await fetch(logoUrl);
         const logoBuffer = await logoResponse.arrayBuffer();
         const logoId = workbook.addImage({
