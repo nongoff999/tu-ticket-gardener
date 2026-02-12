@@ -463,55 +463,119 @@ function getChartData(period, dateStr) {
     };
 
     const date = new Date(dateStr);
+    const tickets = MOCK_DATA.tickets;
+
+    // Helper to init array with zeros
+    const initArray = (len) => Array(len).fill(0);
 
     if (period === 'DAY') {
-        // Hourly buckets (00, 04, 08, 12, 16, 20, 24)
-        for (let i = 0; i <= 24; i += 4) {
-            data.labels.push(`${i.toString().padStart(2, '0')}:00`);
-            // Mock data for hours - random variance based on time
-            // More activity during day (8-16)
-            const activityFactor = (i >= 8 && i <= 18) ? 1 : 0.2;
-            data.series.total.push(Math.floor(Math.random() * 5 * activityFactor));
-            data.series.new.push(Math.floor(Math.random() * 3 * activityFactor));
-            data.series.inProgress.push(Math.floor(Math.random() * 4 * activityFactor));
-            data.series.pending.push(Math.floor(Math.random() * 2 + 5)); // Base pending load
-            data.series.completed.push(Math.floor(Math.random() * 3 * activityFactor));
+        // Hourly buckets: 00:00, 04:00, ..., 20:00, 24:00 (End of day)
+        // 7 points: 0, 4, 8, 12, 16, 20, 24
+        const buckets = [0, 4, 8, 12, 16, 20, 24];
+        data.labels = buckets.map(h => `${h.toString().padStart(2, '0')}:00`);
+
+        const len = buckets.length;
+        data.series.new = initArray(len);
+        data.series.pending = initArray(len);
+        data.series.inProgress = initArray(len);
+        data.series.completed = initArray(len);
+
+        // Filter tickets for this day
+        const dayTickets = tickets.filter(t => t.date.startsWith(dateStr));
+
+        dayTickets.forEach(t => {
+            const h = new Date(t.date).getHours();
+            // Find closest bucket index (floor)
+            // 0-3 -> idx 0 (00:00)
+            // 4-7 -> idx 1 (04:00)
+            const idx = Math.floor(h / 4);
+
+            if (t.status === 'new') data.series.new[idx]++;
+            else if (t.status === 'pending') data.series.pending[idx]++;
+            else if (t.status === 'inProgress') data.series.inProgress[idx]++;
+            else if (t.status === 'completed') data.series.completed[idx]++;
+        });
+
+        // "Pending" line in chart usually represents "Yet to do". Combine New + Pending for visual simplicity?
+        // Or keep distinct? The User requested "Pending (Red), InProgress (Purple), Completed (Green)".
+        // So let's map: Red Line = (New + Pending).
+        for (let i = 0; i < len; i++) {
+            data.series.pending[i] += data.series.new[i];
         }
+
     } else if (period === 'WEEK') {
         const startOfWeek = new Date(date);
         startOfWeek.setDate(date.getDate() - date.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+
         const days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+        data.labels = days;
 
-        for (let i = 0; i < 7; i++) {
-            const d = new Date(startOfWeek);
-            d.setDate(startOfWeek.getDate() + i);
-            data.labels.push(days[i]);
+        const len = 7;
+        data.series.new = initArray(len);
+        data.series.pending = initArray(len);
+        data.series.inProgress = initArray(len);
+        data.series.completed = initArray(len);
 
-            // Random daily data
-            data.series.total.push(Math.floor(Math.random() * 10 + 2));
-            data.series.new.push(Math.floor(Math.random() * 5));
-            data.series.inProgress.push(Math.floor(Math.random() * 6));
-            data.series.pending.push(Math.floor(Math.random() * 5 + 10));
-            data.series.completed.push(Math.floor(Math.random() * 4));
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 7);
+
+        const weekTickets = tickets.filter(t => {
+            const d = new Date(t.date);
+            return d >= startOfWeek && d < endOfWeek;
+        });
+
+        weekTickets.forEach(t => {
+            const d = new Date(t.date);
+            const dayIdx = d.getDay(); // 0-6
+
+            if (t.status === 'new') data.series.new[dayIdx]++;
+            else if (t.status === 'pending') data.series.pending[dayIdx]++;
+            else if (t.status === 'inProgress') data.series.inProgress[dayIdx]++;
+            else if (t.status === 'completed') data.series.completed[dayIdx]++;
+        });
+
+        // Combine New into Pending for Chart (Red Line)
+        for (let i = 0; i < len; i++) {
+            data.series.pending[i] += data.series.new[i];
         }
+
     } else if (period === 'MONTH') {
         const year = date.getFullYear();
         const month = date.getMonth();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        // Show labels every 5 days + last day
+        // Buckets: Days 1..DaysInMonth
+        const len = daysInMonth;
+        // Labels: Show every 5th day
         for (let i = 1; i <= daysInMonth; i++) {
-            if (i === 1 || i % 5 === 0 || i === daysInMonth) {
-                data.labels.push(i.toString());
-            } else {
-                data.labels.push('');
-            }
+            if (i === 1 || i % 5 === 0 || i === daysInMonth) data.labels.push(i.toString());
+            else data.labels.push('');
+        }
 
-            data.series.total.push(Math.floor(Math.random() * 10 + 2));
-            data.series.new.push(Math.floor(Math.random() * 5));
-            data.series.inProgress.push(Math.floor(Math.random() * 6));
-            data.series.pending.push(Math.floor(Math.random() * 5 + 10));
-            data.series.completed.push(Math.floor(Math.random() * 4));
+        data.series.new = initArray(len);
+        data.series.pending = initArray(len);
+        data.series.inProgress = initArray(len);
+        data.series.completed = initArray(len);
+
+        const monthTickets = tickets.filter(t => {
+            const d = new Date(t.date);
+            return d.getFullYear() === year && d.getMonth() === month;
+        });
+
+        monthTickets.forEach(t => {
+            const d = new Date(t.date);
+            const dayIdx = d.getDate() - 1; // 0-indexed (Day 1 -> idx 0)
+
+            if (t.status === 'new') data.series.new[dayIdx]++;
+            else if (t.status === 'pending') data.series.pending[dayIdx]++;
+            else if (t.status === 'inProgress') data.series.inProgress[dayIdx]++;
+            else if (t.status === 'completed') data.series.completed[dayIdx]++;
+        });
+
+        // Combine New into Pending for Chart (Red Line)
+        for (let i = 0; i < len; i++) {
+            data.series.pending[i] += data.series.new[i];
         }
     }
 
