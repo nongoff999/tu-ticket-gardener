@@ -172,7 +172,13 @@
             </div>
             <h3 class="popup-title" id="popup-title">Title</h3>
             <p class="popup-message" id="popup-message">Message</p>
-            <button class="popup-btn primary" onclick="closePopup()">ตกลง</button>
+            <div class="popup-actions"
+                style="display: flex; gap: 0.75rem; width: 100%; justify-content: flex-end; margin-top: 1rem;">
+                <button class="popup-btn secondary" id="popup-cancel-btn" onclick="closePopup()"
+                    style="display: none; background: #f1f5f9; color: #64748b; flex: 1;">ยกเลิก</button>
+                <button class="popup-btn primary" id="popup-confirm-btn" onclick="closePopup()"
+                    style="flex: 1;">ตกลง</button>
+            </div>
         </div>
     </div>
 

@@ -177,29 +177,52 @@ function updateHeaderNav(isSubPage = false) {
 }
 
 // Global Popup Functions
+// Global Popup Functions
 function showPopup(title, message, type = 'info', onConfirm = null) {
     const popup = document.getElementById('custom-popup');
     const iconContainer = document.getElementById('popup-icon');
     const iconSpan = iconContainer.querySelector('span');
     const titleEl = document.getElementById('popup-title');
     const messageEl = document.getElementById('popup-message');
-    const btn = popup.querySelector('.popup-btn');
+
+    // Buttons (Updated IDs from index.html change)
+    const confirmBtn = document.getElementById('popup-confirm-btn');
+    const cancelBtn = document.getElementById('popup-cancel-btn');
 
     // Set content
     titleEl.textContent = title;
     messageEl.textContent = message;
 
     // Set icon and style
-    iconContainer.className = 'popup-icon ' + type;
+    iconContainer.className = 'popup-icon ' + (type === 'confirm' ? 'warning' : type);
+
     if (type === 'success') iconSpan.textContent = 'check_circle';
     else if (type === 'error') iconSpan.textContent = 'error';
+    else if (type === 'confirm') iconSpan.textContent = 'help';
     else iconSpan.textContent = 'info';
+
+    // Toggle Cancel Button
+    if (type === 'confirm') {
+        cancelBtn.style.display = 'block';
+        confirmBtn.textContent = 'ยืนยัน';
+        confirmBtn.className = 'popup-btn primary'; // You might want danger if delete?
+        // If it's a delete confirmation, usually red. But let's keep it primary for now or detect keyword?
+        if (title.includes('ลบ')) {
+            confirmBtn.style.backgroundColor = '#ef4444';
+        } else {
+            confirmBtn.style.backgroundColor = ''; // Reset to CSS default (primary color)
+        }
+    } else {
+        cancelBtn.style.display = 'none';
+        confirmBtn.textContent = 'ตกลง';
+        confirmBtn.style.backgroundColor = '';
+    }
 
     // Show
     popup.classList.add('active');
 
     // Handle button click
-    btn.onclick = function () {
+    confirmBtn.onclick = function () {
         closePopup();
         if (onConfirm) onConfirm();
     };
@@ -2763,20 +2786,19 @@ window.removeUploadedImage = removeUploadedImage;
 
 // Delete Ticket Function
 window.deleteTicket = function (id) {
-    if (confirm('ยืนยันที่จะลบทิคเก็ตนี้หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้')) {
+    showPopup('ลบข้อมูลทิคเก็ต', 'คุณแน่ใจหรือไม่ที่จะลบทิคเก็ตนี้? การกระทำนี้ไม่สามารถย้อนกลับได้', 'confirm', () => {
         const index = MOCK_DATA.tickets.findIndex(t => t.id === id);
         if (index > -1) {
             MOCK_DATA.tickets.splice(index, 1);
             saveData();
             showPopup('ลบข้อมูลสำเร็จ', 'ทิคเก็ตถูกลบออกจากระบบแล้ว', 'success', () => {
-                // Navigate back to history or dashboard
-                // Check history length to decide? For now, Dashboard is safe.
+                // Navigate back to dashboard
                 router.navigate('/dashboard');
             });
         } else {
             showPopup('เกิดข้อผิดพลาด', 'ไม่พบข้อมูลทิคเก็ตในระบบ', 'error');
         }
-    }
+    });
 };
 
 /* Fallen Tree Report Logic */
