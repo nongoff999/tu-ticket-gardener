@@ -581,6 +581,10 @@ function generateChartSVG(period, dateStr) {
 
     // Generate X-axis labels HTML
     let labelsHTML = '';
+
+    // Add Axis Line
+    const axisLine = `<line x1="0" y1="${height}" x2="${width}" y2="${height}" stroke="#e5e7eb" stroke-width="2" />`;
+
     data.labels.forEach((label, index) => {
         if (!label) return;
         const x = (index / (data.labels.length - 1)) * 100;
@@ -589,15 +593,16 @@ function generateChartSVG(period, dateStr) {
         if (index === 0) anchor = 'start';
         if (index === data.labels.length - 1) anchor = 'end';
 
-        labelsHTML += `<text x="${x}" y="15" font-size="7" fill="#6b7280" text-anchor="${anchor}">${label}</text>`;
+        labelsHTML += `<text x="${x}" y="15" font-size="9" font-weight="500" fill="#333333" text-anchor="${anchor}">${label}</text>`;
     });
 
     return `
-        <div style="position: relative; height: 14rem; margin-bottom: 0.5rem;">
-            <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" style="width: 100%; height: 90%; display: block;">
+        <div style="position: relative; height: 16rem; margin-bottom: 0.5rem;">
+            <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" style="width: 100%; height: 85%; display: block; overflow: visible;">
+                ${axisLine}
                 ${pathsHTML}
             </svg>
-            <div style="height: 10%; width: 100%;">
+            <div style="height: 15%; width: 100%; margin-top: 0.5rem;">
                 <svg viewBox="0 0 100 20" style="width: 100%; height: 100%; overflow: visible; display: block;">
                     ${labelsHTML}
                 </svg>
