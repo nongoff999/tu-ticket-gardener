@@ -1932,20 +1932,9 @@ function renderReportList() {
                 <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
             </div>
         </div>
-
-        <div id="reports-calendar-container" style="margin-top: 2rem; padding: 0 1rem;"></div>
         
         <div style="height: 5rem;"></div>
     `;
-
-    // Initialize calendar report
-    if (!window.calendarState) {
-        window.calendarState = {
-            currentMonth: new Date().getMonth(),
-            currentYear: new Date().getFullYear()
-        };
-    }
-    renderCalendar();
 }
 
 function openReportDetail(type) {
@@ -2149,19 +2138,8 @@ function renderReportDetail() {
         return;
     }
 
-    document.getElementById('page-title').textContent = 'รายงานสรุปต้นไม้โค่นล้มฯ';
-
-    const content = document.getElementById('main-content');
-
-    // Initialize calendar state if not exists
-    if (!window.calendarState) {
-        window.calendarState = {
-            currentMonth: new Date().getMonth(),
-            currentYear: new Date().getFullYear()
-        };
-    }
-
-    renderCalendar();
+    // Default to summary if no report selected
+    renderDailySummaryReport(AppState.selectedDate);
 }
 
 function renderDailySummaryReport(dateStr) {
@@ -2188,12 +2166,15 @@ function renderDailySummaryReport(dateStr) {
 
     content.innerHTML = `
         <div class="report-detail-container">
-            <!-- 1. Date Selector (MOVE TO TOP) -->
-            <div style="background: white; padding: 1.5rem; border-radius: 1rem; box-shadow: var(--shadow-md); margin-bottom: 2rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h3 style="font-size: 1rem; font-weight: 700;">เลือกวันที่ต้องการดูรายงาน</h3>
+            <!-- Simple Date Selector for Gardeners -->
+            <div style="background: white; padding: 1.25rem; border-radius: 1rem; box-shadow: var(--shadow-md); margin-bottom: 1.5rem; border: 1px solid var(--border);">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                    <span class="material-symbols-outlined" style="color: var(--primary);">calendar_month</span>
+                    <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary);">เลือกวันที่ต้องการดูรายงาน</h3>
                 </div>
-                <input type="date" value="${dateStr}" onchange="AppState.selectedDate = this.value; renderDailySummaryReport(this.value)" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-family: inherit;">
+                <input type="date" value="${dateStr}" 
+                       onchange="AppState.selectedDate = this.value; renderDailySummaryReport(this.value)" 
+                       style="width: 100%; padding: 1rem; border: 2px solid var(--primary); border-radius: 0.75rem; font-family: inherit; font-size: 1.125rem; font-weight: 600; color: var(--text-primary); outline: none;">
             </div>
 
             <!-- 2. Report Paper (STAY IN MIDDLE) -->
@@ -2370,7 +2351,7 @@ function renderCalendar() {
             `;
         }
 
-        const clickHandler = hasData ? `onclick="downloadDailyReport('${dateKey}')"` : '';
+        const clickHandler = hasData ? `onclick="viewDailySummary('${dateKey}')"` : '';
         const hoverStyle = hasData ? 'onmouseover="this.style.transform=\'scale(1.05)\'; this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.15)\';" onmouseout="this.style.transform=\'scale(1)\'; this.style.boxShadow=\'none\';"' : '';
 
         calendarHTML += `
@@ -2388,7 +2369,7 @@ function renderCalendar() {
             <div style="display: flex; align-items: start; gap: 0.75rem;">
                 <span class="material-symbols-outlined" style="color: var(--primary); font-size: 1.25rem;">info</span>
                 <div style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6;">
-                    <strong style="color: var(--primary);">คลิกที่วันที่มีข้อมูล</strong> เพื่อดาวน์โหลดรายงาน Excel ของวันนั้น<br>
+                    <strong style="color: var(--primary);">คลิกที่วันที่มีข้อมูล</strong> เพื่อดูรายงานสรุปประจำวัน<br>
                     • สีน้ำเงิน = มีข้อมูลวันนั้น<br>
                     • ตัวเลข = จำนวนเคส / จำนวนต้นไม้<br>
                     • ⚠ = มีต้นไม้โค่นล้ม
@@ -2430,6 +2411,14 @@ function changeMonth(delta) {
     renderCalendar();
 }
 window.changeMonth = changeMonth;
+
+// Helper to view daily summary instead of direct download
+function viewDailySummary(dateStr) {
+    AppState.selectedDate = dateStr;
+    AppState.selectedReport = 'summary';
+    router.navigate('/report-detail');
+}
+window.viewDailySummary = viewDailySummary;
 
 
 
