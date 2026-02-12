@@ -243,6 +243,25 @@ function renderDashboard() {
             ${Components.statCard('เสร็จสิ้น', stats.completed, 'green', 'task_alt')}
         </div>
 
+        <!-- Quick Actions -->
+        <div style="margin-top: 1.5rem; margin-bottom: 1rem;">
+            <h3 style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; padding-left: 0.25rem;">Quick Actions</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+                <div onclick="router.navigate('/add-select')" style="background: white; padding: 1.25rem; border-radius: 1rem; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; cursor: pointer; box-shadow: var(--shadow-sm); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div style="width: 3rem; height: 3rem; background: #e0f2fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #0284c7;">
+                        <span class="material-symbols-outlined" style="font-size: 1.75rem;">add</span>
+                    </div>
+                    <span style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem;">Add Ticket</span>
+                </div>
+                <div onclick="router.navigate('/reports')" style="background: white; padding: 1.25rem; border-radius: 1rem; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; cursor: pointer; box-shadow: var(--shadow-sm); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div style="width: 3rem; height: 3rem; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #475569;">
+                        <span class="material-symbols-outlined" style="font-size: 1.75rem;">analytics</span>
+                    </div>
+                    <span style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem;">View Reports</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Period Tabs -->
         <div class="period-tabs">
             <button class="period-tab ${AppState.dashboardPeriod === 'DAY' ? 'active' : ''}" data-period="DAY">DAY</button>
