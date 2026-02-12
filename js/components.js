@@ -131,12 +131,9 @@ const Components = {
         `;
     },
 
-    // Weekly Calendar Selector with Navigation
-    weeklyCalendar(selectedDateStr) {
-        const days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+    // Period Calendar Selector (Day/Week/Month)
+    periodCalendar(selectedDateStr, period) {
         const selectedDate = new Date(selectedDateStr);
-        const startOfWeek = new Date(selectedDate);
-        startOfWeek.setDate(selectedDate.getDate() - selectedDate.getDay()); // Start from Sunday
 
         let html = `
             <div class="weekly-calendar-container" style="display: flex; align-items: center; gap: 0.5rem; background: white; padding: 0.5rem; border-radius: 1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
@@ -146,21 +143,58 @@ const Components = {
                 <div class="weekly-calendar" style="display: flex; flex: 1; justify-content: space-between; gap: 0.25rem; padding: 0.5rem; background: transparent; box-shadow: none;">
         `;
 
-        for (let i = 0; i < 7; i++) {
-            const date = new Date(startOfWeek);
-            date.setDate(startOfWeek.getDate() + i);
-            const dateStr = date.toISOString().split('T')[0];
-            const isActive = dateStr === selectedDateStr;
-            const isToday = dateStr === new Date().toISOString().split('T')[0];
+        if (period === 'MONTH') {
+            const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+            // Show 5 months centered
+            const range = [-2, -1, 0, 1, 2];
+            const currentYear = selectedDate.getFullYear();
+            const currentMonth = selectedDate.getMonth();
 
-            html += `
-                <div class="calendar-day ${isActive ? 'active' : ''} ${isToday ? 'today' : ''}" data-date="${dateStr}" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.25rem; cursor: pointer; border-radius: 0.5rem; padding: 0.25rem 0; transition: all 0.2s;">
-                    <span class="day-name" style="font-size: 0.7rem; color: var(--text-secondary);">${days[date.getDay()]}</span>
-                    <div class="day-number-circle" style="width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.875rem; font-weight: 500; ${isActive ? 'background: var(--primary); color: white;' : isToday ? 'border: 1px solid var(--primary); color: var(--primary);' : 'color: var(--text-primary);'}">
-                        ${date.getDate()}
+            for (let i of range) {
+                // Determine month/year for this slot
+                let d = new Date(currentYear, currentMonth + i, 1);
+                let mIndex = d.getMonth();
+                let y = d.getFullYear(); // AD
+
+                const dateStr = d.toISOString().split('T')[0]; // First day of that month
+                const isActive = i === 0;
+
+                // Check if this slot represents the actual current calendar month (Today)
+                const today = new Date();
+                const isCurrentMonth = (today.getMonth() === mIndex && today.getFullYear() === y);
+
+                html += `
+                    <div class="calendar-day ${isActive ? 'active' : ''} ${isCurrentMonth ? 'today' : ''}" data-date="${dateStr}" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; cursor: pointer; border-radius: 0.5rem; padding: 0.5rem 0; transition: all 0.2s; min-height: 3.5rem;">
+                        <span class="day-name" style="font-size: 0.7rem; color: var(--text-secondary);">${y + 543}</span>
+                        <div style="font-size: 1rem; font-weight: 600; ${isActive ? 'color: var(--primary);' : 'color: var(--text-primary);'}">
+                            ${thaiMonths[mIndex]}
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
+
+        } else {
+            // Week/Day View
+            const days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+            const startOfWeek = new Date(selectedDate);
+            startOfWeek.setDate(selectedDate.getDate() - selectedDate.getDay()); // Start from Sunday
+
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(startOfWeek);
+                date.setDate(startOfWeek.getDate() + i);
+                const dateStr = date.toISOString().split('T')[0];
+                const isActive = dateStr === selectedDateStr;
+                const isToday = dateStr === new Date().toISOString().split('T')[0];
+
+                html += `
+                    <div class="calendar-day ${isActive ? 'active' : ''} ${isToday ? 'today' : ''}" data-date="${dateStr}" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.25rem; cursor: pointer; border-radius: 0.5rem; padding: 0.25rem 0; transition: all 0.2s;">
+                        <span class="day-name" style="font-size: 0.7rem; color: var(--text-secondary);">${days[date.getDay()]}</span>
+                        <div class="day-number-circle" style="width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.875rem; font-weight: 500; ${isActive ? 'background: var(--primary); color: white;' : isToday ? 'border: 1px solid var(--primary); color: var(--primary);' : 'color: var(--text-primary);'}">
+                            ${date.getDate()}
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         html += `

@@ -231,8 +231,8 @@ function renderDashboard() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Weekly Calendar -->
-        ${Components.weeklyCalendar(AppState.selectedDate)}
+        <!-- Period Calendar -->
+        ${Components.periodCalendar(AppState.selectedDate, AppState.dashboardPeriod)}
 
         <!-- Stats Grid -->
         <div class="stats-grid" style="margin-top: -1rem;">
@@ -257,26 +257,18 @@ function renderDashboard() {
             
             ${generateChartSVG(AppState.dashboardPeriod, AppState.selectedDate)}
             
-            <div class="chart-legend" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-top: 1rem;">
+            <div class="chart-legend" style="display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem;">
                 <div class="chart-legend-item">
-                    <div class="chart-legend-color" style="background: #0ea5e9;"></div>
-                    <span class="chart-legend-text">รายวัน/สัปดาห์/เดือน</span>
-                </div>
-                <div class="chart-legend-item">
-                    <div class="chart-legend-color" style="background: #FBBF24;"></div>
-                    <span class="chart-legend-text">ใหม่วันนี้</span>
+                    <div class="chart-legend-color" style="background: #fb7185;"></div>
+                    <span class="chart-legend-text">ยังไม่ดำเนินการ (${AppState.dashboardPeriod === 'DAY' ? 'วันนี้' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์นี้' : 'เดือนนี้'})</span>
                 </div>
                 <div class="chart-legend-item">
                     <div class="chart-legend-color" style="background: #a78bfa;"></div>
-                    <span class="chart-legend-text">ระหว่างดำเนินการ</span>
-                </div>
-                <div class="chart-legend-item">
-                    <div class="chart-legend-color" style="background: #fb7185;"></div>
-                    <span class="chart-legend-text">ยังไม่ดำเนินการ</span>
+                    <span class="chart-legend-text">ระหว่างดำเนินการ (${AppState.dashboardPeriod === 'DAY' ? 'วันนี้' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์นี้' : 'เดือนนี้'})</span>
                 </div>
                 <div class="chart-legend-item">
                     <div class="chart-legend-color" style="background: #10B981;"></div>
-                    <span class="chart-legend-text">เสร็จสิ้น</span>
+                    <span class="chart-legend-text">เสร็จสิ้น (${AppState.dashboardPeriod === 'DAY' ? 'วันนี้' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์นี้' : 'เดือนนี้'})</span>
                 </div>
             </div>
         </div>
@@ -566,7 +558,7 @@ function generateChartSVG(period, dateStr) {
     };
 
     let pathsHTML = '';
-    const seriesOrder = ['total', 'new', 'inProgress', 'pending', 'completed']; // Render order
+    const seriesOrder = ['inProgress', 'pending', 'completed']; // Render order: Purple, Red, Green
 
     // Draw lines
     seriesOrder.forEach(key => {
