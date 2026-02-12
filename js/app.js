@@ -1823,8 +1823,8 @@ function renderCategorySelection() {
 
                 <!-- Gardener Card (Active) -->
                 <div class="category-card active gardener" onclick="router.navigate('/add')">
-                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAteNisuFGxXvz5p3iZfrBglXaOjnXcduPhkx3UbVYLuG6KUXONqFjg7xb4O5akv1m3F7sZJn9iry-SbLukeHDNcllzeHliu_xWfpPXxM6U55eF1r2oGCOlAfT-q48s_cI0o-Q63Krq6I5LTs6CenOiNTUiFkf1YVyvFyB8nRTiV2Dp9OQcYVNgf1BNGnI0fdOqRa45jfd5g-oIaRvhZ72xA37NJ8PS3TaqCpgQ1xuUD7WnmJZceDEM17WNSX5ZYY6DpS_jmdwyrXQ" 
-                         alt="Gardener in Lush Green Garden" class="category-card-img">
+                    <img src="images/gardener_officer.jpg" 
+                         alt="Professional TU Gardener" class="category-card-img">
                     <div class="category-card-overlay">
                         <p class="category-subtitle">TICKET</p>
                         <h3 class="category-title">Gardener</h3>
