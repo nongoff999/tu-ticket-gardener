@@ -2202,11 +2202,8 @@ function renderDailySummaryReport(dateStr) {
 
             <!-- Report Paper UI -->
             <div class="report-paper" id="report-paper">
-                <div class="report-paper-logo">
-                    <img src="https://itdept.psm.tu.ac.th/tu-ticket/assets/img/tu-logo.png" alt="TU Logo" style="height: 48px; object-fit: contain;">
-                    <div style="background: #84cc16; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; height: 48px; min-width: 64px; text-align: center; line-height: 1.2;">
-                        ทรัพย์<br>สิน
-                    </div>
+                <div class="report-paper-logo" style="right: 1.5rem; top: 1.5rem;">
+                    <img src="https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-02-ไม่มีธรรมจักร-scaled.png" alt="TU PSM Logo" style="height: 70px; object-fit: contain;">
                 </div>
 
                 <div class="report-paper-header">
