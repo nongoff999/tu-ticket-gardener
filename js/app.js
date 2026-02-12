@@ -587,13 +587,13 @@ function generateChartSVG(period, dateStr) {
 
     data.labels.forEach((label, index) => {
         if (!label) return;
-        const x = (index / (data.labels.length - 1)) * 100;
+        const x = (index / (data.labels.length - 1)) * 300; // Use 300 width to match chart
         // Adjust text alignment based on position
         let anchor = 'middle';
         if (index === 0) anchor = 'start';
         if (index === data.labels.length - 1) anchor = 'end';
 
-        labelsHTML += `<text x="${x}" y="15" font-size="9" font-weight="500" fill="#333333" text-anchor="${anchor}">${label}</text>`;
+        labelsHTML += `<text x="${x}" y="15" font-size="10" fill="#4B5563" text-anchor="${anchor}">${label}</text>`;
     });
 
     return `
@@ -603,7 +603,8 @@ function generateChartSVG(period, dateStr) {
                 ${pathsHTML}
             </svg>
             <div style="height: 15%; width: 100%; margin-top: 0.5rem;">
-                <svg viewBox="0 0 100 20" style="width: 100%; height: 100%; overflow: visible; display: block;">
+                <!-- Updated viewBox to 300 width -->
+                <svg viewBox="0 0 300 20" style="width: 100%; height: 100%; overflow: visible; display: block;">
                     ${labelsHTML}
                 </svg>
             </div>
