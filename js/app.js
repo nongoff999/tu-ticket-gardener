@@ -2861,7 +2861,7 @@ async function downloadDailyReport(dateStr) {
 
     // Add Logo (Top Left)
     try {
-        const logoUrl = 'https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-02-ไม่มีธรรมจักร-scaled.png';
+        const logoUrl = 'images/tu_logo.png';
         const logoResponse = await fetch(logoUrl);
         const logoBuffer = await logoResponse.arrayBuffer();
         const logoId = workbook.addImage({
