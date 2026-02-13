@@ -2532,17 +2532,94 @@ function renderDailySummaryReport(dateStr) {
                     <span class="material-symbols-outlined">download</span>
                     ดาวน์โหลดรายละเอียด (Excel)
                 </button>
+                <button onclick="downloadDailyImages('${dateStr}')" class="btn-report btn-report-excel" style="background:var(--secondary); color:white; border-color:var(--secondary);">
+                    <span class="material-symbols-outlined">imagesmode</span>
+                    ดาวน์โหลดรูปภาพ (ZIP)
+                </button>
                 <button onclick="window.print()" class="btn-report btn-report-download">
                     <span class="material-symbols-outlined">print</span>
                     พิมพ์รายงานสรุป (PDF)
                 </button>
             </div>
-
+            
             <div style="height: 5rem;"></div>
         </div>
     `;
 }
 
+
+// Function to download all images as ZIP
+async function downloadDailyImages(dateStr) {
+    if (typeof JSZip === 'undefined' || typeof saveAs === 'undefined') {
+        showPopup('ข้อผิดพลาด', 'ไลบรารี ZIP ไม่พร้อมใช้งาน', 'error');
+        return;
+    }
+
+    showPopup('กำลังเตรียมรูปภาพ', 'กำลังรวบรวมและบีบอัดรูปภาพ อาจใช้เวลาสักครู่...', 'info');
+
+    try {
+        const zip = new JSZip();
+        // Standardize YYYY-MM-DD
+        const searchDate = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+
+        // Find tickets
+        const tickets = MOCK_DATA.tickets.filter(t => t.date && t.date.startsWith(searchDate));
+
+        if (tickets.length === 0) {
+            showPopup('ไม่พบข้อมูล', 'ไม่มีรูปภาพในวันที่เลือก', 'warning');
+            return;
+        }
+
+        let imageCount = 0;
+        const promises = [];
+
+        tickets.forEach(ticket => {
+            if (ticket.images && ticket.images.length > 0) {
+                ticket.images.forEach((imgUrl, index) => {
+                    imageCount++;
+                    // Assume jpg if generic, or extract from url
+                    let ext = 'jpg';
+                    if (imgUrl.includes('.png')) ext = 'png';
+
+                    const filename = `Ticket_${ticket.id}_Image${index + 1}.${ext}`;
+
+                    // Fetch image from URL
+                    const p = fetch(imgUrl, { mode: 'cors' })
+                        .then(resp => {
+                            if (!resp.ok) throw new Error('Fetch failed');
+                            return resp.blob();
+                        })
+                        .then(blob => {
+                            zip.file(filename, blob);
+                        })
+                        .catch(err => {
+                            console.error(`Failed to load ${imgUrl}`, err);
+                            zip.file(`Ticket_${ticket.id}_Image${index + 1}_Error.txt`, `Failed to load image: ${imgUrl}\nError: ${err.message}`);
+                        });
+                    promises.push(p);
+                });
+            }
+        });
+
+        if (imageCount === 0) {
+            showPopup('ไม่พบรูปภาพ', 'ไม่มีรูปภาพในทิคเก็ตของวันนี้', 'warning');
+            return;
+        }
+
+        await Promise.all(promises);
+
+        const content = await zip.generateAsync({ type: 'blob' });
+        const zipName = `TU_Ticket_Images_${searchDate}.zip`;
+        saveAs(content, zipName);
+
+        showPopup('สำเร็จ', `ดาวน์โหลดรูปภาพเรียบร้อย (${imageCount} รูป)`, 'success');
+
+    } catch (e) {
+        console.error(e);
+        showPopup('เกิดข้อผิดพลาด', 'ไม่สามารถดาวน์โหลดรูปภาพได้: ' + e.message, 'error');
+    }
+}
+window.downloadDailyImages = downloadDailyImages;
 
 function renderCalendar() {
     const { currentMonth, currentYear } = window.calendarState;
