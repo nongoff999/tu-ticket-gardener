@@ -2161,3 +2161,67 @@ body.login-mode #main-content {
         transform: translateY(0);
     }
 }
+
+/* Report Actions & Buttons */
+.report-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 2rem;
+    padding: 0 1rem;
+}
+
+.btn-report {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border-radius: 9999px;
+    /* Pill shape */
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+    /* Default border */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    text-decoration: none;
+}
+
+.btn-report:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    filter: brightness(1.05);
+}
+
+.btn-report:active {
+    transform: translateY(0);
+}
+
+.btn-report-excel {
+    background-color: #10b981;
+    /* Emerald 500 */
+    color: white;
+    border-color: #059669;
+    /* Emerald 600 */
+}
+
+.btn-report-download {
+    /* Print/PDF */
+    background-color: #475569;
+    /* Slate 600 */
+    color: white;
+    border-color: #334155;
+    /* Slate 700 */
+}
+
+.btn-report-images {
+    background-color: #f59e0b;
+    /* Amber 500 */
+    color: white;
+    border-color: #d97706;
+    /* Amber 600 */
+}

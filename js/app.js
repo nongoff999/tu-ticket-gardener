@@ -2532,7 +2532,7 @@ function renderDailySummaryReport(dateStr) {
                     <span class="material-symbols-outlined">download</span>
                     ดาวน์โหลดรายละเอียด (Excel)
                 </button>
-                <button onclick="downloadDailyImages('${dateStr}')" class="btn-report btn-report-excel" style="background:var(--secondary); color:white; border-color:var(--secondary);">
+                <button onclick="downloadDailyImages('${dateStr}')" class="btn-report btn-report-images">
                     <span class="material-symbols-outlined">imagesmode</span>
                     ดาวน์โหลดรูปภาพ (ZIP)
                 </button>
