@@ -2225,12 +2225,3 @@ body.login-mode #main-content {
     border-color: #d97706;
     /* Amber 600 */
 }
-
-/* Urgent Stats Card */
-.stat-card.red {
-    background: #FEE2E2;
-}
-
-.stat-card.red .stat-card-label {
-    color: #DC2626;
-}
