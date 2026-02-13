@@ -2484,7 +2484,7 @@ function renderDailySummaryReport(dateStr) {
             <!-- 2. Report Paper (STAY IN MIDDLE) -->
             <div class="report-paper" id="report-paper" style="margin-bottom: 2rem;">
                 <div class="report-paper-logo" style="left: 1.5rem; top: 1.5rem;">
-                    <img src="https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-02-ไม่มีธรรมจักร-scaled.png" alt="TU PSM Logo" style="height: 70px; object-fit: contain;">
+                    <img src="https://psm.tu.ac.th/wp-content/uploads/2025/06/ทรัพย์สิน-02-ไม่มีธรรมจักร-scaled.png" crossOrigin="anonymous" alt="TU PSM Logo" style="height: 70px; object-fit: contain;">
                 </div>
 
                 <div class="report-paper-header">
@@ -3507,15 +3507,57 @@ async function downloadReportAsImage(dateStr) {
         return;
     }
 
-    showPopup('กำลังบันทึกรูปภาพ', 'กำลังสร้างไฟล์รูปภาพ...', 'info');
+    showPopup('กำลังบันทึกรูปภาพ', 'กำลังเตรียมรูปภาพและสร้างไฟล์...', 'info');
+
+    // Helper to load image as base64 to bypass some CORS issues in html2canvas
+    const loadImage = async (img) => {
+        try {
+            if (img.src.startsWith('data:')) return; // Already base64
+
+            // Try fetching with CORS
+            const response = await fetch(img.src, { mode: 'cors' });
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const blob = await response.blob();
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    img.dataset.originalSrc = img.src;
+                    img.src = reader.result;
+                    resolve();
+                };
+                reader.readAsDataURL(blob);
+            });
+        } catch (e) {
+            console.warn('Failed to load image for canvas:', img.src, e);
+            // If fetch fails, try adding crossOrigin='anonymous' effectively (already done in HTML),
+            // but simply continue and let html2canvas try its best
+        }
+    };
 
     try {
-        // Use html2canvas to capture the element
+        // Pre-process images: Convert remote URLs to Base64
+        const images = Array.from(element.querySelectorAll('img'));
+        await Promise.all(images.map(img => loadImage(img)));
+
+        // Slight delay to ensure DOM updates with base64 sources
+        await new Promise(r => setTimeout(r, 100));
+
+        // Use html2canvas
         const canvas = await html2canvas(element, {
             scale: 2, // Higher resolution
             useCORS: true, // Allow cross-origin images
             logging: false,
-            backgroundColor: '#ffffff' // Ensure white background
+            backgroundColor: '#ffffff', // Ensure white background
+            allowTaint: false // Tainted canvas cannot be exported
+        });
+
+        // Restore original image sources immediately
+        images.forEach(img => {
+            if (img.dataset.originalSrc) {
+                img.src = img.dataset.originalSrc;
+                delete img.dataset.originalSrc;
+            }
         });
 
         canvas.toBlob(blob => {
@@ -3531,6 +3573,15 @@ async function downloadReportAsImage(dateStr) {
     } catch (error) {
         console.error(error);
         showPopup('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกเป็นรูปภาพได้: ' + error.message, 'error');
+
+        // Ensure images are restored even if error
+        const images = Array.from(element.querySelectorAll('img'));
+        images.forEach(img => {
+            if (img.dataset.originalSrc) {
+                img.src = img.dataset.originalSrc;
+                delete img.dataset.originalSrc;
+            }
+        });
     }
 }
 window.downloadReportAsImage = downloadReportAsImage;
