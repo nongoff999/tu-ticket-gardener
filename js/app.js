@@ -126,31 +126,38 @@ function renderLogin() {
     const content = document.getElementById('main-content');
     content.innerHTML = `
         <div class="login-card">
-            <div class="login-brand">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Emblem_of_Thammasat_University.svg/1200px-Emblem_of_Thammasat_University.svg.png" alt="TU Logo" class="login-logo">
-                <h1 class="login-title">TU Ticket Gardener</h1>
-                <p class="login-subtitle">ระบบบริหารจัดการสวน มหาวิทยาลัยธรรมศาสตร์</p>
+            <div class="login-brand-header">
+                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Emblem_of_Thammasat_University.svg/1200px-Emblem_of_Thammasat_University.svg.png" alt="TU Logo" class="login-logo" style="width: 50px; height: 50px; margin-bottom: 0;">
+                 <div style="display: flex; align-items: baseline; gap: 4px;">
+                     <span class="brand-tu">TU</span>
+                     <span class="brand-separator">:</span>
+                     <span class="brand-ticket">TICKET</span>
+                 </div>
             </div>
+            
+            <h2 class="login-title">Log in</h2>
             
             <form class="login-form" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label>TU Username (AD Account)</label>
-                    <input type="text" class="login-input" placeholder="e.g. somchai.k" required autofocus>
+                    <input type="text" class="login-input" placeholder="User name or email *" required autofocus>
                 </div>
                 <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" class="login-input" placeholder="••••••••" required>
+                    <input type="password" class="login-input" placeholder="Password *" required>
                 </div>
                 
-                <button type="submit" class="login-btn">
-                    เข้าสู่ระบบ
-                    <span class="material-symbols-outlined">arrow_forward</span>
-                </button>
+                <div class="login-options">
+                    <label class="remember-me">
+                        <input type="checkbox" class="remember-checkbox">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-link" onclick="showPopup('ยังไม่เปิดให้บริการ', 'ระบบกู้คืนรหัสผ่านกำลังพัฒนา', 'info'); return false;">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="login-btn">Log in</button>
             </form>
             
             <div class="login-footer">
-                &copy; 2024 Thammasat University. All rights reserved.<br>
-                Property Management Office (Rangsit Center)
+                Not a member yet ? <a href="#" onclick="showPopup('ยังไม่เปิดให้บริการ', 'ระบบลงทะเบียนใหม่กำลังพัฒนา', 'info'); return false;">Email activation</a>
             </div>
         </div>
     `;

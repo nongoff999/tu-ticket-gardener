@@ -1,0 +1,185 @@
+/* Custom Login Styles for "TU TICKET" Design */
+
+/* Override previous login styles if any */
+body.login-mode header,
+body.login-mode aside,
+body.login-mode .bottom-nav {
+    display: none !important;
+}
+
+body.login-mode #main-content {
+    margin-left: 0 !important;
+    padding: 0 !important;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc;
+    /* Soft Background Shapes */
+    background-image:
+        radial-gradient(circle at 0% 100%, rgba(254, 240, 138, 0.4) 0%, transparent 40%),
+        /* Yellow Bottom Left */
+        radial-gradient(circle at 100% 100%, rgba(233, 213, 255, 0.4) 0%, transparent 40%);
+    /* Purple Bottom Right */
+    background-attachment: fixed;
+}
+
+.login-brand-header {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Logo Text Style */
+.brand-tu {
+    font-weight: 800;
+    color: #DC2626;
+    font-size: 1.75rem;
+}
+
+.brand-separator {
+    font-weight: 300;
+    color: #CBD5E1;
+    font-size: 1.75rem;
+}
+
+.brand-ticket {
+    font-weight: 700;
+    color: #94A3B8;
+    font-size: 1.75rem;
+    letter-spacing: 0.05em;
+}
+
+.login-card {
+    background: white;
+    width: 100%;
+    max-width: 480px;
+    /* Wider card */
+    padding: 3rem 2.5rem;
+    border-radius: 0.5rem;
+    /* Less rounded than before */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    /* Soft shadow */
+    text-align: left;
+    /* Alignment left */
+    animation: slideUp 0.5s ease-out;
+}
+
+.login-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 2rem;
+}
+
+.login-form .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.login-input {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background: #F1F5F9;
+    /* Light Grey Background */
+    color: #334155;
+    transition: all 0.2s;
+}
+
+.login-input::placeholder {
+    color: #94A3B8;
+}
+
+.login-input:focus {
+    outline: none;
+    background: #E2E8F0;
+    box-shadow: 0 0 0 2px rgba(99, 197, 241, 0.3);
+    /* Blue focus ring */
+}
+
+/* Remember & Forgot Row */
+.login-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.remember-checkbox {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0.25rem;
+    border: 1px solid #CBD5E1;
+    background: #F1F5F9;
+    cursor: pointer;
+}
+
+.forgot-link {
+    color: #3B82F6;
+    /* Link Blue */
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 0.875rem;
+    background: #63C5F1;
+    /* Sky Blue from screenshot */
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0;
+    display: block;
+    /* Ensure block */
+}
+
+.login-btn:hover {
+    background: #38bdf8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 197, 241, 0.4);
+}
+
+.login-footer {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: #1e293b;
+    text-align: left;
+}
+
+.login-footer a {
+    color: #3B82F6;
+    text-decoration: none;
+    margin-left: 0.25rem;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
