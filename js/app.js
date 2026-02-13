@@ -375,11 +375,10 @@ function renderDashboard() {
 
         <!-- Stats Grid -->
         <div class="stats-grid">
-            ${Components.statCard(`ทิคเก็ตราย${AppState.dashboardPeriod === 'DAY' ? 'วัน' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : 'เดือน'}`, stats.total, 'blue', 'dashboard')}
-            ${Components.statCard('ทิคเก็ตใหม่วันนี้', stats.new, 'yellow', 'notification_important')}
+            ${Components.statCard('ทิคเก็ตคงค้าง', stats.allWaiting, 'yellow', 'notification_important')}
             ${Components.statCard('ระหว่างดำเนินการ', stats.inProgress, 'purple', 'settings_suggest')}
-            ${Components.statCard('ยังไม่ดำเนินการ', stats.pending, 'pink', 'pending_actions')}
-            ${Components.statCard('เสร็จสิ้น', stats.completed, 'green', 'task_alt')}
+            ${Components.statCard('งานเร่งด่วน', stats.urgent, 'red', 'warning')}
+            ${Components.statCard('งานทั่วไป', stats.normal, 'blue', 'info')}
         </div>
 
         <!-- Quick Actions -->
@@ -497,49 +496,25 @@ function navigatePeriod(direction) {
 }
 
 function getStatsForPeriod(period, dateStr) {
-    const date = new Date(dateStr);
-    let tickets = [];
+    const tickets = MOCK_DATA.tickets;
 
-    if (period === 'DAY') {
-        // Same day tickets
-        tickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr));
-    } else if (period === 'WEEK') {
-        // Get week range
-        const startOfWeek = new Date(date);
-        startOfWeek.setDate(date.getDate() - date.getDay()); // Start from Sunday
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
+    // 1. All Waiting (New + Pending) - All Time
+    const allWaiting = tickets.filter(t => t.status === 'new' || t.status === 'pending').length;
 
-        tickets = MOCK_DATA.tickets.filter(t => {
-            const ticketDate = new Date(t.date);
-            return ticketDate >= startOfWeek && ticketDate <= endOfWeek;
-        });
-    } else if (period === 'MONTH') {
-        // Same month tickets
-        const year = date.getFullYear();
-        const month = date.getMonth();
+    // 2. In Progress - All Time
+    const inProgress = tickets.filter(t => t.status === 'inProgress').length;
 
-        tickets = MOCK_DATA.tickets.filter(t => {
-            const ticketDate = new Date(t.date);
-            return ticketDate.getFullYear() === year && ticketDate.getMonth() === month;
-        });
-    }
+    // 3. Urgent - Active
+    const urgent = tickets.filter(t => t.status !== 'completed' && t.priority === 'urgent').length;
 
-    // สำหรับ "ยังไม่ดำเนินการ" = ทิคเก็ตที่ยังไม่มีใครเข้าไปจัดการเลย (status = pending)
-    // นับสะสมจากอดีตจนถึงวันนี้
-    const today = new Date();
-    today.setHours(23, 59, 59, 999); // Set to end of today for inclusive comparison
-    const allPendingTickets = MOCK_DATA.tickets.filter(t => {
-        const ticketDate = new Date(t.date);
-        return ticketDate <= today && t.status === 'pending';
-    });
+    // 4. Normal - Active
+    const normal = tickets.filter(t => t.status !== 'completed' && t.priority !== 'urgent').length;
 
     return {
-        total: tickets.length,
-        new: tickets.filter(t => t.status === 'new').length,
-        inProgress: tickets.filter(t => t.status === 'inProgress').length,
-        pending: allPendingTickets.length, // นับสะสมตลอด
-        completed: tickets.filter(t => t.status === 'completed').length
+        allWaiting,
+        inProgress,
+        urgent,
+        normal
     };
 }
 
