@@ -2862,15 +2862,30 @@ async function downloadDailyReport(dateStr) {
     // Add Logo (Top Left)
     try {
         const logoUrl = 'images/tu_logo.png';
+
+        // Fetch buffer for excel
         const logoResponse = await fetch(logoUrl);
         const logoBuffer = await logoResponse.arrayBuffer();
+
+        // Get dimensions to maintain aspect ratio
+        const img = new Image();
+        img.src = logoUrl;
+        await new Promise(resolve => {
+            img.onload = () => resolve();
+            img.onerror = () => resolve();
+        });
+
+        const aspect = (img.width && img.height) ? (img.width / img.height) : 1;
+        const logoHeight = 80;
+        const logoWidth = logoHeight * aspect;
+
         const logoId = workbook.addImage({
             buffer: logoBuffer,
             extension: 'png',
         });
         worksheet.addImage(logoId, {
             tl: { col: 0.1, row: 0.1 },
-            ext: { width: 80, height: 80 }
+            ext: { width: logoWidth, height: logoHeight }
         });
     } catch (e) {
         console.warn('Could not load logo for Excel:', e);
