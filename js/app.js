@@ -2540,10 +2540,7 @@ function renderDailySummaryReport(dateStr) {
                     <span class="material-symbols-outlined">image</span>
                     บันทึกหน้านี้ (Image)
                 </button>
-                <button onclick="window.print()" class="btn-report btn-report-download">
-                    <span class="material-symbols-outlined">print</span>
-                    พิมพ์ (PDF)
-                </button>
+
             </div>
             
             <div style="height: 5rem;"></div>
