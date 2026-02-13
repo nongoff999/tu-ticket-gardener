@@ -117,17 +117,115 @@ async function forceUpdate() {
 window.forceUpdate = forceUpdate;
 
 // Router Setup
+// Auth & Login Functions (AD Simulation)
+function renderLogin() {
+    AppState.currentPage = 'login';
+    document.body.classList.add('login-mode');
+    document.title = 'Sign In - TU Ticket Gardener';
+
+    const content = document.getElementById('main-content');
+    content.innerHTML = `
+        <div class="login-card">
+            <div class="login-brand">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Emblem_of_Thammasat_University.svg/1200px-Emblem_of_Thammasat_University.svg.png" alt="TU Logo" class="login-logo">
+                <h1 class="login-title">TU Ticket Gardener</h1>
+                <p class="login-subtitle">ระบบบริหารจัดการสวน มหาวิทยาลัยธรรมศาสตร์</p>
+            </div>
+            
+            <form class="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>TU Username (AD Account)</label>
+                    <input type="text" class="login-input" placeholder="e.g. somchai.k" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="login-input" placeholder="••••••••" required>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    เข้าสู่ระบบ
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                &copy; 2024 Thammasat University. All rights reserved.<br>
+                Property Management Office (Rangsit Center)
+            </div>
+        </div>
+    `;
+}
+
+window.handleLogin = function (e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+
+    // Simulate Loading
+    btn.innerHTML = '<span class="material-symbols-outlined" style="animation: spin 1s infinite linear;">sync</span> กำลังตรวจสอบ...';
+    btn.disabled = true;
+    btn.style.opacity = '0.8';
+
+    setTimeout(() => {
+        const usernameInput = e.target.querySelector('input[type="text"]');
+        const username = usernameInput.value.split('@')[0];
+
+        // Mock User Update
+        if (MOCK_DATA.user) {
+            MOCK_DATA.user.name = username || "เจ้าหน้าที่สวน";
+            MOCK_DATA.user.role = "Staff (AD Verified)";
+        }
+
+        localStorage.setItem('isLoggedIn', 'true');
+        document.body.classList.remove('login-mode');
+
+        router.navigate('/dashboard');
+    }, 1500);
+};
+
+window.logout = function () {
+    showPopup('ออกจากระบบ', 'คุณต้องการออกจากระบบหรือไม่?', 'confirm', () => {
+        localStorage.removeItem('isLoggedIn');
+        document.body.classList.add('login-mode'); // Prevent flash
+        router.navigate('/login');
+    });
+};
+
+// Router Setup
 function initRouter() {
+    // Auth Guard
+    const withAuth = (handler) => (params) => {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        if (!isLoggedIn) {
+            router.navigate('/login');
+            return;
+        }
+        document.body.classList.remove('login-mode');
+        handler(params);
+    };
+
+    // Helper to resolve function reference if string or window property
+    const reportDetailHandler = (typeof renderReportDetail !== 'undefined') ? renderReportDetail : (window.openReportDetail || (() => console.error('Report Detail handler missing')));
+
     router
-        .register('/dashboard', renderDashboard)
-        .register('/monitor', renderMonitor)
-        .register('/tickets', renderTicketList)
-        .register('/ticket', renderTicketDetail)
-        .register('/add', renderAddTicket)
-        .register('/add-select', renderCategorySelection)
-        .register('/edit', renderEditTicket)
-        .register('/reports', renderReportList)
-        .register('/report-detail', renderReportDetail);
+        .register('/login', renderLogin)
+        .register('/dashboard', withAuth(renderDashboard))
+        .register('/monitor', withAuth(renderMonitor))
+        .register('/tickets', withAuth(renderTicketList))
+        .register('/ticket', withAuth(renderTicketDetail))
+        .register('/add', withAuth(renderAddTicket))
+        .register('/add-select', withAuth(renderCategorySelection))
+        .register('/edit', withAuth(renderEditTicket))
+        .register('/reports', withAuth(renderReportList))
+        .register('/report-detail', withAuth(reportDetailHandler));
+
+    // Initial Route Check
+    if (!location.hash || location.hash === '#/') {
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            router.navigate('/dashboard');
+        } else {
+            router.navigate('/login');
+        }
+    }
 }
 
 // Drawer Functions

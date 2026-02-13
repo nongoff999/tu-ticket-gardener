@@ -2024,3 +2024,140 @@ body,
         font-size: 1.75rem;
     }
 }
+
+/* Login Page Styles - Added for AD Simulation */
+body.login-mode header,
+body.login-mode aside,
+body.login-mode .bottom-nav {
+    display: none !important;
+}
+
+body.login-mode #main-content {
+    margin-left: 0 !important;
+    /* Override sidebar margin */
+    padding: 0 !important;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc;
+    background-image:
+        radial-gradient(at 0% 0%, rgba(255, 237, 213, 0.3) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(219, 234, 254, 0.3) 0px, transparent 50%);
+}
+
+.login-card {
+    background: white;
+    width: 100%;
+    max-width: 420px;
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    text-align: center;
+    animation: slideUp 0.5s ease-out;
+}
+
+.login-brand {
+    margin-bottom: 2rem;
+}
+
+.login-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
+    object-fit: contain;
+}
+
+.login-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+.login-form .form-group {
+    margin-bottom: 1.25rem;
+    text-align: left;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #334155;
+    font-size: 0.9rem;
+}
+
+.login-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    transition: all 0.2s;
+    background: #f8fafc;
+}
+
+.login-input:focus {
+    outline: none;
+    border-color: #E11D48;
+    box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+    background: white;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 0.875rem;
+    background: #E11D48;
+    /* TU Red */
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.login-btn:hover {
+    background: #be123c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(225, 29, 72, 0.2);
+}
+
+.login-btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.login-footer {
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1.5rem;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
