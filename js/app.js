@@ -3102,83 +3102,34 @@ function renderReportDetail() {
     updateHeaderNav(true);
     const type = AppState.selectedReport;
 
-    // Dispatch
-    if (type === 'summary') renderDailyReportPage();
-    else if (type === 'yearly') renderYearlyAnalysis(null);
-    else if (type === 'tree_stats') renderTreeStatsReport();
-    else if (type === 'zone_hotspots') renderZoneHotspotReport();
-    else if (type === 'performance') renderPerformanceReport();
-    else {
-        // Fallback
-        showPopup('กำลังพัฒนา', 'รายงานส่วนนี้กำลังอยู่ระหว่างการพัฒนา', 'info');
-        renderReportList();
+    if (type === 'yearly') {
+        renderYearlyAnalysis(null);
+        return;
+    } else if (type === 'tree_stats') {
+        renderTreeStatsReport();
+        return;
+    } else if (type === 'zone_hotspots') {
+        renderZoneHotspotReport();
+        return;
+    } else if (type === 'performance') {
+        renderPerformanceReport();
+        return;
     }
-}
 
-function renderDailyReportPage() {
-    document.getElementById('page-title').textContent = 'สรุปความเสียหายรายวัน';
-    const content = document.getElementById('main-content');
-
-    // Get Today's Data
-    const today = new Date().toISOString().slice(0, 10);
-    const todayTickets = MOCK_DATA.tickets.filter(t => t.date === today);
-
-    // Calculate Stats
-    const total = todayTickets.length;
-    const completed = todayTickets.filter(t => t.status === 'completed').length;
-    const inProgress = todayTickets.filter(t => t.status === 'inProgress').length;
-    const pending = todayTickets.filter(t => t.status === 'new').length;
-
-    content.innerHTML = `
-        <div style="padding: 1rem;">
-            <!-- Date Header -->
-            <div style="text-align: center; margin-bottom: 1.5rem;">
-                <h3 style="color: var(--text-primary); margin-bottom: 0.25rem;">ประจำวันที่ ${new Date().toLocaleDateString('th-TH', { dateStyle: 'long' })}</h3>
-                <p style="color: var(--text-secondary); font-size: 0.9rem;">ข้อมูล ณ เวลา ${new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น.</p>
-            </div>
-
-            <!-- Stats Grid -->
-            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-                <div class="stat-card" style="background: white; border: 1px solid var(--border); padding: 1rem; border-radius: 1rem; text-align: center; box-shadow: var(--shadow-sm);">
-                    <div class="stat-value" style="color: var(--primary); font-size: 2rem; font-weight: 800; line-height: 1;">${total}</div>
-                    <div class="stat-label" style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem;">แจ้งวันนี้ (เรื่อง)</div>
-                </div>
-                <div class="stat-card" style="background: white; border: 1px solid var(--border); padding: 1rem; border-radius: 1rem; text-align: center; box-shadow: var(--shadow-sm);">
-                    <div class="stat-value" style="color: #10b981; font-size: 2rem; font-weight: 800; line-height: 1;">${completed}</div>
-                    <div class="stat-label" style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem;">แก้ไขเสร็จ (เรื่อง)</div>
-                </div>
-            </div>
-
-            <!-- Ticket List -->
-            <div class="kpi-card" style="background: white; border-radius: 1rem; padding: 1rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border);">
-                <h3 style="margin-bottom: 1rem;">รายการแจ้งซ่อมวันนี้</h3>
-                ${todayTickets.length > 0 ? `
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        ${todayTickets.map(t => `
-                            <div onclick="router.navigate('/ticket/${t.id}')" style="display: flex; gap: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f1f5f9; cursor: pointer;">
-                                <div style="width: 3rem; height: 3rem; background: #e2e8f0; border-radius: 0.5rem; flex-shrink: 0; overflow: hidden;">
-                                    ${t.images && t.images.length > 0 ? `<img src="${t.images[0]}" style="width: 100%; height: 100%; object-fit: cover;">` : '<span class="material-symbols-outlined" style="font-size: 1.5rem; color: #94a3b8; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">image</span>'}
-                                </div>
-                                <div style="flex: 1; min-width: 0;">
-                                    <div style="font-weight: 600; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${t.title}</div>
-                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">${t.zoneName || 'ไม่ระบุโซน'} • ${t.time} น.</div>
-                                    <div style="margin-top: 0.25rem;">
-                                        <span class="status-badge ${t.status}" style="font-size: 0.7rem; padding: 0.1rem 0.5rem;">${t.status === 'new' ? 'ใหม่' : (t.status === 'inProgress' ? 'กำลังทำ' : 'เสร็จ')}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                ` : `
-                    <div style="text-align: center; padding: 2rem 0; color: var(--text-secondary);">
-                        <span class="material-symbols-outlined" style="font-size: 2rem; color: #cbd5e1; margin-bottom: 0.5rem; display: block;">check_circle</span>
-                        วันนี้ยังไม่มีการแจ้งเหตุ
-                    </div>
-                `}
-            </div>
-            <div style="height: 5rem;"></div>
-        </div>
-    `;
+    // Default to 'summary' (The Designed Report Paper)
+    // Ensure we use the existing renderDailySummaryReport function which has the specific design
+    if (AppState.selectedReport === 'summary' || !type) {
+        if (!AppState.selectedDate) {
+            AppState.selectedDate = new Date().toISOString().slice(0, 10);
+        }
+        // Check if renderDailySummaryReport exists (it should be defined earlier in the file)
+        if (typeof renderDailySummaryReport === 'function') {
+            renderDailySummaryReport(AppState.selectedDate);
+        } else {
+            console.error('renderDailySummaryReport is missing');
+            renderReportList();
+        }
+    }
 }
 
 function renderTreeStatsReport() {
