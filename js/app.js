@@ -2529,16 +2529,20 @@ function renderDailySummaryReport(dateStr) {
             <!-- 3. Summary Actions (MOVE TO BOTTOM) -->
             <div class="report-actions">
                 <button onclick="downloadDailyReport('${dateStr}')" class="btn-report btn-report-excel">
-                    <span class="material-symbols-outlined">download</span>
-                    ดาวน์โหลดรายละเอียด (Excel)
+                    <span class="material-symbols-outlined">table_view</span>
+                    Excel รายละเอียด
                 </button>
                 <button onclick="downloadDailyImages('${dateStr}')" class="btn-report btn-report-images">
-                    <span class="material-symbols-outlined">imagesmode</span>
-                    ดาวน์โหลดรูปภาพ (ZIP)
+                    <span class="material-symbols-outlined">folder_zip</span>
+                    รูปภาพประกอบ (ZIP)
+                </button>
+                <button onclick="downloadReportAsImage('${dateStr}')" class="btn-report" style="background:#3b82f6; color:white; border-color:#2563eb;">
+                    <span class="material-symbols-outlined">image</span>
+                    บันทึกหน้านี้ (Image)
                 </button>
                 <button onclick="window.print()" class="btn-report btn-report-download">
                     <span class="material-symbols-outlined">print</span>
-                    พิมพ์รายงานสรุป (PDF)
+                    พิมพ์ (PDF)
                 </button>
             </div>
             
@@ -3492,3 +3496,44 @@ async function exportToExcel() {
     }, 500);
 }
 window.exportToExcel = exportToExcel;
+
+// Function to download the report as an image
+async function downloadReportAsImage(dateStr) {
+    if (typeof html2canvas === 'undefined') {
+        showPopup('ข้อผิดพลาด', 'ไลบรารี html2canvas ไม่พร้อมใช้งาน', 'error');
+        return;
+    }
+
+    const element = document.getElementById('report-paper');
+    if (!element) {
+        showPopup('ข้อผิดพลาด', 'ไม่พบส่วนรายงานที่จะบันทึก', 'error');
+        return;
+    }
+
+    showPopup('กำลังบันทึกรูปภาพ', 'กำลังสร้างไฟล์รูปภาพ...', 'info');
+
+    try {
+        // Use html2canvas to capture the element
+        const canvas = await html2canvas(element, {
+            scale: 2, // Higher resolution
+            useCORS: true, // Allow cross-origin images
+            logging: false,
+            backgroundColor: '#ffffff' // Ensure white background
+        });
+
+        canvas.toBlob(blob => {
+            if (blob) {
+                const fileName = `TU_Ticket_Report_Image_${dateStr}.png`;
+                saveAs(blob, fileName);
+                showPopup('สำเร็จ', 'บันทึกรูปภาพเรียบร้อยแล้ว', 'success');
+            } else {
+                throw new Error('Canvas is empty');
+            }
+        }, 'image/png');
+
+    } catch (error) {
+        console.error(error);
+        showPopup('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกเป็นรูปภาพได้: ' + error.message, 'error');
+    }
+}
+window.downloadReportAsImage = downloadReportAsImage;
