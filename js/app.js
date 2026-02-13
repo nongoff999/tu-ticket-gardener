@@ -372,11 +372,9 @@ function renderDashboard() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Period Calendar -->
-        ${Components.periodCalendar(AppState.selectedDate, AppState.dashboardPeriod)}
 
         <!-- Stats Grid -->
-        <div class="stats-grid" style="margin-top: -1rem;">
+        <div class="stats-grid">
             ${Components.statCard(`ทิคเก็ตราย${AppState.dashboardPeriod === 'DAY' ? 'วัน' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : 'เดือน'}`, stats.total, 'blue', 'dashboard')}
             ${Components.statCard('ทิคเก็ตใหม่วันนี้', stats.new, 'yellow', 'notification_important')}
             ${Components.statCard('ระหว่างดำเนินการ', stats.inProgress, 'purple', 'settings_suggest')}
@@ -408,6 +406,11 @@ function renderDashboard() {
             <button class="period-tab ${AppState.dashboardPeriod === 'DAY' ? 'active' : ''}" data-period="DAY">DAY</button>
             <button class="period-tab ${AppState.dashboardPeriod === 'WEEK' ? 'active' : ''}" data-period="WEEK">WEEK</button>
             <button class="period-tab ${AppState.dashboardPeriod === 'MONTH' ? 'active' : ''}" data-period="MONTH">MONTH</button>
+        </div>
+
+        <!-- Period Calendar -->
+        <div style="margin-bottom: 1rem;">
+            ${Components.periodCalendar(AppState.selectedDate, AppState.dashboardPeriod)}
         </div>
 
         <!-- Chart Card -->
