@@ -153,13 +153,17 @@
                 <span class="material-symbols-outlined">logout</span>
                 <span>LOG OUT</span>
             </button>
-            <div style="text-align: center;">
-                <a href="#" onclick="forceUpdate(); return false;"
-                    style="font-size: 0.65rem; color: var(--primary); font-weight: 700; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em;">
-                    🔄 รีเซ็ตและอัปเดตแอป (แก้ปัญหารูปลาย)
-                </a>
-            </div>
+
             <div class="drawer-version">Version 1.2.0 (TU Rangsit)</div>
+
+            <div
+                style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed rgba(0,0,0,0.1); text-align: center;">
+                <button onclick="checkForUpdate()" class="update-check-btn"
+                    style="background: none; border: none; font-size: 0.8rem; color: var(--primary); font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; transition: opacity 0.2s;">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">cloud_sync</span>
+                    อัปเดตเวอร์ชันล่าสุด
+                </button>
+            </div>
         </div>
     </aside>
 

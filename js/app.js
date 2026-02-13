@@ -96,25 +96,38 @@ function getDeviceInfo() {
     return `${os} (${device})`;
 }
 
-async function forceUpdate() {
-    console.log('🔄 กำลังล้างแคชและอัปเดตแอป...');
-    if ('serviceWorker' in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        for (let registration of registrations) {
-            await registration.unregister();
+// Check for Update and Reload
+async function checkForUpdate() {
+    console.log('🔄 Checking for updates...');
+
+    // Show feedback
+    showPopup('กำลังอัปเดต', 'ระบบกำลังล้างแคชและดึงข้อมูลล่าสุดจากเซิร์ฟเวอร์...', 'info');
+
+    setTimeout(async () => {
+        try {
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                    await registration.unregister();
+                }
+            }
+
+            // Clear Caches
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+            }
+        } catch (e) {
+            console.error('Update cleanup failed:', e);
         }
-    }
 
-    // Clear Caches
-    if ('caches' in window) {
-        const cacheNames = await caches.keys();
-        await Promise.all(cacheNames.map(name => caches.delete(name)));
-    }
-
-    // Refresh
-    window.location.reload(true);
+        // Reload
+        window.location.reload(true);
+    }, 1000);
 }
-window.forceUpdate = forceUpdate;
+
+window.checkForUpdate = checkForUpdate;
+window.forceUpdate = checkForUpdate; // Alias for backward compatibility
 
 // Router Setup
 // Auth & Login Functions (AD Simulation)
