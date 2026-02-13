@@ -2996,6 +2996,30 @@ async function downloadDailyReport(dateStr) {
                 const imgUrl = t.images[0];
                 let imageId;
 
+                // 1. Get Image Dimensions to preserve Aspect Ratio
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.src = imgUrl;
+                await new Promise(resolve => {
+                    img.onload = () => resolve();
+                    img.onerror = () => resolve();
+                });
+
+                const aspect = (img.width && img.height) ? (img.width / img.height) : 1.33; // Default 4:3
+
+                // Define max box
+                const mW = 160;
+                const mH = 120;
+
+                let targetW = mW;
+                let targetH = mW / aspect;
+
+                if (targetH > mH) {
+                    targetH = mH;
+                    targetW = targetH * aspect;
+                }
+
+                // 2. Add Image to Workbook
                 if (imgUrl.startsWith('data:image/')) {
                     const base64Data = imgUrl.split(',')[1];
                     imageId = workbook.addImage({ base64: base64Data, extension: 'png' });
@@ -3005,9 +3029,14 @@ async function downloadDailyReport(dateStr) {
                     imageId = workbook.addImage({ buffer: buffer, extension: 'png' });
                 }
 
+                // 3. Place Image on Sheet
+                // Center the image in the cell (Column C width is roughly 25 chars ~ 180px?)
+                // Row height is 100 points ~ 133px?
+                // Let's stick to top-left + sized box. Or centering?
+                // Fixed top-left with calculated size is safests for aspect ratio.
                 worksheet.addImage(imageId, {
                     tl: { col: 2.1, row: row.number - 0.9 },
-                    ext: { width: 160, height: 120 }
+                    ext: { width: targetW, height: targetH }
                 });
             } catch (e) {
                 console.error('Image error:', e);
