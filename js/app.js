@@ -3032,7 +3032,7 @@ async function downloadDailyReport(dateStr) {
     caseSumRow.height = 30;
 
     // Generate File
-    const fileName = `TU_Maintenance_Report_${dateStr}.xlsx`;
+    const fileName = `TU_Ticket_Report_${dateStr}.xlsx`;
     const excelBuffer = await workbook.xlsx.writeBuffer();
     saveAs(new Blob([excelBuffer]), fileName);
 }
