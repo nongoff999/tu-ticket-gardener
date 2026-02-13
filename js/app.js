@@ -2181,6 +2181,17 @@ function renderReportList() {
                 </div>
                 <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
             </div>
+
+            <div class="report-card" onclick="exportToExcel()">
+                <div class="report-card-icon" style="background: #f0f9ff; color: #0ea5e9;">
+                    <span class="material-symbols-outlined">table_view</span>
+                </div>
+                <div class="report-card-info">
+                    <h3>ส่งออกข้อมูล (Excel)</h3>
+                    <p>ดาวน์โหลดข้อมูลทิคเก็ตทั้งหมดเป็นไฟล์ .xlsx</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">download</span>
+            </div>
         </div>
         
         <div style="height: 5rem;"></div>
@@ -3240,3 +3251,76 @@ function renderPerformanceReport() {
         </div>
     `;
 }
+
+// Export to Excel Function
+async function exportToExcel() {
+    console.log('🔄 Exporting to Excel...');
+    showPopup('กำลังเตรียมไฟล์', 'ระบบกำลังรวบรวมข้อมูลเพื่อสร้างไฟล์ Excel...', 'info');
+
+    // Simulate async work and use libraries
+    setTimeout(async () => {
+        try {
+            if (typeof ExcelJS === 'undefined' || typeof saveAs === 'undefined') {
+                showPopup('ข้อผิดพลาด', 'ไลบรารี Excel ไม่พร้อมใช้งาน', 'error');
+                return;
+            }
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('All Tickets');
+
+            // Columns
+            worksheet.columns = [
+                { header: 'ID', key: 'id', width: 10 },
+                { header: 'สถานะ', key: 'status', width: 15 },
+                { header: 'วันที่แจ้ง', key: 'date', width: 15 },
+                { header: 'เวลา', key: 'time', width: 10 },
+                { header: 'หมวดหมู่', key: 'category', width: 15 },
+                { header: 'หัวข้อ', key: 'title', width: 30 },
+                { header: 'ความสำคัญ', key: 'priority', width: 12 },
+                { header: 'โซนพื้นที่', key: 'zone', width: 20 },
+                { header: 'ชนิดพันธุ์ไม้', key: 'treeType', width: 20 },
+                { header: 'ผู้รับผิดชอบ', key: 'assignee', width: 20 },
+                { header: 'รายละเอียด', key: 'description', width: 40 }
+            ];
+
+            // Header Style
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFE2E8F0' }
+            };
+
+            // Data
+            MOCK_DATA.tickets.forEach(t => {
+                worksheet.addRow({
+                    id: t.id,
+                    status: t.status === 'new' ? 'รอดำเนินการ' : (t.status === 'inProgress' ? 'กำลังดำเนินการ' : 'เสร็จสิ้น'),
+                    date: t.date,
+                    time: t.time,
+                    category: t.category === 'fallen_tree' ? 'ต้นไม้ล้ม' : (t.category === 'branch_break' ? 'กิ่งไม้หัก' : t.category),
+                    title: t.title,
+                    priority: t.priority === 'urgent' ? 'เร่งด่วน' : 'ปกติ',
+                    zone: t.zoneName || '-',
+                    treeType: t.treeType || '-',
+                    assignee: t.assignee || '-',
+                    description: t.description || '-'
+                });
+            });
+
+            // Write
+            const buffer = await workbook.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+            const fileName = `TU_Ticket_Report_${new Date().toISOString().slice(0, 10)}.xlsx`;
+            saveAs(blob, fileName);
+
+            showPopup('สำเร็จ', 'ดาวน์โหลดไฟล์เรียบร้อยแล้ว', 'success');
+
+        } catch (error) {
+            console.error(error);
+            showPopup('เกิดข้อผิดพลาด', 'ไม่สามารถสร้างไฟล์ Excel ได้: ' + error.message, 'error');
+        }
+    }, 500);
+}
+window.exportToExcel = exportToExcel;
