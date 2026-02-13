@@ -2148,6 +2148,39 @@ function renderReportList() {
                 </div>
                 <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
             </div>
+
+            <div class="report-card" onclick="openReportDetail('tree_stats')">
+                <div class="report-card-icon" style="background: #ecfccb; color: #65a30d;">
+                    <span class="material-symbols-outlined">forest</span>
+                </div>
+                <div class="report-card-info">
+                    <h3>รายงานสถิติปัญหาตามชนิดพันธุ์ไม้</h3>
+                    <p>สถิติการเกิดเหตุแยกตามชนิดพันธุ์ 34 ชนิด</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
+            </div>
+
+            <div class="report-card" onclick="openReportDetail('zone_hotspots')">
+                <div class="report-card-icon" style="background: #fee2e2; color: #ef4444;">
+                    <span class="material-symbols-outlined">location_on</span>
+                </div>
+                <div class="report-card-info">
+                    <h3>รายงานพื้นที่เสี่ยง (Zone Hotspots)</h3>
+                    <p>สรุปพื้นที่เกิดเหตุสูงสุดเพื่อการเฝ้าระวัง</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
+            </div>
+
+            <div class="report-card" onclick="openReportDetail('performance')">
+                <div class="report-card-icon" style="background: #e0f2fe; color: #0284c7;">
+                    <span class="material-symbols-outlined">schedule</span>
+                </div>
+                <div class="report-card-info">
+                    <h3>รายงานประสิทธิภาพงาน (KPI)</h3>
+                    <p>ติดตามสถานะงานค้างและระยะเวลาดำเนินการ</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
+            </div>
         </div>
         
         <div style="height: 5rem;"></div>
@@ -3044,6 +3077,166 @@ function renderFallenTreesSection(period, dateStr) {
                     <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">ต้น</span>
                 </div>
             </div>
+        </div>
+    `;
+}
+
+/**
+ * ==========================================
+ * New Report Implementations
+ * ==========================================
+ */
+
+function renderReportDetail() {
+    updateHeaderNav(true);
+    const type = AppState.selectedReport;
+
+    // Dispatch
+    if (type === 'yearly') renderYearlyAnalysis(null); // null for default year
+    else if (type === 'tree_stats') renderTreeStatsReport();
+    else if (type === 'zone_hotspots') renderZoneHotspotReport();
+    else if (type === 'performance') renderPerformanceReport();
+    else {
+        // Fallback or Summary
+        showPopup('กำลังพัฒนา', 'รายงานส่วนนี้กำลังอยู่ระหว่างการพัฒนา', 'info');
+        renderReportList();
+        // Since we are already on detail page routing, we should navigate back if invalid
+        // But for now, just rendering list instead is safer to avoid loop
+    }
+}
+
+function renderTreeStatsReport() {
+    document.getElementById('page-title').textContent = 'สถิติชนิดพันธุ์ไม้';
+    const content = document.getElementById('main-content');
+
+    // Calculate Stats
+    const treeCounts = {};
+    MOCK_DATA.tickets.forEach(t => {
+        if (t.treeType) {
+            treeCounts[t.treeType] = (treeCounts[t.treeType] || 0) + 1;
+        }
+    });
+
+    // Sort
+    const sortedTrees = Object.entries(treeCounts)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 10); // Top 10
+
+    const total = Object.values(treeCounts).reduce((a, b) => a + b, 0);
+
+    content.innerHTML = `
+        <div style="padding: 1rem;">
+            <div class="kpi-card" style="background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border);">
+                <h3>ชนิดพันธุ์ที่มีปัญหามากที่สุด (Top 10)</h3>
+                <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+                    ${sortedTrees.length > 0 ? sortedTrees.map(([name, count], index) => `
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                <span style="font-weight: 600; color: var(--text-primary);">${index + 1}. ${name}</span>
+                                <span style="font-weight: 700; color: var(--primary);">${count} เคส</span>
+                            </div>
+                            <div style="width: 100%; background: #f1f5f9; height: 0.6rem; border-radius: 1rem; overflow: hidden;">
+                                <div style="height: 100%; background: var(--primary); width: ${(count / total) * 100}%;"></div>
+                            </div>
+                        </div>
+                    `).join('') : '<p style="text-align:center; color: var(--text-secondary);">ไม่มีข้อมูลชนิดพันธุ์ไม้</p>'}
+                </div>
+            </div>
+            <div style="height: 5rem;"></div>
+        </div>
+    `;
+}
+
+function renderZoneHotspotReport() {
+    document.getElementById('page-title').textContent = 'พื้นที่เสี่ยง (Hotspots)';
+    const content = document.getElementById('main-content');
+
+    const zoneCounts = {};
+    MOCK_DATA.tickets.forEach(t => {
+        const zone = t.zoneName || 'ไม่ระบุโซน';
+        zoneCounts[zone] = (zoneCounts[zone] || 0) + 1;
+    });
+
+    const sortedZones = Object.entries(zoneCounts)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 10);
+
+    const maxVal = sortedZones[0]?.[1] || 1;
+
+    content.innerHTML = `
+        <div style="padding: 1rem;">
+            <div class="kpi-card" style="background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid #fee2e2; border-left: 4px solid #ef4444;">
+                <h3 style="color: #ef4444; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="material-symbols-outlined">location_on</span>
+                    10 อันดับพื้นที่เกิดเหตุสูงสุด
+                </h3>
+                <div style="margin-top: 1rem;">
+                    ${sortedZones.map(([zone, count]) => `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px dashed #e2e8f0;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">${zone}</div>
+                                <div style="width: ${(count / maxVal) * 100}%; background: #fee2e2; height: 6px; margin-top: 6px; border-radius: 3px;"></div>
+                            </div>
+                            <div style="font-weight: 800; color: #ef4444; font-size: 1.25rem; margin-left: 1rem;">${count}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            <div style="height: 5rem;"></div>
+        </div>
+    `;
+}
+
+function renderPerformanceReport() {
+    document.getElementById('page-title').textContent = 'ประสิทธิภาพงาน (KPI)';
+    const content = document.getElementById('main-content');
+
+    const completed = MOCK_DATA.tickets.filter(t => t.status === 'completed');
+    const inProgress = MOCK_DATA.tickets.filter(t => t.status === 'inProgress');
+    const pending = MOCK_DATA.tickets.filter(t => t.status === 'new');
+
+    // Avg Time (Mock)
+    const overdue = inProgress.filter(t => {
+        if (!t.startedAt) return false;
+        try {
+            const start = new Date(t.startedAt);
+            const now = new Date();
+            const diff = (now - start) / (1000 * 60 * 60 * 24);
+            return diff > 7;
+        } catch (e) { return false; }
+    }).length;
+
+    content.innerHTML = `
+        <div style="padding: 1rem;">
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="stat-card" style="background: #ecfdf5; border: 1px solid #d1fae5; padding: 1.5rem; border-radius: 1rem; text-align: center;">
+                    <div class="stat-value" style="color: #10b981; font-size: 2.5rem; font-weight: 800; line-height: 1;">${completed.length}</div>
+                    <div class="stat-label" style="color: #059669; font-size: 0.9rem; margin-top: 0.5rem;">งานที่เสร็จสิ้น</div>
+                </div>
+                <div class="stat-card" style="background: #fff1f2; border: 1px solid #ffe4e6; padding: 1.5rem; border-radius: 1rem; text-align: center;">
+                    <div class="stat-value" style="color: #e11d48; font-size: 2.5rem; font-weight: 800; line-height: 1;">${overdue}</div>
+                    <div class="stat-label" style="color: #be123c; font-size: 0.9rem; margin-top: 0.5rem;">งานล่าช้า (>7วัน)</div>
+                </div>
+            </div>
+            
+            <div class="kpi-card" style="background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border);">
+                <h3>สถานะงานปัจจุบัน</h3>
+                <div style="margin-top: 1rem;">
+                    <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9;">
+                        <span style="color: var(--text-secondary);">รอดำเนินการ (New)</span>
+                        <span style="font-weight: 700; color: var(--text-primary);">${pending.length}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9;">
+                        <span style="color: var(--text-secondary);">กำลังดำเนินการ (In Progress)</span>
+                        <span style="font-weight: 700; color: var(--primary);">${inProgress.length}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 1rem 0 0.5rem 0; margin-top: 0.5rem;">
+                        <span style="font-weight: 600;">รวมทั้งหมด</span>
+                        <span style="font-weight: 800; font-size: 1.1rem;">${MOCK_DATA.tickets.length}</span>
+                    </div>
+                </div>
+            </div>
+            <div style="height: 5rem;"></div>
         </div>
     `;
 }
