@@ -2435,3 +2435,8 @@ body.login-mode #main-content {
         font-size: 1.75rem;
     }
 }
+
+/* User requested to remove the bubble instructions */
+.fab-text {
+    display: none !important;
+}
