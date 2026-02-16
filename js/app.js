@@ -410,17 +410,19 @@ function renderDashboard() {
 
         <!-- Chart Card (Simplified - Custom Only) -->
         <div class="chart-card">
-            <div class="chart-header" style="margin-bottom: 1rem;">
-                 <h2 style="font-size: 1rem; margin: 0 0 1rem 0; color: #1e293b;">รายงานจำนวนทิคเก็ต (กำหนดช่วงเวลา)</h2>
+            <div class="chart-header" style="margin-bottom: 1.5rem;">
+                 <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0 0 1rem 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="material-symbols-outlined" style="color: var(--primary);">analytics</span>
+                    รายงานจำนวนทิคเก็ต
+                 </h2>
                  
-                 <div class="custom-date-range" style="display: flex; gap: 0.5rem; align-items: center; width: 100%; padding: 0.5rem; background: #f8fafc; border-radius: 0.5rem; border: 1px dashed #cbd5e1;">
-                    <input type="date" value="${AppState.customStartDate}" 
-                           onchange="AppState.customStartDate=this.value; renderDashboard();"
-                           style="flex: 1; min-width: 0; padding: 0.35rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; text-align: center; font-family: inherit; font-size: 0.85rem; color:#334155; outline: none; background: white;">
-                    <span style="color:#94a3b8;">-</span>
-                    <input type="date" value="${AppState.customEndDate}" 
-                           onchange="AppState.customEndDate=this.value; renderDashboard();"
-                           style="flex: 1; min-width: 0; padding: 0.35rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; text-align: center; font-family: inherit; font-size: 0.85rem; color:#334155; outline: none; background: white;">
+                 <div class="custom-date-range" style="width: 100%;">
+                    <div style="position: relative; width: 100%;">
+                        <span class="material-symbols-outlined" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 1.25rem; pointer-events: none;">calendar_month</span>
+                        <input type="text" id="date-range-picker" readonly 
+                               placeholder="เลือกช่วงเวลา..."
+                               style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 1px solid #e2e8f0; border-radius: 1rem; font-family: 'Kanit', sans-serif; font-size: 0.95rem; color:#1e293b; outline: none; background: white; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s;">
+                    </div>
                 </div>
             </div>
 
@@ -450,7 +452,27 @@ function renderDashboard() {
         <div class="safe-area-bottom"></div>
     `;
 
-    // Add calendar functionality
+    // Initialize Flatpickr for Range Selection
+    setTimeout(() => {
+        const picker = document.getElementById('date-range-picker');
+        if (picker && typeof flatpickr !== 'undefined') {
+            flatpickr(picker, {
+                mode: "range",
+                dateFormat: "Y-m-d",
+                defaultDate: [AppState.customStartDate, AppState.customEndDate],
+                locale: "th",
+                onChange: function (selectedDates) {
+                    if (selectedDates.length === 2) {
+                        AppState.customStartDate = selectedDates[0].toISOString().split('T')[0];
+                        AppState.customEndDate = selectedDates[1].toISOString().split('T')[0];
+                        renderDashboard();
+                    }
+                }
+            });
+        }
+    }, 0);
+
+    // Add calendar functionality (Old logic - keeping if needed by other components)
     const calendarDays = content.querySelectorAll('.calendar-day');
     calendarDays.forEach(day => {
         day.addEventListener('click', function () {

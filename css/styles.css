@@ -2443,6 +2443,7 @@ body.login-mode #main-content {
         display: none;
     }
 }
+
 /* Compact Stats Row (Mobile optimized + PC Balance) */
 .stats-compact-row {
     display: grid;
@@ -2468,10 +2469,79 @@ body.login-mode #main-content {
     margin-bottom: 0.1rem;
 }
 
-.stats-compact-row .stat-card-icon {
-    font-size: 2rem !important;
-    bottom: -0.25rem !important;
-    right: -0.25rem !important;
+/* Flatpickr Premium Theme Customization */
+.flatpickr-calendar {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    border-radius: 1.5rem;
+    padding: 0.5rem;
+    font-family: 'Kanit', sans-serif !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected.inRange,
+.flatpickr-day.startRange.inRange,
+.flatpickr-day.endRange.inRange,
+.flatpickr-day.selected:focus,
+.flatpickr-day.startRange:focus,
+.flatpickr-day.endRange:focus,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover,
+.flatpickr-day.prevMonthDay.selected,
+.flatpickr-day.nextMonthDay.selected {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: white !important;
+}
+
+.flatpickr-day.inRange {
+    background: rgba(var(--primary-rgb, 2, 132, 199), 0.1) !important;
+    box-shadow: -5px 0 0 rgba(var(--primary-rgb, 2, 132, 199), 0.1), 5px 0 0 rgba(var(--primary-rgb, 2, 132, 199), 0.1) !important;
+    border-color: transparent !important;
+}
+
+.flatpickr-months .flatpickr-month {
+    color: #1e293b !important;
+    fill: #1e293b !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    font-weight: 700 !important;
+}
+
+.flatpickr-weekday {
+    color: #94a3b8 !important;
+    font-weight: 600 !important;
+}
+
+.flatpickr-day.today {
+    border-color: var(--primary) !important;
+}
+
+.flatpickr-day.today:hover {
+    background: var(--primary) !important;
+    color: white !important;
+}
+
+/* Specific shading for range selection */
+.flatpickr-day.inRange,
+.flatpickr-day.prevMonthDay.inRange,
+.flatpickr-day.nextMonthDay.inRange,
+.flatpickr-day.today.inRange,
+.flatpickr-day.prevMonthDay.today.inRange,
+.flatpickr-day.nextMonthDay.today.inRange {
+    cursor: pointer;
+    outline: 0;
+    background: #f0f9ff !important;
+    border-color: transparent !important;
+}
+
+#date-range-picker:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(var(--primary-rgb, 2, 132, 199), 0.1) !important;
 }
 
 @media (min-width: 1024px) {
@@ -2479,19 +2549,19 @@ body.login-mode #main-content {
         gap: 1.5rem;
         margin: 1rem 2rem 2rem 2rem;
     }
-    
+
     .stats-compact-row .stat-card {
         padding: 1rem !important;
     }
-    
+
     .stats-compact-row .stat-card-value {
         font-size: 1.75rem !important;
     }
-    
+
     .stats-compact-row .stat-card-label {
         font-size: 0.875rem !important;
     }
-    
+
     .stats-compact-row .stat-card-icon {
         font-size: 3rem !important;
         bottom: -0.5rem !important;
