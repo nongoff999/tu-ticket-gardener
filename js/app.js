@@ -445,6 +445,9 @@ function renderDashboard() {
             </div>
         </div>
 
+        <!-- Risk Area Statistics Section (New) -->
+        ${renderRiskHotspotsSection(AppState.dashboardPeriod, AppState.selectedDate)}
+
         <!-- Donut Chart Card -->
         <!-- Donut Chart Card (Dynamic) -->
         ${renderFallenTreesSection(AppState.dashboardPeriod, AppState.selectedDate)}
@@ -3130,6 +3133,96 @@ function getFallenTreeStats(period, dateStr) {
     items.sort((a, b) => b.count - a.count);
 
     return { total, items };
+}
+
+function getZoneHotspotData(period, dateStr) {
+    let periodTickets = [];
+    const date = new Date(dateStr);
+
+    if (period === 'CUSTOM') {
+        const start = new Date(AppState.customStartDate);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(AppState.customEndDate);
+        end.setHours(23, 59, 59, 999);
+        periodTickets = MOCK_DATA.tickets.filter(t => {
+            const d = new Date(t.date);
+            return d >= start && d <= end;
+        });
+    } else {
+        // Fallback or other periods (Simplified for Dashboard)
+        periodTickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr.split(' ')[0]));
+    }
+
+    const zones = {};
+    periodTickets.forEach(t => {
+        const z = t.zoneName?.split(' - ')[0] || t.zone || 'ไม่ระบุโซน';
+        zones[z] = (zones[z] || 0) + 1;
+    });
+
+    return Object.entries(zones)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5); // Top 5
+}
+
+function renderRiskHotspotsSection(period, dateStr) {
+    const hotspots = getZoneHotspotData(period, dateStr);
+
+    if (hotspots.length === 0) {
+        return `
+            <div class="chart-card">
+                <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0 0 1rem 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="material-symbols-outlined" style="color: #ef4444;">location_on</span>
+                    สถิติรายงานพื้นที่เสี่ยง (Top 5)
+                </h2>
+                <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                    <p style="font-size: 0.875rem;">ไม่มีข้อมูลพื้นที่เสี่ยงในช่วงเวลานี้</p>
+                </div>
+            </div>
+        `;
+    }
+
+    const maxVal = hotspots[0][1];
+    const colors = ['#ef4444', '#f97316', '#fb923c', '#fbbf24', '#fcd34d'];
+
+    const barsHtml = hotspots.map(([name, count], index) => {
+        const percent = (count / maxVal) * 100;
+        const color = colors[index] || '#94a3b8';
+        return `
+            <div style="margin-bottom: 1.25rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.5rem;">
+                    <div style="flex: 1; min-width: 0; padding-right: 1rem;">
+                        <div style="font-size: 0.85rem; font-weight: 600; color: #1e293b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${index + 1}. ${name}
+                        </div>
+                    </div>
+                    <div style="font-size: 0.95rem; font-weight: 800; color: ${color}; white-space: nowrap;">
+                        ${count} <span style="font-size: 0.7rem; font-weight: 500; color: #94a3b8;">รายการ</span>
+                    </div>
+                </div>
+                <div style="height: 10px; background: #f1f5f9; border-radius: 5px; overflow: hidden;">
+                    <div style="height: 100%; width: ${percent}%; background: ${color}; border-radius: 5px; transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    return `
+        <div class="chart-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                <div>
+                     <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="color: #ef4444;">location_on</span>
+                        สถิติรายงานพื้นที่เสี่ยง
+                    </h2>
+                    <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">5 อันดับโซนที่เกิดเหตุสูงสุดในช่วงเวลาที่เลือก</p>
+                </div>
+            </div>
+            
+            <div style="padding: 0 0.5rem;">
+                ${barsHtml}
+            </div>
+        </div>
+    `;
 }
 
 function renderFallenTreesSection(period, dateStr) {
