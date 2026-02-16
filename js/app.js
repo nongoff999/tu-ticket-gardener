@@ -445,6 +445,18 @@ function renderDashboard() {
             </div>
         </div>
 
+        <!-- Risk Area Map Section (New) -->
+        <div class="chart-card" style="padding: 1rem;">
+             <div style="margin-bottom: 1rem; padding: 0.5rem;">
+                <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="material-symbols-outlined" style="color: var(--primary);">map</span>
+                    แผนที่จุดเกิดเหตุอัจฉริยะ (Garden Maps)
+                </h2>
+                <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">แสดงตำแหน่งพันธุ์ไม้ที่มีปัญหาตามช่วงเวลาที่เลือก</p>
+            </div>
+            <div id="dashboard-map" style="height: 300px; width: 100%; border-radius: 1rem; border: 1px solid #e2e8f0; z-index: 1;"></div>
+        </div>
+
         <!-- Risk Area Statistics Section (New) -->
         ${renderRiskHotspotsSection(AppState.dashboardPeriod, AppState.selectedDate)}
 
@@ -474,6 +486,71 @@ function renderDashboard() {
             });
         }
     }, 0);
+
+    // Initialize Dashboard Map
+    setTimeout(() => {
+        const mapContainer = document.getElementById('dashboard-map');
+        if (mapContainer && typeof L !== 'undefined') {
+            const centerLat = 14.0722; // TU Rangsit Center
+            const centerLng = 100.6128;
+
+            const map = L.map('dashboard-map', {
+                zoomControl: false,
+                attributionControl: false
+            }).setView([centerLat, centerLng], 14);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 20
+            }).addTo(map);
+
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+            // Filter tickets like the other stats
+            let ticketsForMap = [];
+            const startStr = AppState.customStartDate;
+            const endStr = AppState.customEndDate;
+
+            if (startStr && endStr) {
+                const start = new Date(startStr);
+                start.setHours(0, 0, 0, 0);
+                const end = new Date(endStr);
+                end.setHours(23, 59, 59, 999);
+                ticketsForMap = MOCK_DATA.tickets.filter(t => {
+                    const d = new Date(t.date);
+                    return d >= start && d <= end && t.lat && t.lng;
+                });
+            } else {
+                ticketsForMap = MOCK_DATA.tickets.filter(t => t.lat && t.lng);
+            }
+
+            ticketsForMap.forEach(t => {
+                const color = t.status === 'new' ? '#fbbf24' : (t.status === 'completed' ? '#94a3b8' : '#f43f5e');
+
+                const customIcon = L.divIcon({
+                    className: 'custom-map-marker',
+                    html: `<div style="background: ${color}; width: 12px; height: 12px; border: 2px solid white; border-radius: 50%; box-shadow: 0 0 10px ${color}"></div>`,
+                    iconSize: [12, 12],
+                    iconAnchor: [6, 6]
+                });
+
+                const popupContent = `
+                    <div style="font-family: 'Kanit', sans-serif; padding: 0.5rem; min-width: 150px;">
+                        <span style="font-size: 0.65rem; color: #94a3b8; font-weight: 700;">#${t.id}</span>
+                        <div style="font-weight: 700; font-size: 0.9rem; color: #1e293b; margin-bottom: 0.25rem;">${t.treeType || 'ไม่ระบุพันธุ์ไม้'}</div>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">${t.zoneName}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+                             <span style="font-size: 0.7rem; color: ${color}; font-weight: 700;">${getStatusLabel(t.status)}</span>
+                             <button onclick="router.navigate('/ticket/${t.id}')" style="background: var(--primary); color: white; border: none; padding: 0.25rem 0.6rem; border-radius: 0.4rem; font-size: 0.7rem; cursor: pointer;">ดูรายละเอียด</button>
+                        </div>
+                    </div>
+                `;
+
+                L.marker([t.lat, t.lng], { icon: customIcon })
+                    .addTo(map)
+                    .bindPopup(popupContent, { closeButton: false });
+            });
+        }
+    }, 100);
 
     // Add calendar functionality (Old logic - keeping if needed by other components)
     const calendarDays = content.querySelectorAll('.calendar-day');
