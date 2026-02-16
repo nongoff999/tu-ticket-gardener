@@ -3571,6 +3571,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!fab) return;
 
     fab.addEventListener('click', (e) => {
+        const icon = fab.querySelector('.material-symbols-outlined');
+        const label = fab.querySelector('.fab-text');
+
+        // Reset Helper
+        const resetFab = () => {
+            fab.classList.remove('active');
+            if (icon) icon.textContent = 'add';
+            if (label) label.textContent = 'เพิ่มรายการ';
+        };
+
         // Step 2: Navigate if already active
         if (fab.classList.contains('active')) {
             if (typeof navigateTo === 'function') {
@@ -3578,18 +3588,24 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 console.warn('navigateTo function not found');
             }
-            fab.classList.remove('active');
+            resetFab();
         }
-        // Step 1: Show Label
+        // Step 1: Show Label & Indicate Next Action
         else {
             e.preventDefault();
             e.stopPropagation();
+
+            // Activate state
             fab.classList.add('active');
+
+            // Change UI to encourage 2nd click
+            if (icon) icon.textContent = 'arrow_forward';
+            if (label) label.textContent = 'แตะอีกครั้งเพื่อยืนยัน';
 
             // Close when clicking outside
             const closeFab = (ev) => {
                 if (ev.target !== fab && !fab.contains(ev.target)) {
-                    fab.classList.remove('active');
+                    resetFab();
                     document.removeEventListener('click', closeFab);
                 }
             };
