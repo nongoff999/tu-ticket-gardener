@@ -2395,10 +2395,12 @@ body.login-mode #main-content {
     }
 
     .fab-btn.active {
-        width: auto;
-        /* Allow expansion */
+        width: auto !important;
+        min-width: 140px;
+        /* Force expansion */
         padding-left: 1rem;
         padding-right: 0.5rem;
+        justify-content: center;
     }
 
     .fab-text {
