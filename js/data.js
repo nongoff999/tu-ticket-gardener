@@ -31,47 +31,18 @@ async function loadData() {
         }
 
         // 2. Check LocalStorage
-        // 2. Check LocalStorage
         const localData = localStorage.getItem('tu_gardener_data');
         if (localData) {
             const parsed = JSON.parse(localData);
 
-            // Check if data is "old" (ID >= 2000) - We want to switch to new curated data (ID 1000+)
-            // If old, we ignore local storage and fetch fresh JSON
-            const hasOldTickets = parsed.tickets && parsed.tickets.some(t => t.id >= 2000);
-
-            if (hasOldTickets) {
-                console.log('🧹 พบข้อมูลชุดเก่า (ID >= 2000) - ทำการล้างและโหลดข้อมูลใหม่จากไฟล์ JSON');
+            // Force refresh from JSON if current data is very small (likely old manual data)
+            // Or if we specifically want to sync with the simulated data in tickets.json
+            if (parsed.tickets && parsed.tickets.length < 100) {
+                console.log('🔄 ข้อมูลมีจำนวนน้อย ( < 100) - ทำการโหลดข้อมูลจำลองใหม่จากไฟล์ JSON');
                 localStorage.removeItem('tu_gardener_data');
-                // Proceed to fetch from JSON (Block 3)
+                // Proceed to fetch from JSON
             } else {
                 MOCK_DATA = parsed;
-
-                // Force update categories and damageTypes to ensure latest schema
-                MOCK_DATA.categories = [
-                    { id: "all", name: "ทั้งหมด" },
-                    { id: "fallen", name: "โค่นล้ม" },
-                    { id: "broken", name: "กิ่งหัก/ฉีก" },
-                    { id: "tilted", name: "ลำต้นเอียง" },
-                    { id: "other", name: "อื่นๆ" }
-                ];
-
-                MOCK_DATA.damageTypes = [
-                    { id: "fallen", name: "โค่นล้ม", icon: "forest" },
-                    { id: "broken", name: "กิ่งหัก/ฉีก", icon: "content_cut" },
-                    { id: "tilted", name: "ลำต้นเอียง", icon: "u_turn_right" },
-                    { id: "other", name: "อื่นๆ", icon: "more_horiz" }
-                ];
-
-                // Force update treeTypes (User Request Step 4943)
-                MOCK_DATA.treeTypes = [
-                    "ต้นจามจุรี", "ต้นพฤกษ์", "ต้นนนทรี", "ต้นประดู่", "ต้นมะฮอกกานี", "ต้นกระพี้จั่น", "ต้นอินทนิล", "ต้นตะแบก",
-                    "ต้นเสลา", "ต้นสะเดา", "ต้นเหลืองปรีดียาธร", "ต้นปีบ", "ต้นกระถินณรงค์", "ต้นชมพูพันธ์ทิพย์", "ต้นพิกุล", "ต้นขี้เหล็ก",
-                    "ต้นพะยูง", "ต้นสาเก", "ต้นกระทิง", "ต้นโศก", "ต้นจิกทะเล", "ต้นจิกสวน", "ต้นชะแมบทอง", "ต้นหางนกยูง",
-                    "ต้นทองอุไร", "ต้นไทร", "ต้นหว้า", "ต้นมะขาม", "ต้นตะเคียน", "ต้นมะกอกน้ำ", "ต้นตีนเป็ด", "ต้นพญาสัตบรรณ",
-                    "ต้นพะยอม", "ต้นทองกวาว"
-                ];
-
                 console.log('📦 โหลดข้อมูลจาก LocalStorage:', MOCK_DATA.tickets.length, 'tickets');
 
                 // Sync to Firebase if enabled
@@ -83,15 +54,15 @@ async function loadData() {
                 return MOCK_DATA;
             }
         }
-        // 3. If no local data, fetch from JSON
+
+        // 3. Fetch from JSON
         const response = await fetch('data/tickets.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         MOCK_DATA = await response.json();
-        // Save initial data to storage
         saveData();
-        console.log('✅ โหลดข้อมูลจากไฟล์ JSON และบันทึกลง Storage');
+        console.log('✅ โหลดข้อมูลจำลอง 500+ รายการจากไฟล์ JSON สำเร็จ');
 
         console.log('==========================================');
         console.log('📊 สรุปข้อมูลทิคเก็ตที่โหลดมา:');

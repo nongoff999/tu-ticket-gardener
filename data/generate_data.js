@@ -141,7 +141,7 @@ for (let d = 0; d < 90; d++) {
         const ticketImages = shuffledPool.slice(0, Math.floor(Math.random() * 2) + 1);
 
         tickets.push({
-            id: 2000 + tickets.length,
+            id: 1000 + tickets.length,
             title: `${tree} (${damage === 'accident' ? 'อุบัติเหตุ' : (damage === 'nature' ? 'อุบัติเหตุจากธรรมชาติ' : 'อื่นๆ')})`,
             description: `พบปัญหา${tree}บริเวณ${zone.name} ต้องการการตรวจสอบ`,
             category: damage,
