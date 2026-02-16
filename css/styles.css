@@ -2324,6 +2324,11 @@ body.login-mode #main-content {
 
 /* Active state logic for Click interaction */
 .fab-btn.active {
+    width: auto;
+    /* Expand button */
+    padding-left: 1.25rem;
+    padding-right: 0.5rem;
+    border-radius: 9999px;
     transform: translateY(-2px) scale(1.05);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
 }
@@ -2332,6 +2337,25 @@ body.login-mode #main-content {
     opacity: 1;
     visibility: visible;
     transform: translateY(-50%) translateX(0);
+}
+
+/* Inner label (Add Ticket) */
+.fab-label {
+    max-width: 0;
+    opacity: 0;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-right: 0;
+}
+
+.fab-btn.active .fab-label {
+    max-width: 150px;
+    opacity: 1;
+    margin-right: 0.5rem;
 }
 
 /* Hide FAB on specific pages (add class via JS if needed) */
