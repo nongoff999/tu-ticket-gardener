@@ -91,27 +91,12 @@ for (let d = 0; d < 90; d++) {
         let status = 'new';
         let operation = "-";
 
-        if (age > 14) {
-            // Old tickets: Mostly completed (90%)
-            status = Math.random() > 0.1 ? 'completed' : 'inProgress';
-        } else if (age > 7) {
-            // 1-2 weeks old: Mostly completed or in progress
-            const r = Math.random();
-            if (r > 0.3) status = 'completed';
-            else if (r > 0.1) status = 'inProgress';
-            else status = 'pending';
-        } else if (age > 3) {
-            // 3-7 days: Active work
-            const r = Math.random();
-            if (r > 0.6) status = 'completed';
-            else if (r > 0.2) status = 'inProgress';
-            else status = 'new';
+        if (age > 2) {
+            // Older than 2 days: 99% completed, very fast closure
+            status = Math.random() > 0.01 ? 'completed' : 'new';
         } else {
-            // Recent: New or Just Started
-            const r = Math.random();
-            if (r > 0.8) status = 'completed'; // Quick fix
-            else if (r > 0.5) status = 'inProgress';
-            else status = 'new';
+            // Recent: new or completed
+            status = Math.random() > 0.6 ? 'completed' : 'new';
         }
 
         const zone = getRandomItem(ZONES);
@@ -121,23 +106,17 @@ for (let d = 0; d < 90; d++) {
         let assignees = [];
         let notes = "";
 
+        // Operation/Assignees for non-new
         if (status !== 'new') {
             const count = Math.floor(Math.random() * 3) + 1;
             const shuffled = [...ASSIGNEES_LIST].sort(() => 0.5 - Math.random());
             assignees = shuffled.slice(0, count);
-
             operation = getRandomItem(OPERATIONS);
             if (Math.random() > 0.7) notes = "ดำเนินการตามแผน";
         }
 
-        if (status === 'new' || status === 'pending') {
-            operation = "-";
-        }
-
-        // Select images from pool based on damage type
         const pool = IMAGE_POOL[damage] || IMAGE_POOL['other'];
         const shuffledPool = [...pool].sort(() => 0.5 - Math.random());
-        // Use 1-2 images per ticket to keep data manageable
         const ticketImages = shuffledPool.slice(0, Math.floor(Math.random() * 2) + 1);
 
         tickets.push({
@@ -146,7 +125,7 @@ for (let d = 0; d < 90; d++) {
             description: `พบปัญหา${tree}บริเวณ${zone.name} ต้องการการตรวจสอบ`,
             category: damage,
             status: status,
-            priority: Math.random() > 0.8 ? 'urgent' : 'normal',
+            priority: Math.random() > 0.9 ? 'urgent' : 'normal',
             zone: zone.id,
             zoneName: zone.name,
             treeType: tree,
@@ -154,7 +133,7 @@ for (let d = 0; d < 90; d++) {
             circumference: Math.floor(Math.random() * 150) + 20,
             quantity: Math.floor(Math.random() * 3) + 1,
             impact: "-",
-            operation: operation,
+            operation: status === 'new' ? "-" : operation,
             date: ticketTime.toISOString().slice(0, 16).replace('T', ' '),
             assignees: assignees,
             images: ticketImages,
@@ -162,6 +141,29 @@ for (let d = 0; d < 90; d++) {
         });
     }
 }
+
+// POST-PROCESS: Force exactly 5 "inProgress" tickets from recent ones
+// To make it look like the work is currently active
+const recentIndices = [];
+for (let i = 0; i < tickets.length; i++) {
+    const age = Math.round((today - new Date(tickets[i].date)) / (1000 * 60 * 60 * 24));
+    if (age <= 7) recentIndices.push(i);
+}
+
+// Pick 5 random from recent
+const shuffledIndices = recentIndices.sort(() => 0.5 - Math.random());
+const selectedForInProgress = shuffledIndices.slice(0, 5);
+
+selectedForInProgress.forEach(idx => {
+    tickets[idx].status = 'inProgress';
+    // Ensure it has assignees and operation
+    if (tickets[idx].assignees.length === 0) {
+        tickets[idx].assignees = [getRandomItem(ASSIGNEES_LIST)];
+    }
+    if (tickets[idx].operation === "-" || !tickets[idx].operation) {
+        tickets[idx].operation = getRandomItem(OPERATIONS);
+    }
+});
 
 // Sort by date desc
 tickets.sort((a, b) => new Date(b.date) - new Date(a.date));
