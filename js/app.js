@@ -377,16 +377,16 @@ function renderDashboard() {
             ? (() => {
                 if (!AppState.customStartDate) AppState.customStartDate = new Date().toISOString().split('T')[0];
                 if (!AppState.customEndDate) AppState.customEndDate = new Date().toISOString().split('T')[0];
-                return `<div class="custom-date-range" style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1.5rem; width: 100%;">
+                return `<div class="custom-date-range" style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1rem; width: 100%; padding: 0.25rem 0;">
                     <input type="date" value="${AppState.customStartDate}" 
                            onchange="AppState.customStartDate=this.value"
-                           style="flex: 1; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; text-align: center; font-family: inherit; font-size: 0.95rem; color:#334155; outline: none;">
+                           style="flex: 1; min-width: 0; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; text-align: center; font-family: inherit; font-size: 0.9rem; color:#334155; outline: none; background: white;">
                     
                     <input type="date" value="${AppState.customEndDate}" 
                            onchange="AppState.customEndDate=this.value"
-                           style="flex: 1; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; text-align: center; font-family: inherit; font-size: 0.95rem; color:#334155; outline: none;">
+                           style="flex: 1; min-width: 0; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; text-align: center; font-family: inherit; font-size: 0.9rem; color:#334155; outline: none; background: white;">
                            
-                    <button onclick="renderDashboard()" style="padding: 0.5rem 1rem; background: #e2e8f0; border: none; border-radius: 0.5rem; color: #334155; font-weight: 600; font-size: 0.9rem; white-space: nowrap;">ตกลง</button>
+                    <button onclick="renderDashboard()" style="padding: 0.5rem 1rem; background: #e2e8f0; border: none; border-radius: 0.375rem; color: #334155; font-weight: 600; font-size: 0.9rem; white-space: nowrap;">ตกลง</button>
                 </div>`;
             })()
             : Components.periodCalendar(AppState.selectedDate, AppState.dashboardPeriod)
