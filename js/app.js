@@ -373,45 +373,51 @@ function renderDashboard() {
     const content = document.getElementById('main-content');
     content.innerHTML = `
         <!-- Period Calendar -->
-        ${Components.periodCalendar(AppState.selectedDate, AppState.dashboardPeriod)}
+        ${AppState.dashboardPeriod === 'CUSTOM'
+            ? `<div class="custom-date-picker" style="background:white; padding:1.25rem; border-radius:1rem; margin-bottom:1.5rem; text-align:center; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
+                 <div style="font-weight:600; margin-bottom:0.75rem; color:#64748b; font-size:0.9rem;">ระบุวันที่ต้องการดูรายงาน</div>
+                 <input type="date" value="${AppState.selectedDate}" 
+                        onchange="AppState.selectedDate=this.value; renderDashboard();" 
+                        style="font-size:1.1rem; padding:0.75rem 1rem; border-radius:0.75rem; border:1px solid #cbd5e1; width:100%; max-width:300px; outline:none; color:#334155; font-family:inherit;">
+               </div>`
+            : Components.periodCalendar(AppState.selectedDate, AppState.dashboardPeriod)
+        }
 
         <!-- Stats Grid -->
         <div class="stats-grid" style="margin-top: -1rem;">
-            ${Components.statCard(`ทิคเก็ตราย${AppState.dashboardPeriod === 'DAY' ? 'วัน' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : 'เดือน'}`, stats.total, 'blue', 'dashboard')}
-            ${Components.statCard('ทิคเก็ตใหม่วันนี้', stats.new, 'yellow', 'notification_important')}
+            ${Components.statCard(`ทิคเก็ตรวม (${AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : AppState.dashboardPeriod === 'MONTH' ? 'เดือน' : 'วัน'})`, stats.total, 'blue', 'dashboard')}
+            ${Components.statCard('ทิคเก็ตใหม่', stats.new, 'yellow', 'notification_important')}
             ${Components.statCard('ระหว่างดำเนินการ', stats.inProgress, 'purple', 'settings_suggest')}
             ${Components.statCard('ยังไม่ดำเนินการ', stats.pending, 'pink', 'pending_actions')}
             ${Components.statCard('เสร็จสิ้น', stats.completed, 'green', 'task_alt')}
         </div>
 
-
-
         <!-- Period Tabs -->
         <div class="period-tabs">
-            <button class="period-tab ${AppState.dashboardPeriod === 'DAY' ? 'active' : ''}" data-period="DAY">DAY</button>
-            <button class="period-tab ${AppState.dashboardPeriod === 'WEEK' ? 'active' : ''}" data-period="WEEK">WEEK</button>
-            <button class="period-tab ${AppState.dashboardPeriod === 'MONTH' ? 'active' : ''}" data-period="MONTH">MONTH</button>
+            <button class="period-tab ${AppState.dashboardPeriod === 'DAY' ? 'active' : ''}" data-period="DAY">วัน</button>
+            <button class="period-tab ${AppState.dashboardPeriod === 'WEEK' ? 'active' : ''}" data-period="WEEK">สัปดาห์</button>
+            <button class="period-tab ${AppState.dashboardPeriod === 'MONTH' ? 'active' : ''}" data-period="MONTH">เดือน</button>
+            <button class="period-tab ${AppState.dashboardPeriod === 'CUSTOM' ? 'active' : ''}" data-period="CUSTOM">กำหนดเอง</button>
         </div>
 
         <!-- Chart Card -->
-        <!-- Chart Card -->
         <div class="chart-card">
-            <h2>รายงานจำนวนของทิคเก็ตราย${AppState.dashboardPeriod === 'DAY' ? 'วัน' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : 'เดือน'}</h2>
+            <h2>รายงานจำนวนของทิคเก็ตราย${AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : AppState.dashboardPeriod === 'MONTH' ? 'เดือน' : 'วัน'}</h2>
             
             ${generateChartSVG(AppState.dashboardPeriod, AppState.selectedDate)}
             
-            <div class="chart-legend" style="display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem;">
+            <div class="chart-legend" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
                 <div class="chart-legend-item">
                     <div class="chart-legend-color" style="background: #fb7185;"></div>
-                    <span class="chart-legend-text">ยังไม่ดำเนินการ (${AppState.dashboardPeriod === 'DAY' ? 'วันนี้' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์นี้' : 'เดือนนี้'})</span>
+                    <span class="chart-legend-text">ยังไม่ดำเนินการ</span>
                 </div>
                 <div class="chart-legend-item">
                     <div class="chart-legend-color" style="background: #a78bfa;"></div>
-                    <span class="chart-legend-text">ระหว่างดำเนินการ (${AppState.dashboardPeriod === 'DAY' ? 'วันนี้' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์นี้' : 'เดือนนี้'})</span>
+                    <span class="chart-legend-text">ระหว่างดำเนินการ</span>
                 </div>
                 <div class="chart-legend-item">
                     <div class="chart-legend-color" style="background: #10B981;"></div>
-                    <span class="chart-legend-text">เสร็จสิ้น (${AppState.dashboardPeriod === 'DAY' ? 'วันนี้' : AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์นี้' : 'เดือนนี้'})</span>
+                    <span class="chart-legend-text">เสร็จสิ้น</span>
                 </div>
             </div>
         </div>
@@ -480,7 +486,7 @@ function getStatsForPeriod(period, dateStr) {
     const date = new Date(dateStr);
     let tickets = [];
 
-    if (period === 'DAY') {
+    if (period === 'DAY' || period === 'CUSTOM') {
         // Same day tickets
         tickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr));
     } else if (period === 'WEEK') {
@@ -541,7 +547,7 @@ function getChartData(period, dateStr) {
     // Helper to init array with zeros
     const initArray = (len) => Array(len).fill(0);
 
-    if (period === 'DAY') {
+    if (period === 'DAY' || period === 'CUSTOM') {
         // Hourly buckets: 00:00, 04:00, ..., 20:00, 24:00 (End of day)
         // 7 points: 0, 4, 8, 12, 16, 20, 24
         const buckets = [0, 4, 8, 12, 16, 20, 24];
