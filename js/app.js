@@ -3583,10 +3583,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Step 2: Navigate if already active
         if (fab.classList.contains('active')) {
+            // User requested to skip 'add-select' and go directly to Add Form
             if (typeof navigateTo === 'function') {
-                navigateTo('add-select');
+                // navigateTo('add-select');
+                navigateTo('add');
+            } else if (window.router) {
+                window.router.navigate('/add');
             } else {
-                console.warn('navigateTo function not found');
+                console.warn('Navigation function not found');
             }
             resetFab();
         }
