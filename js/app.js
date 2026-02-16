@@ -401,52 +401,46 @@ function renderDashboard() {
 
         </div>
 
-        <!-- Period Tabs -->
-        <div class="period-tabs" style="margin-bottom: 1.5rem;">
-            <button class="period-tab ${AppState.dashboardPeriod === 'DAY' ? 'active' : ''}" data-period="DAY">วัน</button>
-            <button class="period-tab ${AppState.dashboardPeriod === 'WEEK' ? 'active' : ''}" data-period="WEEK">สัปดาห์</button>
-            <button class="period-tab ${AppState.dashboardPeriod === 'MONTH' ? 'active' : ''}" data-period="MONTH">เดือน</button>
-            <button class="period-tab ${AppState.dashboardPeriod === 'CUSTOM' ? 'active' : ''}" data-period="CUSTOM">กำหนดเอง</button>
-        </div>
+        <!-- Chart Card (With Tabs) -->
+        <div class="chart-card">
+            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                 <h2 style="font-size: 1rem; margin: 0; color: #1e293b;">รายงานจำนวนทิคเก็ต</h2>
+                 <div class="chart-period-tabs" style="display: flex; background: #f1f5f9; padding: 0.25rem; border-radius: 0.5rem;">
+                      <button class="chart-tab" onclick="AppState.dashboardPeriod='DAY'; renderDashboard();" style="border:none; background: ${AppState.dashboardPeriod === 'DAY' ? 'white' : 'transparent'}; box-shadow: ${AppState.dashboardPeriod === 'DAY' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'}; padding: 0.35rem 0.75rem; border-radius: 0.375rem; font-size: 0.8rem; cursor: pointer; color: ${AppState.dashboardPeriod === 'DAY' ? '#0f172a' : '#64748b'}; font-weight: 500;">รายวัน</button>
+                      <button class="chart-tab" onclick="AppState.dashboardPeriod='WEEK'; renderDashboard();" style="border:none; background: ${AppState.dashboardPeriod === 'WEEK' ? 'white' : 'transparent'}; box-shadow: ${AppState.dashboardPeriod === 'WEEK' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'}; padding: 0.35rem 0.75rem; border-radius: 0.375rem; font-size: 0.8rem; cursor: pointer; color: ${AppState.dashboardPeriod === 'WEEK' ? '#0f172a' : '#64748b'}; font-weight: 500;">รายสัปดาห์</button>
+                      <button class="chart-tab" onclick="AppState.dashboardPeriod='MONTH'; renderDashboard();" style="border:none; background: ${AppState.dashboardPeriod === 'MONTH' ? 'white' : 'transparent'}; box-shadow: ${AppState.dashboardPeriod === 'MONTH' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'}; padding: 0.35rem 0.75rem; border-radius: 0.375rem; font-size: 0.8rem; cursor: pointer; color: ${AppState.dashboardPeriod === 'MONTH' ? '#0f172a' : '#64748b'}; font-weight: 500;">รายเดือน</button>
+                      <button class="chart-tab" onclick="AppState.dashboardPeriod='CUSTOM'; renderDashboard();" style="border:none; background: ${AppState.dashboardPeriod === 'CUSTOM' ? 'white' : 'transparent'}; box-shadow: ${AppState.dashboardPeriod === 'CUSTOM' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'}; padding: 0.35rem 0.75rem; border-radius: 0.375rem; font-size: 0.8rem; cursor: pointer; color: ${AppState.dashboardPeriod === 'CUSTOM' ? '#0f172a' : '#64748b'}; font-weight: 500;">กำหนดเอง</button>
+                 </div>
+            </div>
 
-        <!-- Period Calendar (Moved Below Tabs) -->
-        ${AppState.dashboardPeriod === 'CUSTOM'
+            <!-- Custom Date Picker (Inside Chart) -->
+            ${AppState.dashboardPeriod === 'CUSTOM'
             ? (() => {
                 if (!AppState.customStartDate) AppState.customStartDate = new Date().toISOString().split('T')[0];
                 if (!AppState.customEndDate) AppState.customEndDate = new Date().toISOString().split('T')[0];
-                return `<div class="custom-date-range" style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1.5rem; width: 100%; padding: 0.25rem 0;">
-                    <input type="date" value="${AppState.customStartDate}" 
-                           onchange="AppState.customStartDate=this.value"
-                           style="flex: 1; min-width: 0; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; text-align: center; font-family: inherit; font-size: 0.9rem; color:#334155; outline: none; background: white;">
-                    
-                    <input type="date" value="${AppState.customEndDate}" 
-                           onchange="AppState.customEndDate=this.value"
-                           style="flex: 1; min-width: 0; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; text-align: center; font-family: inherit; font-size: 0.9rem; color:#334155; outline: none; background: white;">
-                           
-                    <button onclick="renderDashboard()" style="padding: 0.5rem 1rem; background: #e2e8f0; border: none; border-radius: 0.375rem; color: #334155; font-weight: 600; font-size: 0.9rem; white-space: nowrap;">ตกลง</button>
-                </div>`;
+                return `<div class="custom-date-range" style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1.5rem; width: 100%; padding: 0.5rem; background: #f8fafc; border-radius: 0.5rem; border: 1px dashed #cbd5e1;">
+                        <input type="date" value="${AppState.customStartDate}" 
+                               onchange="AppState.customStartDate=this.value; renderDashboard();"
+                               style="flex: 1; min-width: 0; padding: 0.35rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; text-align: center; font-family: inherit; font-size: 0.85rem; color:#334155; outline: none; background: white;">
+                        <span style="color:#94a3b8;">-</span>
+                        <input type="date" value="${AppState.customEndDate}" 
+                               onchange="AppState.customEndDate=this.value; renderDashboard();"
+                               style="flex: 1; min-width: 0; padding: 0.35rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; text-align: center; font-family: inherit; font-size: 0.85rem; color:#334155; outline: none; background: white;">
+                    </div>`;
             })()
-            : Components.periodCalendar(AppState.selectedDate, AppState.dashboardPeriod)
+            : ''
         }
-
-        <!-- Chart Card -->
-        <div class="chart-card">
-            <h2>รายงานจำนวนของทิคเก็ตราย${AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : AppState.dashboardPeriod === 'MONTH' ? 'เดือน' : 'วัน'}</h2>
             
             ${generateChartSVG(AppState.dashboardPeriod, AppState.selectedDate)}
             
-            <div class="chart-legend" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                <div class="chart-legend-item">
-                    <div class="chart-legend-color" style="background: #fb7185;"></div>
-                    <span class="chart-legend-text">ยังไม่ดำเนินการ</span>
+            <div class="chart-legend" style="display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #fbbf24; border-radius: 2px;"></div>
+                    <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนทิคเก็ตเปิดใหม่</span>
                 </div>
-                <div class="chart-legend-item">
-                    <div class="chart-legend-color" style="background: #a78bfa;"></div>
-                    <span class="chart-legend-text">ระหว่างดำเนินการ</span>
-                </div>
-                <div class="chart-legend-item">
-                    <div class="chart-legend-color" style="background: #10B981;"></div>
-                    <span class="chart-legend-text">เสร็จสิ้น</span>
+                <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #cbd5e1; border-radius: 2px;"></div>
+                    <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนทิคเก็ตที่ปิดเรียบร้อยแล้ว</span>
                 </div>
             </div>
         </div>
@@ -577,238 +571,155 @@ function getStatsForPeriod(period, dateStr) {
 function getChartData(period, dateStr) {
     const data = {
         labels: [],
-        series: {
-            total: [],
-            new: [],
-            inProgress: [],
-            pending: [],
-            completed: []
-        }
+        series: { new: [], completed: [] }
     };
-
-    const date = new Date(dateStr);
     const tickets = MOCK_DATA.tickets;
-
-    // Helper to init array with zeros
     const initArray = (len) => Array(len).fill(0);
 
-    if (period === 'DAY' || period === 'CUSTOM') {
-        // Hourly buckets: 00:00, 04:00, ..., 20:00, 24:00 (End of day)
-        // 7 points: 0, 4, 8, 12, 16, 20, 24
+    if (period === 'DAY') {
         const buckets = [0, 4, 8, 12, 16, 20, 24];
         data.labels = buckets.map(h => `${h.toString().padStart(2, '0')}:00`);
-
         const len = buckets.length;
         data.series.new = initArray(len);
-        data.series.pending = initArray(len);
-        data.series.inProgress = initArray(len);
         data.series.completed = initArray(len);
 
-        // Filter tickets for this day
         const dayTickets = tickets.filter(t => t.date.startsWith(dateStr));
-
         dayTickets.forEach(t => {
             const h = new Date(t.date).getHours();
-            // Find closest bucket index (floor)
-            // 0-3 -> idx 0 (00:00)
-            // 4-7 -> idx 1 (04:00)
             const idx = Math.floor(h / 4);
-
             if (t.status === 'new') data.series.new[idx]++;
-            else if (t.status === 'pending') data.series.pending[idx]++;
-            else if (t.status === 'inProgress') data.series.inProgress[idx]++;
             else if (t.status === 'completed') data.series.completed[idx]++;
         });
-
-        // "Pending" line in chart usually represents "Yet to do". Combine New + Pending for visual simplicity?
-        // Or keep distinct? The User requested "Pending (Red), InProgress (Purple), Completed (Green)".
-        // So let's map: Red Line = (New + Pending).
-        for (let i = 0; i < len; i++) {
-            data.series.pending[i] += data.series.new[i];
-        }
-
     } else if (period === 'WEEK') {
-        const startOfWeek = new Date(date);
-        startOfWeek.setDate(date.getDate() - date.getDay());
+        const d = new Date(dateStr);
+        const startOfWeek = new Date(d);
+        startOfWeek.setDate(d.getDate() - d.getDay());
         startOfWeek.setHours(0, 0, 0, 0);
-
-        const days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
-        data.labels = days;
-
-        const len = 7;
-        data.series.new = initArray(len);
-        data.series.pending = initArray(len);
-        data.series.inProgress = initArray(len);
-        data.series.completed = initArray(len);
 
         const endOfWeek = new Date(startOfWeek);
         endOfWeek.setDate(startOfWeek.getDate() + 7);
 
-        const weekTickets = tickets.filter(t => {
-            const d = new Date(t.date);
-            return d >= startOfWeek && d < endOfWeek;
-        });
+        data.labels = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
+        const len = 7;
+        data.series.new = initArray(len);
+        data.series.completed = initArray(len);
 
+        const weekTickets = tickets.filter(t => { const td = new Date(t.date); return td >= startOfWeek && td < endOfWeek; });
         weekTickets.forEach(t => {
-            const d = new Date(t.date);
-            const dayIdx = d.getDay(); // 0-6
-
-            if (t.status === 'new') data.series.new[dayIdx]++;
-            else if (t.status === 'pending') data.series.pending[dayIdx]++;
-            else if (t.status === 'inProgress') data.series.inProgress[dayIdx]++;
-            else if (t.status === 'completed') data.series.completed[dayIdx]++;
+            const idx = new Date(t.date).getDay();
+            if (t.status === 'new') data.series.new[idx]++;
+            else if (t.status === 'completed') data.series.completed[idx]++;
         });
-
-        // Combine New into Pending for Chart (Red Line)
-        for (let i = 0; i < len; i++) {
-            data.series.pending[i] += data.series.new[i];
-        }
-
     } else if (period === 'MONTH') {
-        const year = date.getFullYear();
-        const month = date.getMonth();
+        const d = new Date(dateStr);
+        const year = d.getFullYear();
+        const month = d.getMonth();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        // Buckets: Days 1..DaysInMonth
-        const len = daysInMonth;
-        // Labels: Show every 5th day
         for (let i = 1; i <= daysInMonth; i++) {
             if (i === 1 || i % 5 === 0 || i === daysInMonth) data.labels.push(i.toString());
             else data.labels.push('');
         }
 
+        const len = daysInMonth;
         data.series.new = initArray(len);
-        data.series.pending = initArray(len);
-        data.series.inProgress = initArray(len);
         data.series.completed = initArray(len);
 
-        const monthTickets = tickets.filter(t => {
-            const d = new Date(t.date);
-            return d.getFullYear() === year && d.getMonth() === month;
-        });
-
+        const monthTickets = tickets.filter(t => { const td = new Date(t.date); return td.getFullYear() === year && td.getMonth() === month; });
         monthTickets.forEach(t => {
-            const d = new Date(t.date);
-            const dayIdx = d.getDate() - 1; // 0-indexed (Day 1 -> idx 0)
-
-            if (t.status === 'new') data.series.new[dayIdx]++;
-            else if (t.status === 'pending') data.series.pending[dayIdx]++;
-            else if (t.status === 'inProgress') data.series.inProgress[dayIdx]++;
-            else if (t.status === 'completed') data.series.completed[dayIdx]++;
+            const idx = new Date(t.date).getDate() - 1;
+            if (t.status === 'new') data.series.new[idx]++;
+            else if (t.status === 'completed') data.series.completed[idx]++;
         });
+    } else if (period === 'CUSTOM') {
+        const start = new Date(AppState.customStartDate || new Date());
+        const end = new Date(AppState.customEndDate || new Date());
+        start.setHours(0, 0, 0, 0); end.setHours(23, 59, 59, 999);
 
-        // Combine New into Pending for Chart (Red Line)
+        // Calculate days difference
+        const oneDay = 1000 * 60 * 60 * 24;
+        const daysDiff = Math.max(1, Math.ceil((end - start) / oneDay));
+        const len = daysDiff + 1;
+
+        data.series.new = initArray(len);
+        data.series.completed = initArray(len);
+
         for (let i = 0; i < len; i++) {
-            data.series.pending[i] += data.series.new[i];
+            const curr = new Date(start);
+            curr.setDate(start.getDate() + i);
+            const dayStr = `${curr.getDate()}/${curr.getMonth() + 1}`;
+            // Limit labels if too many
+            if (len <= 10 || i === 0 || i === len - 1 || i % Math.ceil(len / 10) === 0) data.labels.push(dayStr);
+            else data.labels.push('');
         }
-    }
 
+        const customTickets = tickets.filter(t => { const td = new Date(t.date); return td >= start && td <= end; });
+        customTickets.forEach(t => {
+            const td = new Date(t.date);
+            td.setHours(0, 0, 0, 0);
+            const diff = Math.round((td - start) / oneDay);
+            if (diff >= 0 && diff < len) {
+                if (t.status === 'new') data.series.new[diff]++;
+                else if (t.status === 'completed') data.series.completed[diff]++;
+            }
+        });
+    }
     return data;
 }
 
 function generateChartSVG(period, dateStr) {
     const data = getChartData(period, dateStr);
-    const height = 150; // ViewBox height
-    const width = 300; // ViewBox width (wider for smooth curve)
+    const height = 220;
+    const width = 340;
+    const paddingTop = 20;
+    const paddingBottom = 30;
+    const paddingLeft = 10;
+    const paddingRight = 10;
+    const chartHeight = height - paddingTop - paddingBottom;
 
-    // Find max value for scaling
-    const allValues = [
-        ...data.series.total, ...data.series.new,
-        ...data.series.inProgress, ...data.series.pending,
-        ...data.series.completed
-    ];
-    const maxValue = Math.max(...allValues, 10) * 1.2; // Add 20% padding
+    // Scale
+    const allVals = [...data.series.new, ...data.series.completed];
+    const maxVal = Math.max(...allVals, 5); // Minimum scale 5
 
-    const pointsToPath = (values) => {
-        if (values.length === 0) return '';
+    const itemCount = data.labels.length;
+    const availableWidth = width - paddingLeft - paddingRight;
+    const itemWidth = availableWidth / itemCount;
+    // Bar dimensions
+    const barGroupWidth = itemWidth * 0.6; // 60% of slot width
+    const singleBarWidth = barGroupWidth / 2 - 1; // Gap between bars
+    const gap = (itemWidth - barGroupWidth) / 2;
 
-        // 1. Convert values to coordinate points
-        const points = values.map((v, i) => {
-            const x = (i / (values.length - 1)) * width;
-            const y = height - (v / maxValue * height); // Invert Y because SVG 0 is top
-            return [x, y];
-        });
+    let svgContent = '';
 
-        // 2. Helper to calculate control points for Bezier curve
-        const controlPoint = (current, previous, next, reverse) => {
-            const p = previous || current;
-            const n = next || current;
-            const smoothing = 0.2; // 0 (sharp) to 1 (very round)
+    // Grid Lines
+    const gridCount = 5;
+    for (let i = 0; i <= gridCount; i++) {
+        const val = (maxVal / gridCount) * i;
+        const y = height - paddingBottom - ((val / maxVal) * chartHeight);
+        svgContent += `<line x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" stroke="#f1f5f9" stroke-width="1" />`;
+    }
 
-            const oX = n[0] - p[0];
-            const oY = n[1] - p[1];
-            const length = Math.sqrt(Math.pow(oX, 2) + Math.pow(oY, 2)) * smoothing;
-            const angle = Math.atan2(oY, oX) + (reverse ? Math.PI : 0);
+    // Bars
+    data.labels.forEach((label, i) => {
+        const xBase = paddingLeft + (i * itemWidth) + gap;
 
-            const x = current[0] + Math.cos(angle) * length;
-            const y = current[1] + Math.sin(angle) * length;
-            return [x, y];
-        };
+        // New Bar (Yellow)
+        const h1 = (data.series.new[i] / maxVal) * chartHeight;
+        const y1 = height - paddingBottom - h1;
+        if (h1 > 0) svgContent += `<rect x="${xBase}" y="${y1}" width="${singleBarWidth}" height="${h1}" fill="#fde047" rx="2" />`;
 
-        // 3. Generate Path logic
-        return points.reduce((acc, point, i, a) => {
-            if (i === 0) return `M ${point[0]},${point[1]}`;
+        // Completed Bar (Grey)
+        const h2 = (data.series.completed[i] / maxVal) * chartHeight;
+        const y2 = height - paddingBottom - h2;
+        if (h2 > 0) svgContent += `<rect x="${xBase + singleBarWidth + 2}" y="${y2}" width="${singleBarWidth}" height="${h2}" fill="#cbd5e1" rx="2" />`;
 
-            const [cpsX, cpsY] = controlPoint(a[i - 1], a[i - 2], point, false);
-            const [cpeX, cpeY] = controlPoint(point, a[i - 1], a[i + 1], true);
-
-            return `${acc} C ${cpsX},${cpsY} ${cpeX},${cpeY} ${point[0]},${point[1]}`;
-        }, '');
-    };
-
-    const seriesColors = {
-        total: '#0ea5e9',
-        new: '#FBBF24',
-        inProgress: '#a78bfa',
-        pending: '#fb7185',
-        completed: '#10B981'
-    };
-
-    let pathsHTML = '';
-    const seriesOrder = ['inProgress', 'pending', 'completed']; // Render order: Purple, Red, Green
-
-    // Draw lines
-    seriesOrder.forEach(key => {
-        pathsHTML += `<path d="${pointsToPath(data.series[key])}" 
-                           fill="none" 
-                           stroke="${seriesColors[key]}" 
-                           stroke-width="4" 
-                           stroke-linecap="round" 
-                           stroke-linejoin="round"
-                           opacity="0.9"></path>`;
+        // Axis Label
+        if (label) {
+            svgContent += `<text x="${xBase + barGroupWidth / 2}" y="${height - 10}" font-size="9" fill="#94a3b8" text-anchor="middle" font-family="sans-serif">${label}</text>`;
+        }
     });
 
-    // Generate X-axis labels HTML
-    let labelsHTML = '';
-
-    // Add Axis Line
-    const axisLine = `<line x1="0" y1="${height}" x2="${width}" y2="${height}" stroke="#e5e7eb" stroke-width="2" />`;
-
-    data.labels.forEach((label, index) => {
-        if (!label) return;
-        const x = (index / (data.labels.length - 1)) * 300; // Use 300 width to match chart
-        // Adjust text alignment based on position
-        let anchor = 'middle';
-        if (index === 0) anchor = 'start';
-        if (index === data.labels.length - 1) anchor = 'end';
-
-        labelsHTML += `<text x="${x}" y="15" font-size="10" fill="#4B5563" text-anchor="${anchor}">${label}</text>`;
-    });
-
-    return `
-        <div style="position: relative; height: 16rem; margin-bottom: 0.5rem;">
-            <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" style="width: 100%; height: 85%; display: block; overflow: visible;">
-                ${axisLine}
-                ${pathsHTML}
-            </svg>
-            <div style="height: 15%; width: 100%; margin-top: 0.5rem;">
-                <!-- Updated viewBox to 300 width -->
-                <svg viewBox="0 0 300 20" style="width: 100%; height: 100%; overflow: visible; display: block;">
-                    ${labelsHTML}
-                </svg>
-            </div>
-        </div>
-    `;
+    return `<svg viewBox="0 0 ${width} ${height}" style="width:100%; height:auto; display:block;">${svgContent}</svg>`;
 }
 
 function getStatsForDate(dateStr) {
