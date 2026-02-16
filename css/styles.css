@@ -2437,4 +2437,9 @@ body.login-mode #main-content {
     .fab-btn .material-symbols-outlined {
         font-size: 1.75rem;
     }
+
+    /* Hide icon when expanded on mobile */
+    .fab-btn.active .material-symbols-outlined {
+        display: none;
+    }
 }
