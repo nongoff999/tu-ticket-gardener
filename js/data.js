@@ -35,10 +35,12 @@ async function loadData() {
         if (localData) {
             const parsed = JSON.parse(localData);
 
-            // Force refresh from JSON if current data is very small (likely old manual data)
-            // Or if we specifically want to sync with the simulated data in tickets.json
-            if (parsed.tickets && parsed.tickets.length < 100) {
-                console.log('🔄 ข้อมูลมีจำนวนน้อย ( < 100) - ทำการโหลดข้อมูลจำลองใหม่จากไฟล์ JSON');
+            // Force refresh from JSON if:
+            // 1. Data is small (< 100 tickets)
+            // 2. Data is missing the 'lat' property (New feature)
+            const firstTicket = parsed.tickets?.[0] || {};
+            if ((parsed.tickets && parsed.tickets.length < 100) || (parsed.tickets && parsed.tickets.length > 0 && !firstTicket.lat)) {
+                console.log('🔄 ข้อมูลเก่าหรือไม่มีพิกัด - ทำการโหลดข้อมูลใหม่จากไฟล์ JSON');
                 localStorage.removeItem('tu_gardener_data');
                 // Proceed to fetch from JSON
             } else {

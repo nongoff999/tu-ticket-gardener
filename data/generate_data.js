@@ -119,15 +119,21 @@ for (let d = 0; d < 90; d++) {
         const shuffledPool = [...pool].sort(() => 0.5 - Math.random());
         const ticketImages = shuffledPool.slice(0, Math.floor(Math.random() * 2) + 1);
 
+        // Random location around TU Rangsit (approx 14.0722, 100.6128)
+        const lat = 14.068 + (Math.random() * 0.012);
+        const lng = 100.605 + (Math.random() * 0.015);
+
         tickets.push({
             id: 1000 + tickets.length,
-            title: `${tree} (${damage === 'accident' ? 'อุบัติเหตุ' : (damage === 'nature' ? 'อุบัติเหตุจากธรรมชาติ' : 'อื่นๆ')})`,
+            title: `${tree} (${damage === 'nature' ? 'อุบัติเหตุจากธรรมชาติ' : (damage === 'accident' ? 'อุบัติเหตุ' : 'อื่นๆ')})`,
             description: `พบปัญหา${tree}บริเวณ${zone.name} ต้องการการตรวจสอบ`,
             category: damage,
             status: status,
             priority: Math.random() > 0.9 ? 'urgent' : 'normal',
             zone: zone.id,
             zoneName: zone.name,
+            lat: lat.toFixed(6),
+            lng: lng.toFixed(6),
             treeType: tree,
             damageType: damage,
             circumference: Math.floor(Math.random() * 150) + 20,
