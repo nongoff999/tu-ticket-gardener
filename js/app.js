@@ -372,31 +372,31 @@ function renderDashboard() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Stats Grid (Compact Row - Old Look) -->
-        <div class="stats-compact-row" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 1.5rem;">
+        <!-- Stats Grid (Compact Row - Responsive via CSS) -->
+        <div class="stats-compact-row">
             
-            <div class="stat-card yellow" style="padding: 0.5rem 0.5rem; height: auto; min-height: 0;">
+            <div class="stat-card yellow">
                 <div style="position: relative; z-index: 10;">
-                    <p class="stat-card-label" style="font-size: 0.6rem; white-space: nowrap; margin-bottom: 0.1rem;">ทิคเก็ตใหม่</p>
-                    <p class="stat-card-value" style="font-size: 1.25rem; margin-bottom: 0;">${stats.new}</p>
+                    <p class="stat-card-label">ทิคเก็ตใหม่</p>
+                    <p class="stat-card-value">${stats.new}</p>
                 </div>
-                <span class="material-symbols-outlined stat-card-icon" style="font-size: 2rem; bottom: -0.25rem; right: -0.25rem; opacity: 0.15;">fiber_new</span>
+                <span class="material-symbols-outlined stat-card-icon">fiber_new</span>
             </div>
 
-            <div class="stat-card purple" style="padding: 0.5rem 0.5rem; height: auto; min-height: 0;">
+            <div class="stat-card purple">
                 <div style="position: relative; z-index: 10;">
-                    <p class="stat-card-label" style="font-size: 0.6rem; white-space: nowrap; margin-bottom: 0.1rem;">ระหว่างดำเนินการ</p>
-                    <p class="stat-card-value" style="font-size: 1.25rem; margin-bottom: 0;">${stats.inProgress}</p>
+                    <p class="stat-card-label">ระหว่างดำเนินการ</p>
+                    <p class="stat-card-value">${stats.inProgress}</p>
                 </div>
-                <span class="material-symbols-outlined stat-card-icon" style="font-size: 2rem; bottom: -0.25rem; right: -0.25rem; opacity: 0.15;">settings_suggest</span>
+                <span class="material-symbols-outlined stat-card-icon">settings_suggest</span>
             </div>
 
-            <div class="stat-card pink" style="padding: 0.5rem 0.5rem; height: auto; min-height: 0;">
+            <div class="stat-card pink">
                 <div style="position: relative; z-index: 10;">
-                    <p class="stat-card-label" style="font-size: 0.6rem; white-space: nowrap; margin-bottom: 0.1rem;">งานเร่งด่วน</p>
-                    <p class="stat-card-value" style="font-size: 1.25rem; margin-bottom: 0;">${stats.urgent}</p>
+                    <p class="stat-card-label">งานเร่งด่วน</p>
+                    <p class="stat-card-value">${stats.urgent}</p>
                 </div>
-                <span class="material-symbols-outlined stat-card-icon" style="font-size: 2rem; bottom: -0.25rem; right: -0.25rem; opacity: 0.15;">warning</span>
+                <span class="material-symbols-outlined stat-card-icon">warning</span>
             </div>
 
         </div>

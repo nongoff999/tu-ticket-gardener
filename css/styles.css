@@ -2443,3 +2443,58 @@ body.login-mode #main-content {
         display: none;
     }
 }
+/* Compact Stats Row (Mobile optimized + PC Balance) */
+.stats-compact-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin: 0.5rem 1.5rem 1.5rem 1.5rem;
+}
+
+.stats-compact-row .stat-card {
+    padding: 0.5rem !important;
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+.stats-compact-row .stat-card-value {
+    font-size: 1.25rem !important;
+    margin-bottom: 0;
+}
+
+.stats-compact-row .stat-card-label {
+    font-size: 0.6rem !important;
+    white-space: nowrap;
+    margin-bottom: 0.1rem;
+}
+
+.stats-compact-row .stat-card-icon {
+    font-size: 2rem !important;
+    bottom: -0.25rem !important;
+    right: -0.25rem !important;
+}
+
+@media (min-width: 1024px) {
+    .stats-compact-row {
+        gap: 1.5rem;
+        margin: 1rem 2rem 2rem 2rem;
+    }
+    
+    .stats-compact-row .stat-card {
+        padding: 1rem !important;
+    }
+    
+    .stats-compact-row .stat-card-value {
+        font-size: 1.75rem !important;
+    }
+    
+    .stats-compact-row .stat-card-label {
+        font-size: 0.875rem !important;
+    }
+    
+    .stats-compact-row .stat-card-icon {
+        font-size: 3rem !important;
+        bottom: -0.5rem !important;
+        right: -0.5rem !important;
+    }
+}
