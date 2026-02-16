@@ -374,12 +374,21 @@ function renderDashboard() {
     content.innerHTML = `
         <!-- Period Calendar -->
         ${AppState.dashboardPeriod === 'CUSTOM'
-            ? `<div class="custom-date-picker" style="background:white; padding:1.25rem; border-radius:1rem; margin-bottom:1.5rem; text-align:center; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
-                 <div style="font-weight:600; margin-bottom:0.75rem; color:#64748b; font-size:0.9rem;">ระบุวันที่ต้องการดูรายงาน</div>
-                 <input type="date" value="${AppState.selectedDate}" 
-                        onchange="AppState.selectedDate=this.value; renderDashboard();" 
-                        style="font-size:1.1rem; padding:0.75rem 1rem; border-radius:0.75rem; border:1px solid #cbd5e1; width:100%; max-width:300px; outline:none; color:#334155; font-family:inherit;">
-               </div>`
+            ? (() => {
+                if (!AppState.customStartDate) AppState.customStartDate = new Date().toISOString().split('T')[0];
+                if (!AppState.customEndDate) AppState.customEndDate = new Date().toISOString().split('T')[0];
+                return `<div class="custom-date-range" style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1.5rem; width: 100%;">
+                    <input type="date" value="${AppState.customStartDate}" 
+                           onchange="AppState.customStartDate=this.value"
+                           style="flex: 1; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; text-align: center; font-family: inherit; font-size: 0.95rem; color:#334155; outline: none;">
+                    
+                    <input type="date" value="${AppState.customEndDate}" 
+                           onchange="AppState.customEndDate=this.value"
+                           style="flex: 1; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; text-align: center; font-family: inherit; font-size: 0.95rem; color:#334155; outline: none;">
+                           
+                    <button onclick="renderDashboard()" style="padding: 0.5rem 1rem; background: #e2e8f0; border: none; border-radius: 0.5rem; color: #334155; font-weight: 600; font-size: 0.9rem; white-space: nowrap;">ตกลง</button>
+                </div>`;
+            })()
             : Components.periodCalendar(AppState.selectedDate, AppState.dashboardPeriod)
         }
 
@@ -486,9 +495,18 @@ function getStatsForPeriod(period, dateStr) {
     const date = new Date(dateStr);
     let tickets = [];
 
-    if (period === 'DAY' || period === 'CUSTOM') {
+    if (period === 'DAY') {
         // Same day tickets
         tickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr));
+    } else if (period === 'CUSTOM') {
+        const start = new Date(AppState.customStartDate || new Date());
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(AppState.customEndDate || new Date());
+        end.setHours(23, 59, 59, 999);
+        tickets = MOCK_DATA.tickets.filter(t => {
+            const d = new Date(t.date);
+            return d >= start && d <= end;
+        });
     } else if (period === 'WEEK') {
         // Get week range
         const startOfWeek = new Date(date);
