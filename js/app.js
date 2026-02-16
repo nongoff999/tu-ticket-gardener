@@ -3599,7 +3599,8 @@ document.addEventListener('DOMContentLoaded', () => {
             fab.classList.add('active');
 
             // Change UI to encourage 2nd click
-            if (icon) icon.textContent = 'arrow_forward';
+            // User requested Plus icon stay
+            // if (icon) icon.textContent = 'arrow_forward'; 
             if (label) label.textContent = 'แตะอีกครั้งเพื่อยืนยัน';
 
             // Close when clicking outside
