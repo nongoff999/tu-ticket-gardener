@@ -2346,6 +2346,7 @@ body.login-mode #main-content {
     font-weight: 600;
     font-size: 0.95rem;
     color: white;
+    white-space: nowrap;
 }
 
 .fab-btn.active .fab-label {
