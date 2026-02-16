@@ -443,7 +443,7 @@ function renderDashboard() {
                     <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนที่ค้าง</span>
                 </div>
                 <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #10b981; border-radius: 2px;"></div>
+                    <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #cbd5e1; border-radius: 2px;"></div>
                     <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนที่เสร็จสิ้น</span>
                 </div>
             </div>
@@ -724,10 +724,10 @@ function generateChartSVG(period, dateStr) {
         const y2 = height - paddingBottom - h2;
         if (h2 > 0) svgContent += `<rect x="${xBase + singleBarWidth + 1}" y="${y2}" width="${singleBarWidth}" height="${h2}" fill="#f43f5e" rx="2" />`;
 
-        // 3. Completed (Green)
+        // 3. Completed (Gray)
         const h3 = (data.series.completed[i] / maxVal) * chartHeight;
         const y3 = height - paddingBottom - h3;
-        if (h3 > 0) svgContent += `<rect x="${xBase + (singleBarWidth + 1) * 2}" y="${y3}" width="${singleBarWidth}" height="${h3}" fill="#10b981" rx="2" />`;
+        if (h3 > 0) svgContent += `<rect x="${xBase + (singleBarWidth + 1) * 2}" y="${y3}" width="${singleBarWidth}" height="${h3}" fill="#cbd5e1" rx="2" />`;
 
         // Label
         if (label) {
