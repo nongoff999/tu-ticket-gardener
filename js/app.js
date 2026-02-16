@@ -372,13 +372,24 @@ function renderDashboard() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Stats Grid -->
-        <div class="stats-grid" style="margin-top: 0.5rem; margin-bottom: 1.5rem;">
-            ${Components.statCard(`ทิคเก็ตรวม (${AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : AppState.dashboardPeriod === 'MONTH' ? 'เดือน' : 'วัน'})`, stats.total, 'blue', 'dashboard')}
-            ${Components.statCard('ทิคเก็ตใหม่', stats.new, 'yellow', 'notification_important')}
-            ${Components.statCard('ระหว่างดำเนินการ', stats.inProgress, 'purple', 'settings_suggest')}
-            ${Components.statCard('ยังไม่ดำเนินการ', stats.pending, 'pink', 'pending_actions')}
-            ${Components.statCard('เสร็จสิ้น', stats.completed, 'green', 'task_alt')}
+        <!-- Stats Grid (Compact Row) -->
+        <div class="stats-compact-row" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 1.5rem;">
+            
+            <div style="background: #fffbeb; border: 1px solid #fcd34d; border-radius: 0.75rem; padding: 0.75rem 0.25rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <div style="font-size: 1.5rem; font-weight: 800; color: #d97706; line-height: 1; margin-bottom: 0.25rem;">${stats.new}</div>
+                <div style="font-size: 0.75rem; color: #92400e; font-weight: 600;">ใหม่ (สะสม)</div>
+            </div>
+
+            <div style="background: #f3e8ff; border: 1px solid #d8b4fe; border-radius: 0.75rem; padding: 0.75rem 0.25rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <div style="font-size: 1.5rem; font-weight: 800; color: #9333ea; line-height: 1; margin-bottom: 0.25rem;">${stats.inProgress}</div>
+                <div style="font-size: 0.75rem; color: #6b21a8; font-weight: 600;">ทำอยู่ (สะสม)</div>
+            </div>
+
+            <div style="background: #fee2e2; border: 1px solid #fca5a5; border-radius: 0.75rem; padding: 0.75rem 0.25rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <div style="font-size: 1.5rem; font-weight: 800; color: #dc2626; line-height: 1; margin-bottom: 0.25rem;">${stats.urgent}</div>
+                <div style="font-size: 0.75rem; color: #991b1b; font-weight: 600;">ด่วน (คงค้าง)</div>
+            </div>
+
         </div>
 
         <!-- Period Tabs -->
@@ -493,57 +504,64 @@ function navigatePeriod(direction) {
 
 function getStatsForPeriod(period, dateStr) {
     const date = new Date(dateStr);
-    let tickets = [];
+    let periodTickets = [];
 
+    // 1. Filter Tickets by Period (For 'Completed' and 'Total Intake' reference)
     if (period === 'DAY') {
-        // Same day tickets
-        tickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr));
+        periodTickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr));
     } else if (period === 'CUSTOM') {
         const start = new Date(AppState.customStartDate || new Date());
         start.setHours(0, 0, 0, 0);
         const end = new Date(AppState.customEndDate || new Date());
         end.setHours(23, 59, 59, 999);
-        tickets = MOCK_DATA.tickets.filter(t => {
+        periodTickets = MOCK_DATA.tickets.filter(t => {
             const d = new Date(t.date);
             return d >= start && d <= end;
         });
     } else if (period === 'WEEK') {
-        // Get week range
         const startOfWeek = new Date(date);
-        startOfWeek.setDate(date.getDate() - date.getDay()); // Start from Sunday
+        startOfWeek.setDate(date.getDate() - date.getDay());
         const endOfWeek = new Date(startOfWeek);
         endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-        tickets = MOCK_DATA.tickets.filter(t => {
+        periodTickets = MOCK_DATA.tickets.filter(t => {
             const ticketDate = new Date(t.date);
             return ticketDate >= startOfWeek && ticketDate <= endOfWeek;
         });
     } else if (period === 'MONTH') {
-        // Same month tickets
         const year = date.getFullYear();
         const month = date.getMonth();
-
-        tickets = MOCK_DATA.tickets.filter(t => {
+        periodTickets = MOCK_DATA.tickets.filter(t => {
             const ticketDate = new Date(t.date);
             return ticketDate.getFullYear() === year && ticketDate.getMonth() === month;
         });
     }
 
-    // สำหรับ "ยังไม่ดำเนินการ" = ทิคเก็ตที่ยังไม่มีใครเข้าไปจัดการเลย (status = pending)
-    // นับสะสมจากอดีตจนถึงวันนี้
-    const today = new Date();
-    today.setHours(23, 59, 59, 999); // Set to end of today for inclusive comparison
-    const allPendingTickets = MOCK_DATA.tickets.filter(t => {
-        const ticketDate = new Date(t.date);
-        return ticketDate <= today && t.status === 'pending';
-    });
+    // 2. Global Accumulation (All Time) - As requested
+    // New: All time 'new'
+    const newAllTime = MOCK_DATA.tickets.filter(t => t.status === 'new').length;
+
+    // In Progress: All time 'inProgress' (User said "Everything in progress accumulated")
+    const inProgressAllTime = MOCK_DATA.tickets.filter(t => t.status === 'inProgress').length;
+
+    // Urgent: All time Urgent (Active tickets only)
+    // "Both New and Doing" => active statuses
+    const urgentAllTime = MOCK_DATA.tickets.filter(t =>
+        t.priority === 'urgent' &&
+        ['new', 'pending', 'inProgress'].includes(t.status)
+    ).length;
+
+    // Completed: Period based (Performance tracking)
+    const completedPeriod = periodTickets.filter(t => t.status === 'completed').length;
 
     return {
-        total: tickets.length,
-        new: tickets.filter(t => t.status === 'new').length,
-        inProgress: tickets.filter(t => t.status === 'inProgress').length,
-        pending: allPendingTickets.length, // นับสะสมตลอด
-        completed: tickets.filter(t => t.status === 'completed').length
+        total: periodTickets.length, // Keep for chart mostly
+        completed: completedPeriod,
+
+        // Accumulated values
+        new: newAllTime,
+        inProgress: inProgressAllTime,
+        urgent: urgentAllTime
     };
 }
 
