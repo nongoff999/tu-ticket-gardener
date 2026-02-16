@@ -63,28 +63,62 @@ const IMAGE_POOL = {
 };
 
 const tickets = [];
-const today = new Date('2026-02-11T17:00:00');
+const today = new Date(); // Use current date
+const options = { timeZone: 'Asia/Bangkok' };
 
-// Generate data for the last 365 days
-for (let d = 0; d < 365; d++) {
+// Generate data for the last 90 days (approx 3 months) to focus on recent activity
+for (let d = 0; d < 90; d++) {
     const currentDate = new Date(today);
     currentDate.setDate(today.getDate() - d);
 
-    // Number of tickets per day: 1, 2, or 4 as requested
-    const dailyCounts = [1, 2, 4];
-    const ticketsToday = dailyCounts[Math.floor(Math.random() * dailyCounts.length)];
+    // Number of tickets based on weekday (Mon-Fri busy, Sat-Sun quiet)
+    const dayOfWeek = currentDate.getDay(); // 0 Sun, 6 Sat
+    let baseCount = 8;
+    if (dayOfWeek === 0 || dayOfWeek === 6) baseCount = 3; // Weekend
+
+    // Add random variation (+/- 40%)
+    const variation = Math.floor(baseCount * 0.4);
+    const ticketsToday = baseCount + Math.floor(Math.random() * (variation * 2 + 1)) - variation;
 
     for (let tCount = 0; tCount < ticketsToday; tCount++) {
         const ticketTime = new Date(currentDate);
         ticketTime.setHours(8 + Math.floor(Math.random() * 9), Math.floor(Math.random() * 60)); // Random work hours
 
-        const status = getRandomItem(STATUSES);
+        // Determine Status based on AGE (Realistic)
+        // Age in days
+        const age = d; // since d loops 0..90 (0 is today)
+
+        let status = 'new';
+        let operation = "-";
+
+        if (age > 14) {
+            // Old tickets: Mostly completed (90%)
+            status = Math.random() > 0.1 ? 'completed' : 'inProgress';
+        } else if (age > 7) {
+            // 1-2 weeks old: Mostly completed or in progress
+            const r = Math.random();
+            if (r > 0.3) status = 'completed';
+            else if (r > 0.1) status = 'inProgress';
+            else status = 'pending';
+        } else if (age > 3) {
+            // 3-7 days: Active work
+            const r = Math.random();
+            if (r > 0.6) status = 'completed';
+            else if (r > 0.2) status = 'inProgress';
+            else status = 'new';
+        } else {
+            // Recent: New or Just Started
+            const r = Math.random();
+            if (r > 0.8) status = 'completed'; // Quick fix
+            else if (r > 0.5) status = 'inProgress';
+            else status = 'new';
+        }
+
         const zone = getRandomItem(ZONES);
         const tree = getRandomItem(TREE_TYPES);
         const damage = getRandomItem(DAMAGES);
 
         let assignees = [];
-        let operation = "-";
         let notes = "";
 
         if (status !== 'new') {
@@ -96,7 +130,7 @@ for (let d = 0; d < 365; d++) {
             if (Math.random() > 0.7) notes = "ดำเนินการตามแผน";
         }
 
-        if (status === 'new') {
+        if (status === 'new' || status === 'pending') {
             operation = "-";
         }
 
