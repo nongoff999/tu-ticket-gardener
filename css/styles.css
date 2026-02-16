@@ -2322,6 +2322,18 @@ body.login-mode #main-content {
     height: 100%;
 }
 
+/* Active state logic for Click interaction */
+.fab-btn.active {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+}
+
+.fab-btn.active .fab-text {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) translateX(0);
+}
+
 /* Hide FAB on specific pages (add class via JS if needed) */
 .fab-hidden {
     display: none !important;

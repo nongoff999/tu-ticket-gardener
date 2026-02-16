@@ -3561,3 +3561,42 @@ async function downloadReportAsImage(dateStr) {
     }
 }
 window.downloadReportAsImage = downloadReportAsImage;
+
+/* =========================================
+   FAB Interaction Logic (2-Step Click)
+   ========================================= */
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize FAB Logic
+    const fab = document.getElementById('add-ticket-fab');
+    if (!fab) return;
+
+    fab.addEventListener('click', (e) => {
+        // Step 2: Navigate if already active
+        if (fab.classList.contains('active')) {
+            if (typeof navigateTo === 'function') {
+                navigateTo('add-select');
+            } else {
+                console.warn('navigateTo function not found');
+            }
+            fab.classList.remove('active');
+        }
+        // Step 1: Show Label
+        else {
+            e.preventDefault();
+            e.stopPropagation();
+            fab.classList.add('active');
+
+            // Close when clicking outside
+            const closeFab = (ev) => {
+                if (ev.target !== fab && !fab.contains(ev.target)) {
+                    fab.classList.remove('active');
+                    document.removeEventListener('click', closeFab);
+                }
+            };
+
+            setTimeout(() => {
+                document.addEventListener('click', closeFab);
+            }, 100);
+        }
+    });
+});
