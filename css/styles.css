@@ -2225,3 +2225,53 @@ body.login-mode #main-content {
     border-color: #d97706;
     /* Amber 600 */
 }
+
+/* Floating Action Button (FAB) */
+.fab-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 1.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    /* Accent to Primary */
+    color: white;
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 50;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fab-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.fab-btn:active {
+    transform: translateY(0) scale(0.95);
+}
+
+.fab-btn .material-symbols-outlined {
+    font-size: 2rem;
+}
+
+/* Hide FAB on specific pages (add class via JS if needed) */
+.fab-hidden {
+    display: none !important;
+}
+
+/* Hide FAB on print */
+@media print {
+
+    .fab-btn,
+    .header-btn,
+    .drawer,
+    .drawer-overlay {
+        display: none !important;
+    }
+}
