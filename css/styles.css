@@ -2383,8 +2383,8 @@ body.login-mode #main-content {
     }
 }
 
-/* Responsive adjustments for small screens */
-@media (max-width: 360px) {
+/* Responsive adjustments for small screens (Mobile) */
+@media (max-width: 480px) {
 
     .fab-btn,
     .fab-btn.active {
@@ -2403,8 +2403,27 @@ body.login-mode #main-content {
     .fab-text {
         font-size: 0.8rem;
         padding: 0.35rem 0.7rem;
-        right: calc(100% + 0.5rem);
-        margin-right: 0.5rem;
+        /* Position ABOVE on mobile */
+        right: 0;
+        top: auto;
+        bottom: 100%;
+        margin-bottom: 0.75rem;
+        margin-right: 0;
+        transform: translateY(5px);
+        white-space: nowrap;
+    }
+
+    .fab-btn.active .fab-text {
+        transform: translateY(0);
+    }
+
+    /* Mobile arrow pointing down */
+    .fab-text::after {
+        right: 1rem;
+        top: 100%;
+        transform: none;
+        border-width: 6px 6px 0 6px;
+        border-color: white transparent transparent transparent;
     }
 
     .fab-label,
