@@ -372,12 +372,29 @@ function renderDashboard() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Period Calendar -->
+        <!-- Stats Grid -->
+        <div class="stats-grid" style="margin-top: 0.5rem; margin-bottom: 1.5rem;">
+            ${Components.statCard(`ทิคเก็ตรวม (${AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : AppState.dashboardPeriod === 'MONTH' ? 'เดือน' : 'วัน'})`, stats.total, 'blue', 'dashboard')}
+            ${Components.statCard('ทิคเก็ตใหม่', stats.new, 'yellow', 'notification_important')}
+            ${Components.statCard('ระหว่างดำเนินการ', stats.inProgress, 'purple', 'settings_suggest')}
+            ${Components.statCard('ยังไม่ดำเนินการ', stats.pending, 'pink', 'pending_actions')}
+            ${Components.statCard('เสร็จสิ้น', stats.completed, 'green', 'task_alt')}
+        </div>
+
+        <!-- Period Tabs -->
+        <div class="period-tabs" style="margin-bottom: 1.5rem;">
+            <button class="period-tab ${AppState.dashboardPeriod === 'DAY' ? 'active' : ''}" data-period="DAY">วัน</button>
+            <button class="period-tab ${AppState.dashboardPeriod === 'WEEK' ? 'active' : ''}" data-period="WEEK">สัปดาห์</button>
+            <button class="period-tab ${AppState.dashboardPeriod === 'MONTH' ? 'active' : ''}" data-period="MONTH">เดือน</button>
+            <button class="period-tab ${AppState.dashboardPeriod === 'CUSTOM' ? 'active' : ''}" data-period="CUSTOM">กำหนดเอง</button>
+        </div>
+
+        <!-- Period Calendar (Moved Below Tabs) -->
         ${AppState.dashboardPeriod === 'CUSTOM'
             ? (() => {
                 if (!AppState.customStartDate) AppState.customStartDate = new Date().toISOString().split('T')[0];
                 if (!AppState.customEndDate) AppState.customEndDate = new Date().toISOString().split('T')[0];
-                return `<div class="custom-date-range" style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1rem; width: 100%; padding: 0.25rem 0;">
+                return `<div class="custom-date-range" style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1.5rem; width: 100%; padding: 0.25rem 0;">
                     <input type="date" value="${AppState.customStartDate}" 
                            onchange="AppState.customStartDate=this.value"
                            style="flex: 1; min-width: 0; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; text-align: center; font-family: inherit; font-size: 0.9rem; color:#334155; outline: none; background: white;">
@@ -391,23 +408,6 @@ function renderDashboard() {
             })()
             : Components.periodCalendar(AppState.selectedDate, AppState.dashboardPeriod)
         }
-
-        <!-- Stats Grid -->
-        <div class="stats-grid" style="margin-top: -1rem;">
-            ${Components.statCard(`ทิคเก็ตรวม (${AppState.dashboardPeriod === 'WEEK' ? 'สัปดาห์' : AppState.dashboardPeriod === 'MONTH' ? 'เดือน' : 'วัน'})`, stats.total, 'blue', 'dashboard')}
-            ${Components.statCard('ทิคเก็ตใหม่', stats.new, 'yellow', 'notification_important')}
-            ${Components.statCard('ระหว่างดำเนินการ', stats.inProgress, 'purple', 'settings_suggest')}
-            ${Components.statCard('ยังไม่ดำเนินการ', stats.pending, 'pink', 'pending_actions')}
-            ${Components.statCard('เสร็จสิ้น', stats.completed, 'green', 'task_alt')}
-        </div>
-
-        <!-- Period Tabs -->
-        <div class="period-tabs">
-            <button class="period-tab ${AppState.dashboardPeriod === 'DAY' ? 'active' : ''}" data-period="DAY">วัน</button>
-            <button class="period-tab ${AppState.dashboardPeriod === 'WEEK' ? 'active' : ''}" data-period="WEEK">สัปดาห์</button>
-            <button class="period-tab ${AppState.dashboardPeriod === 'MONTH' ? 'active' : ''}" data-period="MONTH">เดือน</button>
-            <button class="period-tab ${AppState.dashboardPeriod === 'CUSTOM' ? 'active' : ''}" data-period="CUSTOM">กำหนดเอง</button>
-        </div>
 
         <!-- Chart Card -->
         <div class="chart-card">
