@@ -2232,68 +2232,94 @@ body.login-mode #main-content {
     bottom: 2rem;
     right: 1.5rem;
     height: 3.5rem;
+    width: 3.5rem;
     min-width: 3.5rem;
-    /* Circular default */
+    border-radius: 50%;
     padding: 0;
-    /* Center content */
-    border-radius: 9999px;
-    /* Pill/Circle */
+
     background: linear-gradient(135deg, #0ea5e9, #0284c7);
     /* Accent to Primary */
     color: white;
     border: none;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 50;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    white-space: nowrap;
-    overflow: hidden;
+
+    overflow: visible;
+    /* Allow label to show outside */
 }
 
+/* Tooltip / Label Bubble */
 .fab-text {
-    max-width: 0;
-    opacity: 0;
-    margin-left: 0;
+    position: absolute;
+    right: 100%;
+    /* Attach to left side */
+    top: 50%;
+    transform: translateY(-50%) translateX(10px);
+    /* Start slightly offset */
+    margin-right: 1rem;
+    /* Gap */
+
+    background-color: white;
+    color: #0f172a;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    /* Pill */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
     font-size: 0.95rem;
     font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-block;
+    white-space: nowrap;
+
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+/* Add a small arrow to tooltip */
+.fab-text::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 6px 0 6px 6px;
+    border-style: solid;
+    border-color: transparent transparent transparent white;
 }
 
 .fab-btn:hover,
 .fab-btn:focus {
-    width: auto;
-    /* Expand */
-    padding-right: 1.25rem;
-    padding-left: 0.25rem;
-    /* Adjust for icon centering */
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px) scale(1.05);
+    /* Slight grow */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
 }
 
 .fab-btn:hover .fab-text,
 .fab-btn:focus .fab-text {
-    max-width: 150px;
-    /* Reveal text */
     opacity: 1;
-    margin-left: 0.5rem;
+    visibility: visible;
+    transform: translateY(-50%) translateX(0);
+    /* Slide into place */
 }
 
 .fab-btn:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.95);
 }
 
 .fab-btn .material-symbols-outlined {
     font-size: 2rem;
-    /* Ensure icon stays stable */
-    min-width: 3.5rem;
-    /* Icon takes full circle width initially */
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
 /* Hide FAB on specific pages (add class via JS if needed) */
