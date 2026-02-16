@@ -433,14 +433,18 @@ function renderDashboard() {
             
             ${generateChartSVG(AppState.dashboardPeriod, AppState.selectedDate)}
             
-            <div class="chart-legend" style="display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap;">
+            <div class="chart-legend" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
                 <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
                     <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #fbbf24; border-radius: 2px;"></div>
-                    <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนทิคเก็ตเปิดใหม่</span>
+                    <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">ทิคเก็ตเปิดใหม่</span>
+                </div>
+                <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #a78bfa; border-radius: 2px;"></div>
+                    <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนที่ค้าง</span>
                 </div>
                 <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
                     <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #cbd5e1; border-radius: 2px;"></div>
-                    <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนทิคเก็ตที่ปิดเรียบร้อยแล้ว</span>
+                    <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนที่เสร็จสิ้น</span>
                 </div>
             </div>
         </div>
@@ -571,7 +575,7 @@ function getStatsForPeriod(period, dateStr) {
 function getChartData(period, dateStr) {
     const data = {
         labels: [],
-        series: { new: [], completed: [] }
+        series: { new: [], pending: [], completed: [] }
     };
     const tickets = MOCK_DATA.tickets;
     const initArray = (len) => Array(len).fill(0);
@@ -581,6 +585,7 @@ function getChartData(period, dateStr) {
         data.labels = buckets.map(h => `${h.toString().padStart(2, '0')}:00`);
         const len = buckets.length;
         data.series.new = initArray(len);
+        data.series.pending = initArray(len);
         data.series.completed = initArray(len);
 
         const dayTickets = tickets.filter(t => t.date.startsWith(dateStr));
@@ -589,6 +594,7 @@ function getChartData(period, dateStr) {
             const idx = Math.floor(h / 4);
             if (t.status === 'new') data.series.new[idx]++;
             else if (t.status === 'completed') data.series.completed[idx]++;
+            else data.series.pending[idx]++; // inProgress + pending
         });
     } else if (period === 'WEEK') {
         const d = new Date(dateStr);
@@ -602,6 +608,7 @@ function getChartData(period, dateStr) {
         data.labels = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
         const len = 7;
         data.series.new = initArray(len);
+        data.series.pending = initArray(len);
         data.series.completed = initArray(len);
 
         const weekTickets = tickets.filter(t => { const td = new Date(t.date); return td >= startOfWeek && td < endOfWeek; });
@@ -609,6 +616,7 @@ function getChartData(period, dateStr) {
             const idx = new Date(t.date).getDay();
             if (t.status === 'new') data.series.new[idx]++;
             else if (t.status === 'completed') data.series.completed[idx]++;
+            else data.series.pending[idx]++;
         });
     } else if (period === 'MONTH') {
         const d = new Date(dateStr);
@@ -623,6 +631,7 @@ function getChartData(period, dateStr) {
 
         const len = daysInMonth;
         data.series.new = initArray(len);
+        data.series.pending = initArray(len);
         data.series.completed = initArray(len);
 
         const monthTickets = tickets.filter(t => { const td = new Date(t.date); return td.getFullYear() === year && td.getMonth() === month; });
@@ -630,25 +639,25 @@ function getChartData(period, dateStr) {
             const idx = new Date(t.date).getDate() - 1;
             if (t.status === 'new') data.series.new[idx]++;
             else if (t.status === 'completed') data.series.completed[idx]++;
+            else data.series.pending[idx]++;
         });
     } else if (period === 'CUSTOM') {
         const start = new Date(AppState.customStartDate || new Date());
         const end = new Date(AppState.customEndDate || new Date());
         start.setHours(0, 0, 0, 0); end.setHours(23, 59, 59, 999);
 
-        // Calculate days difference
         const oneDay = 1000 * 60 * 60 * 24;
         const daysDiff = Math.max(1, Math.ceil((end - start) / oneDay));
         const len = daysDiff + 1;
 
         data.series.new = initArray(len);
+        data.series.pending = initArray(len);
         data.series.completed = initArray(len);
 
         for (let i = 0; i < len; i++) {
             const curr = new Date(start);
             curr.setDate(start.getDate() + i);
             const dayStr = `${curr.getDate()}/${curr.getMonth() + 1}`;
-            // Limit labels if too many
             if (len <= 10 || i === 0 || i === len - 1 || i % Math.ceil(len / 10) === 0) data.labels.push(dayStr);
             else data.labels.push('');
         }
@@ -661,6 +670,7 @@ function getChartData(period, dateStr) {
             if (diff >= 0 && diff < len) {
                 if (t.status === 'new') data.series.new[diff]++;
                 else if (t.status === 'completed') data.series.completed[diff]++;
+                else data.series.pending[diff]++;
             }
         });
     }
@@ -678,15 +688,16 @@ function generateChartSVG(period, dateStr) {
     const chartHeight = height - paddingTop - paddingBottom;
 
     // Scale
-    const allVals = [...data.series.new, ...data.series.completed];
-    const maxVal = Math.max(...allVals, 5); // Minimum scale 5
+    const allVals = [...data.series.new, ...data.series.pending, ...data.series.completed];
+    const maxVal = Math.max(...allVals, 5);
 
     const itemCount = data.labels.length;
     const availableWidth = width - paddingLeft - paddingRight;
     const itemWidth = availableWidth / itemCount;
-    // Bar dimensions
-    const barGroupWidth = itemWidth * 0.6; // 60% of slot width
-    const singleBarWidth = barGroupWidth / 2 - 1; // Gap between bars
+
+    // 3 Bars: New, Pending, Completed
+    const barGroupWidth = itemWidth * 0.8;
+    const singleBarWidth = (barGroupWidth / 3) - 1;
     const gap = (itemWidth - barGroupWidth) / 2;
 
     let svgContent = '';
@@ -703,17 +714,22 @@ function generateChartSVG(period, dateStr) {
     data.labels.forEach((label, i) => {
         const xBase = paddingLeft + (i * itemWidth) + gap;
 
-        // New Bar (Yellow)
+        // 1. New (Yellow)
         const h1 = (data.series.new[i] / maxVal) * chartHeight;
         const y1 = height - paddingBottom - h1;
         if (h1 > 0) svgContent += `<rect x="${xBase}" y="${y1}" width="${singleBarWidth}" height="${h1}" fill="#fde047" rx="2" />`;
 
-        // Completed Bar (Grey)
-        const h2 = (data.series.completed[i] / maxVal) * chartHeight;
+        // 2. Pending (Purple)
+        const h2 = (data.series.pending[i] / maxVal) * chartHeight;
         const y2 = height - paddingBottom - h2;
-        if (h2 > 0) svgContent += `<rect x="${xBase + singleBarWidth + 2}" y="${y2}" width="${singleBarWidth}" height="${h2}" fill="#cbd5e1" rx="2" />`;
+        if (h2 > 0) svgContent += `<rect x="${xBase + singleBarWidth + 1}" y="${y2}" width="${singleBarWidth}" height="${h2}" fill="#a78bfa" rx="2" />`;
 
-        // Axis Label
+        // 3. Completed (Grey)
+        const h3 = (data.series.completed[i] / maxVal) * chartHeight;
+        const y3 = height - paddingBottom - h3;
+        if (h3 > 0) svgContent += `<rect x="${xBase + (singleBarWidth + 1) * 2}" y="${y3}" width="${singleBarWidth}" height="${h3}" fill="#cbd5e1" rx="2" />`;
+
+        // Label
         if (label) {
             svgContent += `<text x="${xBase + barGroupWidth / 2}" y="${height - 10}" font-size="9" fill="#94a3b8" text-anchor="middle" font-family="sans-serif">${label}</text>`;
         }
