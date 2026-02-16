@@ -2340,22 +2340,30 @@ body.login-mode #main-content {
 }
 
 /* Inner label (Add Ticket) */
+/* Inner label (Add Ticket) */
 .fab-label {
-    max-width: 0;
-    opacity: 0;
-    display: inline-block;
-    overflow: hidden;
-    white-space: nowrap;
-    transition: all 0.3s ease;
+    display: none;
     font-weight: 600;
     font-size: 0.95rem;
-    margin-right: 0;
+    color: white;
 }
 
 .fab-btn.active .fab-label {
-    max-width: 150px;
-    opacity: 1;
+    display: block;
     margin-right: 0.5rem;
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 /* Hide FAB on specific pages (add class via JS if needed) */
@@ -2371,5 +2379,39 @@ body.login-mode #main-content {
     .drawer,
     .drawer-overlay {
         display: none !important;
+    }
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 360px) {
+
+    .fab-btn,
+    .fab-btn.active {
+        width: 3rem;
+        height: 3rem;
+        bottom: 1.5rem;
+        right: 1rem;
+        min-width: 3rem;
+    }
+
+    .fab-btn.active {
+        padding-left: 1rem;
+        padding-right: 0.4rem;
+    }
+
+    .fab-text {
+        font-size: 0.8rem;
+        padding: 0.35rem 0.7rem;
+        right: calc(100% + 0.5rem);
+        margin-right: 0.5rem;
+    }
+
+    .fab-label,
+    .fab-btn.active .fab-label {
+        font-size: 0.8rem;
+    }
+
+    .fab-btn .material-symbols-outlined {
+        font-size: 1.75rem;
     }
 }

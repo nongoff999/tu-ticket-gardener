@@ -30,15 +30,30 @@ class Router {
         const path = hash.replace('#', '');
 
         // Extract route and params
-        const [route, ...params] = path.split('/').filter(Boolean);
+        const parts = path.split('/').filter(Boolean);
+        const route = parts.length > 0 ? parts[0] : 'dashboard';
         const routePath = '/' + route;
+        const params = parts.slice(1);
+
+        // Toggle FAB Visibility
+        const fab = document.getElementById('add-ticket-fab');
+        if (fab) {
+            if (route === 'dashboard') {
+                fab.classList.remove('fab-hidden');
+            } else {
+                fab.classList.add('fab-hidden');
+            }
+        }
 
         if (this.routes[routePath]) {
             this.currentRoute = routePath;
             this.routes[routePath](params);
         } else {
-            // Default to dashboard
-            this.navigate('/dashboard');
+            // Default to dashboard if route not found
+            // This might cause infinite loop if /dashboard is not registered yet?
+            if (window.location.hash !== '#/dashboard') {
+                this.navigate('/dashboard');
+            }
         }
     }
 
