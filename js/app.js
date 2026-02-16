@@ -372,22 +372,31 @@ function renderDashboard() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Stats Grid (Compact Row) -->
+        <!-- Stats Grid (Compact Row - Old Look) -->
         <div class="stats-compact-row" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 1.5rem;">
             
-            <div style="background: #fffbeb; border: 1px solid #fcd34d; border-radius: 0.75rem; padding: 0.75rem 0.25rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <div style="font-size: 1.5rem; font-weight: 800; color: #d97706; line-height: 1; margin-bottom: 0.25rem;">${stats.new}</div>
-                <div style="font-size: 0.75rem; color: #92400e; font-weight: 600;">ใหม่ (สะสม)</div>
+            <div class="stat-card yellow" style="padding: 0.75rem 0.5rem; min-height: auto;">
+                <div style="position: relative; z-index: 10;">
+                    <p class="stat-card-label" style="font-size: 0.65rem; white-space: nowrap; margin-bottom: 0.25rem;">ทิคเก็ตใหม่</p>
+                    <p class="stat-card-value" style="font-size: 1.5rem;">${stats.new}</p>
+                </div>
+                <span class="material-symbols-outlined stat-card-icon" style="font-size: 2.5rem; bottom: -0.5rem; right: -0.5rem; opacity: 0.15;">fiber_new</span>
             </div>
 
-            <div style="background: #f3e8ff; border: 1px solid #d8b4fe; border-radius: 0.75rem; padding: 0.75rem 0.25rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <div style="font-size: 1.5rem; font-weight: 800; color: #9333ea; line-height: 1; margin-bottom: 0.25rem;">${stats.inProgress}</div>
-                <div style="font-size: 0.75rem; color: #6b21a8; font-weight: 600;">ทำอยู่ (สะสม)</div>
+            <div class="stat-card purple" style="padding: 0.75rem 0.5rem; min-height: auto;">
+                <div style="position: relative; z-index: 10;">
+                    <p class="stat-card-label" style="font-size: 0.65rem; white-space: nowrap; margin-bottom: 0.25rem;">ระหว่างดำเนินการ</p>
+                    <p class="stat-card-value" style="font-size: 1.5rem;">${stats.inProgress}</p>
+                </div>
+                <span class="material-symbols-outlined stat-card-icon" style="font-size: 2.5rem; bottom: -0.5rem; right: -0.5rem; opacity: 0.15;">settings_suggest</span>
             </div>
 
-            <div style="background: #fee2e2; border: 1px solid #fca5a5; border-radius: 0.75rem; padding: 0.75rem 0.25rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <div style="font-size: 1.5rem; font-weight: 800; color: #dc2626; line-height: 1; margin-bottom: 0.25rem;">${stats.urgent}</div>
-                <div style="font-size: 0.75rem; color: #991b1b; font-weight: 600;">ด่วน (คงค้าง)</div>
+            <div class="stat-card pink" style="padding: 0.75rem 0.5rem; min-height: auto;">
+                <div style="position: relative; z-index: 10;">
+                    <p class="stat-card-label" style="font-size: 0.65rem; white-space: nowrap; margin-bottom: 0.25rem;">งานเร่งด่วน</p>
+                    <p class="stat-card-value" style="font-size: 1.5rem;">${stats.urgent}</p>
+                </div>
+                <span class="material-symbols-outlined stat-card-icon" style="font-size: 2.5rem; bottom: -0.5rem; right: -0.5rem; opacity: 0.15;">warning</span>
             </div>
 
         </div>
