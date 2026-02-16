@@ -362,12 +362,19 @@ function renderDashboard() {
 
     document.getElementById('page-title').textContent = 'TICKET DASHBOARD';
 
-    // Initialize period if not set
-    if (!AppState.dashboardPeriod) {
-        AppState.dashboardPeriod = 'DAY';
+    // Initialize period and default to 7-day range if not set
+    if (!AppState.dashboardPeriod || AppState.dashboardPeriod !== 'CUSTOM') {
+        AppState.dashboardPeriod = 'CUSTOM';
     }
 
-    // Calculate dynamic stats based on period
+    if (!AppState.customStartDate || !AppState.customEndDate) {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(start.getDate() - 7);
+        AppState.customStartDate = start.toISOString().split('T')[0];
+        AppState.customEndDate = end.toISOString().split('T')[0];
+    }
+
     const stats = getStatsForPeriod(AppState.dashboardPeriod, AppState.selectedDate);
 
     const content = document.getElementById('main-content');
@@ -401,35 +408,22 @@ function renderDashboard() {
 
         </div>
 
-        <!-- Chart Card (With Tabs) -->
+        <!-- Chart Card (Simplified - Custom Only) -->
         <div class="chart-card">
-            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-                 <h2 style="font-size: 1rem; margin: 0; color: #1e293b;">รายงานจำนวนทิคเก็ต</h2>
-                 <div class="chart-period-tabs" style="display: flex; background: #f1f5f9; padding: 0.25rem; border-radius: 0.5rem;">
-                      <button class="chart-tab" onclick="AppState.dashboardPeriod='DAY'; renderDashboard();" style="border:none; background: ${AppState.dashboardPeriod === 'DAY' ? 'white' : 'transparent'}; box-shadow: ${AppState.dashboardPeriod === 'DAY' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'}; padding: 0.35rem 0.75rem; border-radius: 0.375rem; font-size: 0.8rem; cursor: pointer; color: ${AppState.dashboardPeriod === 'DAY' ? '#0f172a' : '#64748b'}; font-weight: 500;">รายวัน</button>
-                      <button class="chart-tab" onclick="AppState.dashboardPeriod='WEEK'; renderDashboard();" style="border:none; background: ${AppState.dashboardPeriod === 'WEEK' ? 'white' : 'transparent'}; box-shadow: ${AppState.dashboardPeriod === 'WEEK' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'}; padding: 0.35rem 0.75rem; border-radius: 0.375rem; font-size: 0.8rem; cursor: pointer; color: ${AppState.dashboardPeriod === 'WEEK' ? '#0f172a' : '#64748b'}; font-weight: 500;">รายสัปดาห์</button>
-                      <button class="chart-tab" onclick="AppState.dashboardPeriod='MONTH'; renderDashboard();" style="border:none; background: ${AppState.dashboardPeriod === 'MONTH' ? 'white' : 'transparent'}; box-shadow: ${AppState.dashboardPeriod === 'MONTH' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'}; padding: 0.35rem 0.75rem; border-radius: 0.375rem; font-size: 0.8rem; cursor: pointer; color: ${AppState.dashboardPeriod === 'MONTH' ? '#0f172a' : '#64748b'}; font-weight: 500;">รายเดือน</button>
-                      <button class="chart-tab" onclick="AppState.dashboardPeriod='CUSTOM'; renderDashboard();" style="border:none; background: ${AppState.dashboardPeriod === 'CUSTOM' ? 'white' : 'transparent'}; box-shadow: ${AppState.dashboardPeriod === 'CUSTOM' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'}; padding: 0.35rem 0.75rem; border-radius: 0.375rem; font-size: 0.8rem; cursor: pointer; color: ${AppState.dashboardPeriod === 'CUSTOM' ? '#0f172a' : '#64748b'}; font-weight: 500;">กำหนดเอง</button>
-                 </div>
+            <div class="chart-header" style="margin-bottom: 1rem;">
+                 <h2 style="font-size: 1rem; margin: 0 0 1rem 0; color: #1e293b;">รายงานจำนวนทิคเก็ต (กำหนดช่วงเวลา)</h2>
+                 
+                 <div class="custom-date-range" style="display: flex; gap: 0.5rem; align-items: center; width: 100%; padding: 0.5rem; background: #f8fafc; border-radius: 0.5rem; border: 1px dashed #cbd5e1;">
+                    <input type="date" value="${AppState.customStartDate}" 
+                           onchange="AppState.customStartDate=this.value; renderDashboard();"
+                           style="flex: 1; min-width: 0; padding: 0.35rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; text-align: center; font-family: inherit; font-size: 0.85rem; color:#334155; outline: none; background: white;">
+                    <span style="color:#94a3b8;">-</span>
+                    <input type="date" value="${AppState.customEndDate}" 
+                           onchange="AppState.customEndDate=this.value; renderDashboard();"
+                           style="flex: 1; min-width: 0; padding: 0.35rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; text-align: center; font-family: inherit; font-size: 0.85rem; color:#334155; outline: none; background: white;">
+                </div>
             </div>
 
-            <!-- Custom Date Picker (Inside Chart) -->
-            ${AppState.dashboardPeriod === 'CUSTOM'
-            ? (() => {
-                if (!AppState.customStartDate) AppState.customStartDate = new Date().toISOString().split('T')[0];
-                if (!AppState.customEndDate) AppState.customEndDate = new Date().toISOString().split('T')[0];
-                return `<div class="custom-date-range" style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1.5rem; width: 100%; padding: 0.5rem; background: #f8fafc; border-radius: 0.5rem; border: 1px dashed #cbd5e1;">
-                        <input type="date" value="${AppState.customStartDate}" 
-                               onchange="AppState.customStartDate=this.value; renderDashboard();"
-                               style="flex: 1; min-width: 0; padding: 0.35rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; text-align: center; font-family: inherit; font-size: 0.85rem; color:#334155; outline: none; background: white;">
-                        <span style="color:#94a3b8;">-</span>
-                        <input type="date" value="${AppState.customEndDate}" 
-                               onchange="AppState.customEndDate=this.value; renderDashboard();"
-                               style="flex: 1; min-width: 0; padding: 0.35rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; text-align: center; font-family: inherit; font-size: 0.85rem; color:#334155; outline: none; background: white;">
-                    </div>`;
-            })()
-            : ''
-        }
             
             ${generateChartSVG(AppState.dashboardPeriod, AppState.selectedDate)}
             
