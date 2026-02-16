@@ -2386,8 +2386,7 @@ body.login-mode #main-content {
 /* Responsive adjustments for small screens (Mobile) */
 @media (max-width: 480px) {
 
-    .fab-btn,
-    .fab-btn.active {
+    .fab-btn {
         width: 3rem;
         height: 3rem;
         bottom: 1.5rem;
@@ -2396,8 +2395,10 @@ body.login-mode #main-content {
     }
 
     .fab-btn.active {
+        width: auto;
+        /* Allow expansion */
         padding-left: 1rem;
-        padding-right: 0.4rem;
+        padding-right: 0.5rem;
     }
 
     .fab-text {
@@ -2434,9 +2435,4 @@ body.login-mode #main-content {
     .fab-btn .material-symbols-outlined {
         font-size: 1.75rem;
     }
-}
-
-/* User requested to remove the bubble instructions */
-.fab-text {
-    display: none !important;
 }
