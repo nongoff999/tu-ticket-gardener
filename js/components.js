@@ -52,18 +52,27 @@ const Components = {
         `;
     },
 
-    // Monitor Ticket Card (with images row)
+    // Monitor Ticket Card (with images row + progress tracking)
     monitorCard(ticket) {
+        const hasProgressImages = ticket.progressImages && ticket.progressImages.length > 0;
+        const hasOperation = ticket.operation && ticket.operation !== '-';
+
         return `
             <div class="ticket-card" onclick="showTicketDetail(${ticket.id})" style="flex-direction: column; height: auto;">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="color: var(--text-muted); font-weight: 700; font-size: 0.75rem;">#${ticket.id}</span>
-                        <h3 style="font-size: 0.875rem; font-weight: 600;">${ticket.title}</h3>
+                <!-- Header: ID + Title + Badges -->
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.25rem; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 0;">
+                        <span style="color: var(--text-muted); font-weight: 700; font-size: 0.75rem; flex-shrink: 0;">#${ticket.id}</span>
+                        <h3 style="font-size: 0.875rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${ticket.title}</h3>
                     </div>
-                    <span class="badge ${getStatusClass(ticket.status)}">${getStatusLabel(ticket.status)}</span>
+                    <div style="display: flex; gap: 0.25rem; flex-shrink: 0;">
+                        ${ticket.priority === 'urgent' ? '<span class="badge urgent">เร่งด่วน</span>' : ''}
+                        <span class="badge ${getStatusClass(ticket.status)}">${getStatusLabel(ticket.status)}</span>
+                    </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; font-size: 0.625rem;">
+
+                <!-- Zone + Date + Damage Type -->
+                <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; font-size: 0.625rem; flex-wrap: wrap;">
                     <div style="display: flex; align-items: center; gap: 0.25rem;">
                         <span class="material-symbols-outlined" style="font-size: 0.875rem;">location_on</span>
                         <span>${ticket.zoneName}</span>
@@ -72,12 +81,43 @@ const Components = {
                         <span class="material-symbols-outlined" style="font-size: 0.875rem;">calendar_today</span>
                         <span>${formatShortDate(ticket.date)}</span>
                     </div>
+                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                        <span class="material-symbols-outlined" style="font-size: 0.875rem;">park</span>
+                        <span>${getDamageTypeName(ticket.damageType)}</span>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 0.375rem; overflow-x: auto; margin-bottom: 0.625rem;">
+
+                <!-- Operation -->
+                ${hasOperation ? `
+                <div style="display: flex; align-items: flex-start; gap: 0.35rem; margin-bottom: 0.5rem; padding: 0.4rem 0.6rem; background: #f0fdf4; border-radius: 0.5rem; border: 1px solid #bbf7d0;">
+                    <span class="material-symbols-outlined" style="font-size: 0.875rem; color: #16a34a; flex-shrink: 0; margin-top: 1px;">construction</span>
+                    <span style="font-size: 0.7rem; color: #15803d; line-height: 1.3;">${ticket.operation}</span>
+                </div>
+                ` : ''}
+
+                <!-- Before Images -->
+                <div style="margin-bottom: 0.25rem;">
+                    <span style="font-size: 0.6rem; color: var(--text-muted); font-weight: 500;">📷 ก่อนดำเนินการ</span>
+                </div>
+                <div style="display: flex; gap: 0.375rem; overflow-x: auto; margin-bottom: ${hasProgressImages ? '0.375rem' : '0.625rem'};">
                     ${ticket.images.slice(0, 3).map(img => `
                         <img src="${img}" alt="" style="width: 7rem; height: 4rem; object-fit: cover; border-radius: 0.5rem; flex-shrink: 0; background: var(--background);">
                     `).join('')}
                 </div>
+
+                <!-- Progress Images (if any) -->
+                ${hasProgressImages ? `
+                <div style="margin-bottom: 0.25rem;">
+                    <span style="font-size: 0.6rem; color: #8b5cf6; font-weight: 500;">📸 ระหว่างดำเนินการ</span>
+                </div>
+                <div style="display: flex; gap: 0.375rem; overflow-x: auto; margin-bottom: 0.625rem;">
+                    ${ticket.progressImages.slice(0, 3).map(img => `
+                        <img src="${img}" alt="" style="width: 7rem; height: 4rem; object-fit: cover; border-radius: 0.5rem; flex-shrink: 0; background: var(--background); border: 2px solid #c4b5fd;">
+                    `).join('')}
+                </div>
+                ` : ''}
+
+                <!-- Assignees -->
                 <div style="display: flex; flex-direction: column; gap: 0.5rem; border-top: 1px solid var(--border); padding-top: 0.5rem;">
                     <span style="font-size: 0.625rem; color: var(--text-secondary); font-weight: 500;">ผู้รับผิดชอบ:</span>
                     ${this.renderAssignees(ticket.assignees)}

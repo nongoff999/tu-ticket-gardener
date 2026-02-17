@@ -876,29 +876,75 @@ function renderMonitor() {
 
     document.getElementById('page-title').textContent = 'GARDEN MONITOR';
 
+    // Default: Show all tickets (sorted by newest/urgent usually, but using default MOCK_DATA order here)
+    // You might want to sort urgent first if desired, but default order is often fine.
+    const ticketsToShow = MOCK_DATA.tickets;
+
     const content = document.getElementById('main-content');
+    // Minimalist: No header, just the list
     content.innerHTML = `
-        <!-- Search -->
-        <div class="search-box">
-            <span class="material-symbols-outlined icon">search</span>
-            <input type="text" placeholder="ค้นหาทิคเก็ต..." id="search-input">
-        </div>
-
-        <!-- Filter Tabs -->
-        <div class="filter-tabs" id="filter-tabs">
-            <button class="filter-tab active" data-filter="all">ทิคเก็ตทั้งหมด</button>
-            <button class="filter-tab" data-filter="urgent">ทิคเก็ตเร่งด่วน</button>
-            <button class="filter-tab" data-filter="not-urgent">ทิคเก็ตไม่เร่งด่วน</button>
-        </div>
-
-        <!-- Ticket List -->
-        <div class="ticket-list pb-safe" id="ticket-list">
-            ${MOCK_DATA.tickets.map(ticket => Components.monitorCard(ticket)).join('')}
+        <div class="ticket-list pb-safe" id="ticket-list" style="scroll-behavior: smooth; padding-top: 1rem; height: calc(100vh - 120px); overflow-y: auto;">
+            ${ticketsToShow.map(ticket => Components.monitorCard(ticket)).join('')}
         </div>
     `;
 
-    initFilterTabs();
-    initSearch();
+    // --- Auto-Scroll Logic (Auto Start) ---
+    let autoScrollEnabled = true;
+    let scrollInterval = null;
+    const ticketList = document.getElementById('ticket-list');
+
+    function startAutoScroll() {
+        if (!autoScrollEnabled) return;
+
+        // Disable standard scroll snap to ensure smooth programmatic scroll
+        ticketList.style.scrollBehavior = 'auto';
+
+        if (scrollInterval) clearInterval(scrollInterval);
+
+        scrollInterval = setInterval(() => {
+            if (!ticketList) return;
+
+            // Check if at bottom
+            if (ticketList.scrollTop + ticketList.clientHeight >= ticketList.scrollHeight - 2) {
+                // Reached bottom → scroll back to top smoothly
+                ticketList.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                ticketList.scrollTop += 1;
+            }
+        }, 40); // Speed
+    }
+
+    function stopAutoScroll() {
+        autoScrollEnabled = false;
+        ticketList.style.scrollBehavior = 'smooth';
+        if (scrollInterval) {
+            clearInterval(scrollInterval);
+            scrollInterval = null;
+        }
+    }
+
+    // Start immediately
+    setTimeout(startAutoScroll, 1000); // Slight delay for layout to settle
+
+    // Pause on user touch/interaction
+    const stopInteractionEvents = ['touchstart', 'mousedown', 'wheel'];
+    stopInteractionEvents.forEach(evt => {
+        ticketList.addEventListener(evt, () => {
+            stopAutoScroll();
+            // Allow restarting manually? For now, simpler is better.
+        }, { passive: true });
+    });
+
+    // Cleanup when navigating away
+    const originalNavigate = router.navigate.bind(router);
+    const cleanupMonitor = () => {
+        if (scrollInterval) clearInterval(scrollInterval);
+        router.navigate = originalNavigate;
+    };
+    router.navigate = function (path) {
+        cleanupMonitor();
+        originalNavigate(path);
+    };
 }
 
 function renderTicketList() {

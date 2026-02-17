@@ -2788,3 +2788,73 @@ body.login-mode #main-content {
         padding: 2rem;
     }
 }
+
+/* ==========================================
+   Monitor Chip Filters
+   ========================================== */
+.monitor-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.monitor-chip:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+.monitor-chip.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(2, 132, 199, 0.3);
+}
+
+.monitor-chip.active[data-value="urgent"] {
+    background: #ef4444;
+    border-color: #ef4444;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+.monitor-chip.active[data-value="not-urgent"] {
+    background: #10b981;
+    border-color: #10b981;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.monitor-chip.active[data-value="has-operation"] {
+    background: #16a34a;
+    border-color: #16a34a;
+    box-shadow: 0 2px 4px rgba(22, 163, 74, 0.3);
+}
+
+.monitor-chip.active[data-value="has-progress-img"] {
+    background: #8b5cf6;
+    border-color: #8b5cf6;
+    box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
+}
+
+/* Pulse Dot Animation */
+@keyframes pulse-dot {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
