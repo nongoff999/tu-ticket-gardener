@@ -939,24 +939,6 @@ function renderTicketList() {
                 <p class="summary-card-value">${urgentCount}</p>
                 <span class="material-symbols-outlined summary-card-icon">notifications_active</span>
             </div>
-            <div class="summary-card normal">
-                <p class="summary-card-label">ทิคเก็ตปกติ</p>
-                <p class="summary-card-value">${normalCount}</p>
-                <span class="material-symbols-outlined summary-card-icon">confirmation_number</span>
-            </div>
-        </div>
-
-        <!-- Search -->
-        <div class="search-box">
-            <span class="material-symbols-outlined icon">search</span>
-            <input type="text" placeholder="Search ticket" id="search-input">
-        </div>
-
-        <!-- Filter Tabs -->
-        <div class="filter-tabs" id="filter-tabs">
-            ${MOCK_DATA.categories.map((cat, i) =>
-        Components.filterTab(cat.id, cat.name, i === 0)
-    ).join('')}
         </div>
 
         <!-- Ticket Count -->
@@ -975,9 +957,6 @@ function renderTicketList() {
             <span class="material-symbols-outlined" style="font-size: 1.75rem;">add</span>
         </button>
     `;
-
-    initFilterTabs();
-    initSearch();
 }
 
 function renderTicketDetail(params) {
