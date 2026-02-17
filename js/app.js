@@ -878,36 +878,63 @@ function renderMonitor() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Search -->
-        <div class="search-box" style="margin-bottom: 0.75rem;">
-            <span class="material-symbols-outlined icon">search</span>
-            <input type="text" placeholder="ค้นหาทิคเก็ต..." id="search-input">
-        </div>
-
-        <!-- Filter Chips (Status) -->
-        <div style="padding: 0 1rem; margin-bottom: 0.5rem;">
-            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">สถานะ</span>
-            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="status-filters">
-                <button class="filter-chip" data-group="status" data-value="all">ทั้งหมด</button>
-                <button class="filter-chip active" data-group="status" data-value="new">🌟 ทิคเก็ตใหม่</button>
-                <button class="filter-chip" data-group="status" data-value="inProgress">⏳ ดำเนินการ</button>
-                <button class="filter-chip" data-group="status" data-value="completed">✅ เสร็จสิ้น</button>
+        <!-- Search & Filter Toggle Row -->
+        <div style="display: flex; gap: 0.75rem; padding: 0 1rem; margin-bottom: 0.75rem; align-items: center;">
+            <div class="search-box" style="flex: 1; margin: 0; height: 3rem;">
+                <span class="material-symbols-outlined icon">search</span>
+                <input type="text" placeholder="ค้นหาทิคเก็ต..." id="search-input">
             </div>
+            <button id="filter-toggle-btn">
+                <span class="material-symbols-outlined" style="font-size: 1.5rem;">tune</span>
+            </button>
         </div>
 
-        <!-- Filter Chips (Priority) -->
-        <div style="padding: 0 1rem; margin-bottom: 1rem;">
-            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">ความเร่งด่วน</span>
-            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="priority-filters">
-                <button class="filter-chip active" data-group="priority" data-value="all">ทั้งหมด</button>
-                <button class="filter-chip" data-group="priority" data-value="urgent">🔴 เร่งด่วน</button>
-                <button class="filter-chip" data-group="priority" data-value="not-urgent">🟢 ไม่เร่งด่วน</button>
+        <!-- Collapsible Filter Panel -->
+        <div id="monitor-filter-panel" class="monitor-filter-panel">
+            <div style="padding: 1rem 1.25rem; background: var(--card); margin: 0 1rem; border-radius: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+                
+                <!-- Status Group -->
+                <div style="margin-bottom: 1.25rem;">
+                    <span class="filter-group-header">สถานะทิคเก็ต</span>
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;" id="status-filters">
+                        <button class="modern-filter-chip" data-group="status" data-value="all">ทั้งหมด</button>
+                        <button class="modern-filter-chip active" data-group="status" data-value="new">
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">new_releases</span>
+                            ทิคเก็ตใหม่
+                        </button>
+                        <button class="modern-filter-chip" data-group="status" data-value="inProgress">
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">hourglass_top</span>
+                            ดำเนินการ
+                        </button>
+                        <button class="modern-filter-chip" data-group="status" data-value="completed">
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">check_circle</span>
+                            เสร็จสิ้น
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Priority Group -->
+                <div>
+                    <span class="filter-group-header">ความเร่งด่วน</span>
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;" id="priority-filters">
+                        <button class="modern-filter-chip active" data-group="priority" data-value="all">ทั้งหมด</button>
+                        <button class="modern-filter-chip" data-group="priority" data-value="urgent">
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #ef4444;">error</span>
+                            เร่งด่วน
+                        </button>
+                        <button class="modern-filter-chip" data-group="priority" data-value="not-urgent">
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #22c55e;">check_circle</span>
+                            ไม่เร่งด่วน
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </div>
 
         <!-- Ticket Count -->
         <div style="padding: 0 1.5rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 0.8rem; color: var(--text-muted);" id="monitor-count"></span>
+            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="monitor-count"></span>
         </div>
 
         <!-- Ticket List -->
@@ -916,11 +943,25 @@ function renderMonitor() {
         </div>
     `;
 
-    // --- Filter Logic ---
+    // --- Logic ---
+    const filterToggleBtn = document.getElementById('filter-toggle-btn');
+    const filterPanel = document.getElementById('monitor-filter-panel');
     const statusFilters = document.getElementById('status-filters');
     const priorityFilters = document.getElementById('priority-filters');
     const searchInput = document.getElementById('search-input');
     const countLabel = document.getElementById('monitor-count');
+
+    // Toggle Panel Visibility
+    filterToggleBtn.addEventListener('click', () => {
+        const isOpen = filterPanel.classList.contains('open');
+        if (isOpen) {
+            filterPanel.classList.remove('open');
+            filterToggleBtn.classList.remove('active');
+        } else {
+            filterPanel.classList.add('open');
+            filterToggleBtn.classList.add('active');
+        }
+    });
 
     // Default Filters
     let currentStatus = 'new';
@@ -963,9 +1004,9 @@ function renderMonitor() {
         } else {
             listEl.innerHTML = `
                 <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
-                    <span class="material-symbols-outlined" style="font-size: 3.5rem; margin-bottom: 0.75rem; opacity: 0.5;">inbox</span>
-                    <p style="font-size: 1rem;">ไม่พบรายการทิคเก็ต</p>
-                    <p style="font-size: 0.8rem;">ลองปรับตัวกรองหรือค้นหาใหม่</p>
+                    <span class="material-symbols-outlined" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;">inbox</span>
+                    <p style="font-size: 1.1rem; font-weight: 500;">ไม่พบรายการทิคเก็ต</p>
+                    <p style="font-size: 0.9rem; opacity: 0.7;">ลองปรับตัวกรองหรือค้นหาใหม่</p>
                 </div>
             `;
         }
@@ -977,11 +1018,11 @@ function renderMonitor() {
     // Event Listeners for Chips
     function setupChipGroup(groupElement, groupName) {
         groupElement.addEventListener('click', (e) => {
-            const btn = e.target.closest('.filter-chip');
+            const btn = e.target.closest('.modern-filter-chip'); // Updated class name
             if (!btn) return;
 
             // Update UI
-            groupElement.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+            groupElement.querySelectorAll('.modern-filter-chip').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
             // Update State
