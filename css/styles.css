@@ -133,11 +133,12 @@ body,
 
 @media (min-width: 1024px) {
     .app-container {
-        max-width: 1440px;
+        width: 100%;
+        max-width: none;
         padding-left: 280px;
         box-shadow: none;
-        margin: 0 auto;
-        border-right: 1px solid var(--border);
+        margin: 0;
+        border-right: none;
         transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -148,19 +149,20 @@ body,
 
     body {
         background: #f1f5f9;
-        display: flex;
-        justify-content: center;
+        display: block;
     }
 
     .app-header {
-        max-width: calc(1440px - 280px);
-        left: auto !important;
+        width: calc(100% - 280px);
+        max-width: none;
+        left: 280px !important;
         margin-left: 0;
-        transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .sidebar-collapsed .app-header {
-        max-width: calc(1440px - 80px);
+        width: calc(100% - 80px);
+        left: 80px !important;
     }
 
     .drawer {
@@ -171,7 +173,7 @@ body,
         box-shadow: none !important;
         backdrop-filter: none !important;
         position: fixed;
-        left: auto;
+        left: 0;
         transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 101;
     }
@@ -214,11 +216,10 @@ body,
 
     /* Dashboard Grid System */
     .dashboard-container {
-        padding: 0 1.5rem 2rem 1.5rem;
-        /* Slightly tighter on desktop */
+        padding: 0 2rem 2.5rem 2rem;
         display: grid;
         grid-template-columns: repeat(12, 1fr);
-        gap: 1.5rem;
+        gap: 2rem;
     }
 
     .dashboard-container>.chart-card {
@@ -242,9 +243,9 @@ body,
     /* List and Stats Grids */
     .ticket-list {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-        gap: 1.5rem;
-        padding: 2rem;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 2rem;
+        padding: 2.5rem;
     }
 
     .stats-grid {
@@ -254,21 +255,22 @@ body,
 
     .desktop-3-col {
         grid-template-columns: repeat(3, 1fr) !important;
-        padding: 1rem 1.5rem 1.5rem 1.5rem !important;
+        padding: 1.5rem 2rem 2rem 2rem !important;
     }
 
     /* Sticky Footer Responsive */
     .sticky-footer {
         left: 280px;
         transform: none;
-        max-width: calc(1440px - 280px);
-        padding: 1.25rem 3rem;
-        transition: left 0.3s, max-width 0.3s;
+        width: calc(100% - 280px);
+        max-width: none;
+        padding: 1.5rem 4rem;
+        transition: left 0.3s, width 0.3s;
     }
 
     .sidebar-collapsed .sticky-footer {
         left: 80px;
-        max-width: calc(1440px - 80px);
+        width: calc(100% - 80px);
     }
 
     .detail-content {
