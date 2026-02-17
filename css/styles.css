@@ -2246,6 +2246,13 @@ body.login-mode #main-content {
     /* Slide into place */
 }
 
+/* Hide tooltip for expanded button */
+.fab-btn-expanded:hover .fab-text,
+.fab-btn-expanded:focus .fab-text {
+    opacity: 0;
+    visibility: hidden;
+}
+
 .fab-btn:active {
     transform: translateY(0) scale(0.95);
 }
