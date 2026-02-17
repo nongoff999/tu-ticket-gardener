@@ -1165,23 +1165,11 @@ function renderAddTicket() {
         <div style="padding: 0 1rem;">
             <form id="ticket-form">
                 <div class="form-group">
-                    <label class="form-label">Ticket Type <span class="required">*</span></label>
-                    <div class="damage-type-toggle" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        ${MOCK_DATA.damageTypes.map((dt, idx) => `
-                            <button type="button" class="damage-type-btn ${idx === 0 ? 'active' : ''}" data-type="${dt.id}">
-                                ${dt.name}
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Ticket Description <span class="required">*</span></label>
+                    <label class="form-label">ลักษณะความเสียหาย <span class="required">*</span></label>
                     <div class="description-toggle" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
-                        <button type="button" class="desc-btn" data-value="ตัดแต่งกิ่งไม้">ตัดแต่งกิ่งไม้</button>
-                        <button type="button" class="desc-btn" data-value="ปลูกใหม่">ปลูกใหม่</button>
-                        <button type="button" class="desc-btn" data-value="เก็บกวาด">เก็บกวาด</button>
-                        <button type="button" class="desc-btn" data-value="รดน้ำ">รดน้ำ</button>
+                        <button type="button" class="desc-btn" data-value="โค่นล้ม">โค่นล้ม</button>
+                        <button type="button" class="desc-btn" data-value="กิ่งหัก/ฉีก">กิ่งหัก/ฉีก</button>
+                        <button type="button" class="desc-btn" data-value="ลำต้นเอียง">ลำต้นเอียง</button>
                         <button type="button" class="desc-btn" data-value="other">อื่นๆ</button>
                     </div>
                     <textarea id="ticket-description-custom" class="form-textarea" rows="3" placeholder="ระบุรายละเอียดเพิ่มเติม..." style="display: none;"></textarea>
@@ -1238,12 +1226,23 @@ function renderAddTicket() {
         <div class="safe-area-bottom"></div>
     `;
 
-    // Damage type toggle
-    const damageTypeBtns = content.querySelectorAll('.damage-type-btn');
-    damageTypeBtns.forEach(btn => {
+
+
+    // Description toggle - Buttons
+    const descBtns = content.querySelectorAll('.desc-btn');
+    const customDesc = content.querySelector('#ticket-description-custom');
+
+    descBtns.forEach(btn => {
         btn.addEventListener('click', function () {
-            damageTypeBtns.forEach(b => b.classList.remove('active'));
+            descBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
+
+            if (this.dataset.value === 'other') {
+                customDesc.style.display = 'block';
+                customDesc.focus();
+            } else {
+                customDesc.style.display = 'none';
+            }
         });
     });
 
@@ -1323,7 +1322,7 @@ function renderAddTicket() {
         const locationName = content.querySelector('#ticket-location-name').value.trim();
         const lat = content.querySelector('#ticket-lat').value;
         const lng = content.querySelector('#ticket-lng').value;
-        const selectedDamageType = content.querySelector('.damage-type-btn.active')?.dataset.type || 'accident';
+
 
         // Get Description
         const activeDescBtn = content.querySelector('.desc-btn.active');
@@ -1349,20 +1348,26 @@ function renderAddTicket() {
         }
 
         // Generate location detail
+
         const fullLocationDetail = locationName;
 
         // Create new ticket object
         const zoneObj = MOCK_DATA.zones.find(z => z.id === zoneId);
         const combinedZoneName = `${zoneObj?.name.split(' (')[0] || ''} - ${locationName}`;
 
-        const damageTypeObj = MOCK_DATA.damageTypes.find(dt => dt.id === selectedDamageType);
-        const autoTitle = `${damageTypeObj?.name || 'ทิคเก็ตใหม่'} (${locationName})`;
+        // Map description to damage type logic
+        let damageType = 'other';
+        if (finalDescription === 'โค่นล้ม') damageType = 'fallen';
+        else if (finalDescription === 'กิ่งหัก/ฉีก') damageType = 'broken';
+        else if (finalDescription === 'ลำต้นเอียง') damageType = 'tilted';
+
+        const autoTitle = `${finalDescription} (${locationName})`;
 
         const newTicket = {
             id: Math.floor(Math.random() * 100000), // Simple random ID
             title: autoTitle,
             description: finalDescription,
-            category: selectedDamageType, // Set category to match the selected type for filtering
+            category: damageType, // Use derived category
             status: 'new',
             priority: 'normal',
             zone: zoneId,
@@ -1371,7 +1376,7 @@ function renderAddTicket() {
             lat: lat || null,
             lng: lng || null,
             treeType: '-',
-            damageType: selectedDamageType,
+            damageType: damageType,
             circumference: 0,
             quantity: 1,
             impact: '-',
