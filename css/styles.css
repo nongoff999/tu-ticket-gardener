@@ -167,7 +167,7 @@ body,
         border-bottom: 1px solid var(--border);
     }
 
-    .sidebar-collapsed .app-header {
+    body.sidebar-collapsed .app-header {
         width: calc(100% - 80px);
         left: 80px !important;
     }
@@ -186,7 +186,7 @@ body,
         background: white;
     }
 
-    .sidebar-collapsed .drawer {
+    body.sidebar-collapsed .drawer {
         width: 80px !important;
     }
 
@@ -232,43 +232,6 @@ body,
         color: white;
     }
 
-    .sidebar-collapsed .drawer-nav-item {
-        margin: 0.25rem 0.5rem;
-        padding-left: 0;
-    }
-
-    /* Hide text labels in collapsed drawer */
-    .sidebar-collapsed .drawer .drawer-nav-item span:not(.material-symbols-outlined),
-    .sidebar-collapsed .drawer .drawer-logo-text,
-    .sidebar-collapsed .drawer .drawer-user-info,
-    .sidebar-collapsed .drawer-version,
-    .sidebar-collapsed .logout-btn span:not(.material-symbols-outlined) {
-        display: none !important;
-    }
-
-    .sidebar-collapsed .drawer .drawer-nav-item {
-        justify-content: center;
-        padding-left: 0;
-    }
-
-    .sidebar-collapsed .drawer .drawer-header {
-        padding: 1.5rem 0;
-        justify-content: center;
-    }
-
-    .sidebar-collapsed .drawer .drawer-header .header-btn {
-        display: none !important;
-    }
-
-    .drawer-overlay {
-        display: none !important;
-    }
-
-    /* Allow the hamburger on desktop for collapse toggle */
-    .header-btn[onclick*="openDrawer"] {
-        display: flex !important;
-    }
-
     /* Dashboard Grid System */
     .dashboard-container {
         padding: 0 2rem 2.5rem 2rem;
@@ -290,8 +253,7 @@ body,
     }
 
     .dashboard-container .col-span-12 svg {
-        max-height: 500px;
-        /* Bigger bars on desktop */
+        max-height: 600px;
         width: 100%;
     }
 
@@ -313,6 +275,45 @@ body,
         padding: 1.5rem 2rem 2rem 2rem !important;
     }
 
+    /* Sidebar Collapse State - Body Level */
+    body.sidebar-collapsed .drawer .drawer-nav-item span:not(.material-symbols-outlined),
+    body.sidebar-collapsed .drawer .drawer-logo-text,
+    body.sidebar-collapsed .drawer .drawer-profile-info,
+    body.sidebar-collapsed .drawer .drawer-version,
+    body.sidebar-collapsed .drawer .logout-btn span:not(.material-symbols-outlined) {
+        display: none !important;
+    }
+
+    body.sidebar-collapsed .drawer .drawer-nav-item {
+        justify-content: center;
+        padding-left: 0;
+        margin: 0.25rem 0.5rem;
+    }
+
+    body.sidebar-collapsed .drawer .drawer-profile {
+        padding: 1rem 0;
+        margin: 0 0.5rem 1.5rem 0.5rem;
+        justify-content: center;
+    }
+
+    body.sidebar-collapsed .drawer .drawer-header {
+        padding: 1.5rem 0;
+        justify-content: center;
+    }
+
+    body.sidebar-collapsed .drawer .drawer-header .header-btn {
+        display: none !important;
+    }
+
+    .drawer-overlay {
+        display: none !important;
+    }
+
+    /* Allow the hamburger on desktop for collapse toggle */
+    .header-btn[onclick*="openDrawer"] {
+        display: flex !important;
+    }
+
     /* Sticky Footer Responsive */
     .sticky-footer {
         left: 280px;
@@ -320,10 +321,10 @@ body,
         width: calc(100% - 280px);
         max-width: none;
         padding: 1.5rem 4rem;
-        transition: left 0.3s, width 0.3s;
+        transition: left 0.4s, width 0.4s;
     }
 
-    .sidebar-collapsed .sticky-footer {
+    body.sidebar-collapsed .sticky-footer {
         left: 80px;
         width: calc(100% - 80px);
     }
