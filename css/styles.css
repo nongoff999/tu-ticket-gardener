@@ -2143,6 +2143,7 @@ body.login-mode #main-content {
 }
 
 /* Floating Action Button (FAB) */
+/* Floating Action Button (FAB) */
 .fab-btn {
     position: fixed;
     bottom: 2rem;
@@ -2166,8 +2167,28 @@ body.login-mode #main-content {
     z-index: 50;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
+    animation: float-pulse 3s ease-in-out infinite;
+    /* Continuous animation */
+
     overflow: visible;
     /* Allow label to show outside */
+}
+
+@keyframes float-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4);
+        transform: translateY(0);
+    }
+
+    50% {
+        box-shadow: 0 0 0 10px rgba(14, 165, 233, 0);
+        transform: translateY(-4px);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(14, 165, 233, 0);
+        transform: translateY(0);
+    }
 }
 
 /* Tooltip / Label Bubble */
