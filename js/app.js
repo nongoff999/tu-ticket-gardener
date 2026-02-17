@@ -1165,21 +1165,26 @@ function renderAddTicket() {
         <div style="padding: 0 1rem;">
             <form id="ticket-form">
                 <div class="form-group">
-                    <label class="form-label">ลำดับความสำคัญ <span class="required">*</span></label>
-                    <div class="priority-toggle">
-                        <button type="button" class="priority-btn normal active">ไม่เร่งด่วน</button>
-                        <button type="button" class="priority-btn urgent">เร่งด่วน</button>
+                    <label class="form-label">Ticket Type <span class="required">*</span></label>
+                    <div class="damage-type-toggle" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        ${MOCK_DATA.damageTypes.map((dt, idx) => `
+                            <button type="button" class="damage-type-btn ${idx === 0 ? 'active' : ''}" data-type="${dt.id}">
+                                ${dt.name}
+                            </button>
+                        `).join('')}
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Ticket Name <span class="required">*</span></label>
-                    <input type="text" id="ticket-title" class="form-input" placeholder="ชื่อทิคเก็ต">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Ticket Description</label>
-                    <textarea class="form-textarea" rows="4" placeholder="รายละเอียดของปัญหา"></textarea>
+                    <label class="form-label">Ticket Description <span class="required">*</span></label>
+                    <div class="description-toggle" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                        <button type="button" class="desc-btn" data-value="ตัดแต่งกิ่งไม้">ตัดแต่งกิ่งไม้</button>
+                        <button type="button" class="desc-btn" data-value="ปลูกใหม่">ปลูกใหม่</button>
+                        <button type="button" class="desc-btn" data-value="เก็บกวาด">เก็บกวาด</button>
+                        <button type="button" class="desc-btn" data-value="รดน้ำ">รดน้ำ</button>
+                        <button type="button" class="desc-btn" data-value="other">อื่นๆ</button>
+                    </div>
+                    <textarea id="ticket-description-custom" class="form-textarea" rows="3" placeholder="ระบุรายละเอียดเพิ่มเติม..." style="display: none;"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -1210,17 +1215,6 @@ function renderAddTicket() {
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Ticket Type <span class="required">*</span></label>
-                    <div class="damage-type-toggle" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        ${MOCK_DATA.damageTypes.map((dt, idx) => `
-                            <button type="button" class="damage-type-btn ${idx === 0 ? 'active' : ''}" data-type="${dt.id}">
-                                ${dt.name}
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label class="form-label">รูปภาพ <span class="required">*</span> <span class="image-count">(0/6)</span></label>
                     <input type="file" id="image-input" accept="image/*" multiple style="display: none;">
                     <div class="image-grid" id="image-grid">
@@ -1244,15 +1238,6 @@ function renderAddTicket() {
         <div class="safe-area-bottom"></div>
     `;
 
-    // Priority toggle
-    const priorityBtns = content.querySelectorAll('.priority-btn');
-    priorityBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            priorityBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
-
     // Damage type toggle
     const damageTypeBtns = content.querySelectorAll('.damage-type-btn');
     damageTypeBtns.forEach(btn => {
@@ -1262,13 +1247,10 @@ function renderAddTicket() {
         });
     });
 
-    // Zone selection - Show location detail
+    // Zone selection
     const zoneSelect = content.querySelector('#ticket-zone');
-    const locationDetailGroup = content.querySelector('#location-detail-group');
-    const locationDetailInput = content.querySelector('#location-detail');
-
     zoneSelect.addEventListener('change', function () {
-        // Zone change logic removed as reporter info is now static at top
+        // Zone change logic
     });
 
     // Image upload functionality
@@ -1337,17 +1319,26 @@ function renderAddTicket() {
     form.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        const title = content.querySelector('#ticket-title').value.trim();
         const zoneId = content.querySelector('#ticket-zone').value;
         const locationName = content.querySelector('#ticket-location-name').value.trim();
         const lat = content.querySelector('#ticket-lat').value;
         const lng = content.querySelector('#ticket-lng').value;
-        const description = content.querySelector('.form-textarea').value.trim();
-        const isUrgent = content.querySelector('.priority-btn.urgent').classList.contains('active');
         const selectedDamageType = content.querySelector('.damage-type-btn.active')?.dataset.type || 'accident';
 
+        // Get Description
+        const activeDescBtn = content.querySelector('.desc-btn.active');
+        let finalDescription = '';
+
+        if (activeDescBtn) {
+            if (activeDescBtn.dataset.value === 'other') {
+                finalDescription = content.querySelector('#ticket-description-custom').value.trim();
+            } else {
+                finalDescription = activeDescBtn.dataset.value;
+            }
+        }
+
         const errors = [];
-        if (!title) errors.push('ชื่อทิคเก็ต');
+        if (!finalDescription) errors.push('รายละเอียด (Ticket Description)');
         if (!zoneId) errors.push('โซนพื้นที่');
         if (!locationName) errors.push('สถานที่เกิดเหตุ (ระบุชัดเจน)');
         if (uploadedImages.length === 0) errors.push('รูปภาพ (อย่างน้อย 1 รูป)');
@@ -1364,13 +1355,16 @@ function renderAddTicket() {
         const zoneObj = MOCK_DATA.zones.find(z => z.id === zoneId);
         const combinedZoneName = `${zoneObj?.name.split(' (')[0] || ''} - ${locationName}`;
 
+        const damageTypeObj = MOCK_DATA.damageTypes.find(dt => dt.id === selectedDamageType);
+        const autoTitle = `${damageTypeObj?.name || 'ทิคเก็ตใหม่'} (${locationName})`;
+
         const newTicket = {
             id: Math.floor(Math.random() * 100000), // Simple random ID
-            title: title,
-            description: description,
+            title: autoTitle,
+            description: finalDescription,
             category: selectedDamageType, // Set category to match the selected type for filtering
             status: 'new',
-            priority: isUrgent ? 'urgent' : 'normal',
+            priority: 'normal',
             zone: zoneId,
             zoneName: combinedZoneName,
             locationDetail: fullLocationDetail, // Set functionality string here
