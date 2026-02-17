@@ -268,7 +268,11 @@ function openDrawer() {
 }
 
 function closeDrawer() {
-    if (window.innerWidth >= 1024) return;
+    // If desktop (min-width 1024), collapse the sidebar instead of closing overlay
+    if (window.innerWidth >= 1024) {
+        document.querySelector('.app-container').classList.add('sidebar-collapsed');
+        return;
+    }
 
     const drawer = document.getElementById('drawer');
     const overlay = document.getElementById('drawer-overlay');
