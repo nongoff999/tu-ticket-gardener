@@ -398,6 +398,14 @@ function renderDashboard() {
                 <span class="material-symbols-outlined stat-card-icon">settings_suggest</span>
             </div>
 
+            <div class="stat-card grey">
+                <div style="position: relative; z-index: 10;">
+                    <p class="stat-card-label">เสร็จสิ้น (ช่วงเวลา)</p>
+                    <p class="stat-card-value">${stats.completed}</p>
+                </div>
+                <span class="material-symbols-outlined stat-card-icon">task_alt</span>
+            </div>
+
             <div class="stat-card pink">
                 <div style="position: relative; z-index: 10;">
                     <p class="stat-card-label">งานเร่งด่วน</p>
@@ -407,62 +415,64 @@ function renderDashboard() {
             </div>
 
         </div>
+        
+        <div class="dashboard-container">
+            <!-- Chart Card (Simplified - Custom Only) -->
+            <div class="chart-card col-span-2">
+                <div class="chart-header" style="margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0 0 1rem 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="color: var(--primary);">analytics</span>
+                        รายงานจำนวนทิคเก็ต
+                    </h2>
+                    
+                    <div class="custom-date-range" style="width: 100%;">
+                        <div style="position: relative; width: 100%;">
+                            <span class="material-symbols-outlined" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 1.25rem; pointer-events: none;">calendar_month</span>
+                            <input type="text" id="date-range-picker" readonly 
+                                placeholder="เลือกช่วงเวลา..."
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 1px solid #e2e8f0; border-radius: 1rem; font-family: 'Kanit', sans-serif; font-size: 0.95rem; color:#1e293b; outline: none; background: white; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s;">
+                        </div>
+                    </div>
+                </div>
 
-        <!-- Chart Card (Simplified - Custom Only) -->
-        <div class="chart-card">
-            <div class="chart-header" style="margin-bottom: 1.5rem;">
-                 <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0 0 1rem 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                    <span class="material-symbols-outlined" style="color: var(--primary);">analytics</span>
-                    รายงานจำนวนทิคเก็ต
-                 </h2>
-                 
-                 <div class="custom-date-range" style="width: 100%;">
-                    <div style="position: relative; width: 100%;">
-                        <span class="material-symbols-outlined" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 1.25rem; pointer-events: none;">calendar_month</span>
-                        <input type="text" id="date-range-picker" readonly 
-                               placeholder="เลือกช่วงเวลา..."
-                               style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 1px solid #e2e8f0; border-radius: 1rem; font-family: 'Kanit', sans-serif; font-size: 0.95rem; color:#1e293b; outline: none; background: white; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s;">
+                ${generateChartSVG(AppState.dashboardPeriod, AppState.selectedDate)}
+                
+                <div class="chart-legend" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                    <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #fbbf24; border-radius: 2px;"></div>
+                        <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">ทิคเก็ตเปิดใหม่</span>
+                    </div>
+                    <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #cbd5e1; border-radius: 2px;"></div>
+                        <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนที่เสร็จสิ้น</span>
+                    </div>
+                    <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #f43f5e; border-radius: 2px;"></div>
+                        <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนที่ค้าง</span>
                     </div>
                 </div>
             </div>
 
-            
-            ${generateChartSVG(AppState.dashboardPeriod, AppState.selectedDate)}
-            
-            <div class="chart-legend" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #fbbf24; border-radius: 2px;"></div>
-                    <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">ทิคเก็ตเปิดใหม่</span>
+            <!-- Risk Area Map Section (New) -->
+            <div class="chart-card" style="padding: 1rem;">
+                <div style="margin-bottom: 1rem; padding: 0.5rem;">
+                    <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="color: var(--primary);">map</span>
+                        แผนที่จุดเกิดเหตุอัจฉริยะ (Garden Maps)
+                    </h2>
+                    <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">แสดงตำแหน่งพันธุ์ไม้ที่มีปัญหาตามช่วงเวลาที่เลือก</p>
                 </div>
-                <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #cbd5e1; border-radius: 2px;"></div>
-                    <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนที่เสร็จสิ้น</span>
-                </div>
-                <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #f43f5e; border-radius: 2px;"></div>
-                    <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนที่ค้าง</span>
-                </div>
+                <div id="dashboard-map" style="height: 300px; width: 100%; border-radius: 1rem; border: 1px solid #e2e8f0; z-index: 1;"></div>
+            </div>
+
+            <!-- Risk Area Statistics Section (New) -->
+            ${renderRiskHotspotsSection(AppState.dashboardPeriod, AppState.selectedDate)}
+
+            <!-- Donut Chart Card (Dynamic) -->
+            <div class="col-span-2">
+                ${renderFallenTreesSection(AppState.dashboardPeriod, AppState.selectedDate)}
             </div>
         </div>
-
-        <!-- Risk Area Map Section (New) -->
-        <div class="chart-card" style="padding: 1rem;">
-             <div style="margin-bottom: 1rem; padding: 0.5rem;">
-                <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                    <span class="material-symbols-outlined" style="color: var(--primary);">map</span>
-                    แผนที่จุดเกิดเหตุอัจฉริยะ (Garden Maps)
-                </h2>
-                <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">แสดงตำแหน่งพันธุ์ไม้ที่มีปัญหาตามช่วงเวลาที่เลือก</p>
-            </div>
-            <div id="dashboard-map" style="height: 300px; width: 100%; border-radius: 1rem; border: 1px solid #e2e8f0; z-index: 1;"></div>
-        </div>
-
-        <!-- Risk Area Statistics Section (New) -->
-        ${renderRiskHotspotsSection(AppState.dashboardPeriod, AppState.selectedDate)}
-
-        <!-- Donut Chart Card -->
-        <!-- Donut Chart Card (Dynamic) -->
-        ${renderFallenTreesSection(AppState.dashboardPeriod, AppState.selectedDate)}
 
         <div class="safe-area-bottom"></div>
     `;

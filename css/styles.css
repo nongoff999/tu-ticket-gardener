@@ -131,17 +131,25 @@ body,
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Desktop Styles (Screens > 1024px) */
 @media (min-width: 1024px) {
     .app-container {
-        max-width: 100%;
+        max-width: 1440px;
         padding-left: 280px;
         box-shadow: none;
+        margin: 0 auto;
+        border-right: 1px solid var(--border);
+    }
+
+    body {
+        background: #f1f5f9;
+        display: flex;
+        justify-content: center;
     }
 
     .app-header {
-        max-width: calc(100% - 280px);
-        left: 280px !important;
+        max-width: calc(1440px - 280px);
+        left: auto !important;
+        margin-left: 0;
     }
 
     .drawer {
@@ -151,46 +159,42 @@ body,
         border-right: 1px solid var(--border);
         box-shadow: none !important;
         backdrop-filter: none !important;
-    }
-
-    /* Sticky Footer / Floating Action Button Bar */
-    .sticky-footer {
         position: fixed;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
-        max-width: 500px;
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        padding: 1rem 1.25rem;
-        padding-bottom: calc(1rem + env(safe-area-inset-bottom));
-        border-top: 1px solid var(--border);
-        z-index: 100;
-        display: flex;
-        gap: 1rem;
-        box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+        left: auto;
     }
 
-    @media (min-width: 1024px) {
-        .sticky-footer {
-            left: 280px;
-            transform: none;
-            max-width: calc(100% - 280px);
-            padding: 1.25rem 3rem;
-        }
-    }
-
-    .drawer-overlay {
-        display: none !important;
-    }
-
+    .drawer-overlay,
     .header-btn[onclick*="toggleDrawer"] {
         display: none !important;
     }
 
-    /* Grid Layout for Desktop Card Views */
+    /* Dashboard Grid System */
+    .dashboard-container {
+        padding: 0 2rem 2rem 2rem;
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 1.5rem;
+    }
+
+    .dashboard-container>.chart-card {
+        margin: 0 !important;
+    }
+
+    .dashboard-container .col-span-2 {
+        grid-column: span 12;
+    }
+
+    .dashboard-container .chart-card:nth-of-type(2),
+    .dashboard-container .chart-card:nth-of-type(3) {
+        grid-column: span 6;
+    }
+
+    .dashboard-container .col-span-2 svg {
+        max-height: 400px;
+        width: 100%;
+    }
+
+    /* List and Stats Grids */
     .ticket-list {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -203,16 +207,12 @@ body,
         padding: 2rem;
     }
 
-    .stat-card.green {
-        grid-column: span 1;
-    }
-
-    .summary-cards {
-        padding: 1.5rem 2rem;
-    }
-
-    .chart-card {
-        margin: 0 2rem 2rem;
+    /* Sticky Footer Responsive */
+    .sticky-footer {
+        left: 280px;
+        transform: none;
+        max-width: calc(1440px - 280px);
+        padding: 1.25rem 3rem;
     }
 
     .detail-content {
@@ -2544,8 +2544,35 @@ body.login-mode #main-content {
     box-shadow: 0 0 0 4px rgba(var(--primary-rgb, 2, 132, 199), 0.1) !important;
 }
 
+/* Stat Card Colors */
+.stat-card.yellow {
+    background: #fffbeb;
+    border-color: #fef3c7;
+    color: #92400e;
+}
+
+.stat-card.purple {
+    background: #f5f3ff;
+    border-color: #ede9fe;
+    color: #5b21b6;
+}
+
+.stat-card.pink {
+    background: #fff1f2;
+    border-color: #ffe4e6;
+    color: #9f1239;
+}
+
+.stat-card.grey {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #475569;
+}
+
 @media (min-width: 1024px) {
     .stats-compact-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
         gap: 1.5rem;
         margin: 1rem 2rem 2rem 2rem;
     }
