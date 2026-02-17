@@ -884,58 +884,65 @@ function renderMonitor() {
             <input type="text" placeholder="ค้นหาทิคเก็ต..." id="search-input">
         </div>
 
-        <!-- Filter Dropdowns -->
-        <div style="display: flex; gap: 0.5rem; padding: 0 1rem; margin-bottom: 1rem;">
-            <select id="filter-priority" style="flex: 1; padding: 0.6rem; border-radius: 0.75rem; border: 1px solid var(--border); background-color: white; color: var(--text-primary); font-size: 0.85rem; outline: none; box-shadow: var(--shadow-sm);">
-                <option value="all">ความเร่งด่วนทั้งหมด</option>
-                <option value="urgent">🔴 เร่งด่วน</option>
-                <option value="not-urgent">🟢 ไม่เร่งด่วน</option>
-            </select>
-            <select id="filter-status" style="flex: 1; padding: 0.6rem; border-radius: 0.75rem; border: 1px solid var(--border); background-color: white; color: var(--text-primary); font-size: 0.85rem; outline: none; box-shadow: var(--shadow-sm);">
-                <option value="all">สถานะทั้งหมด</option>
-                <option value="new">🌟 ทิคเก็ตใหม่</option>
-                <option value="inProgress">⏳ ระหว่างดำเนินการ</option>
-                <option value="completed">✅ ปิดทิคเก็ต</option>
-            </select>
+        <!-- Filter Chips (Status) -->
+        <div style="padding: 0 1rem; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">สถานะ</span>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="status-filters">
+                <button class="filter-chip" data-group="status" data-value="all">ทั้งหมด</button>
+                <button class="filter-chip active" data-group="status" data-value="new">🌟 ทิคเก็ตใหม่</button>
+                <button class="filter-chip" data-group="status" data-value="inProgress">⏳ ดำเนินการ</button>
+                <button class="filter-chip" data-group="status" data-value="completed">✅ เสร็จสิ้น</button>
+            </div>
+        </div>
+
+        <!-- Filter Chips (Priority) -->
+        <div style="padding: 0 1rem; margin-bottom: 1rem;">
+            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">ความเร่งด่วน</span>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="priority-filters">
+                <button class="filter-chip active" data-group="priority" data-value="all">ทั้งหมด</button>
+                <button class="filter-chip" data-group="priority" data-value="urgent">🔴 เร่งด่วน</button>
+                <button class="filter-chip" data-group="priority" data-value="not-urgent">🟢 ไม่เร่งด่วน</button>
+            </div>
         </div>
 
         <!-- Ticket Count -->
         <div style="padding: 0 1.5rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 0.8rem; color: var(--text-muted);" id="monitor-count">ทั้งหมด ${MOCK_DATA.tickets.length} รายการ</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);" id="monitor-count"></span>
         </div>
 
         <!-- Ticket List -->
         <div class="ticket-list pb-safe" id="ticket-list">
-            ${MOCK_DATA.tickets.map(ticket => Components.monitorCard(ticket)).join('')}
+            <!-- Content will be rendered by applyFilters() -->
         </div>
     `;
 
     // --- Filter Logic ---
-    const filterPriority = document.getElementById('filter-priority');
-    const filterStatus = document.getElementById('filter-status');
+    const statusFilters = document.getElementById('status-filters');
+    const priorityFilters = document.getElementById('priority-filters');
     const searchInput = document.getElementById('search-input');
     const countLabel = document.getElementById('monitor-count');
 
-    function applyFilters() {
-        const priority = filterPriority.value;
-        const status = filterStatus.value;
-        const query = searchInput.value.toLowerCase().trim();
+    // Default Filters
+    let currentStatus = 'new';
+    let currentPriority = 'all';
 
+    function applyFilters() {
+        const query = searchInput.value.toLowerCase().trim();
         let filtered = MOCK_DATA.tickets;
 
-        // Priority Filter
-        if (priority === 'urgent') {
+        // 1. Status Filter
+        if (currentStatus !== 'all') {
+            filtered = filtered.filter(t => t.status === currentStatus);
+        }
+
+        // 2. Priority Filter
+        if (currentPriority === 'urgent') {
             filtered = filtered.filter(t => t.priority === 'urgent');
-        } else if (priority === 'not-urgent') {
+        } else if (currentPriority === 'not-urgent') {
             filtered = filtered.filter(t => t.priority !== 'urgent');
         }
 
-        // Status Filter
-        if (status !== 'all') {
-            filtered = filtered.filter(t => t.status === status);
-        }
-
-        // Search Filter
+        // 3. Search Filter
         if (query) {
             filtered = filtered.filter(t =>
                 t.title.toLowerCase().includes(query) ||
@@ -944,7 +951,6 @@ function renderMonitor() {
                 t.id.toString().includes(query) ||
                 (t.treeType && t.treeType.toLowerCase().includes(query)) ||
                 (t.operation && t.operation.toLowerCase().includes(query)) ||
-                (t.assignees && t.assignees.join(' ').toLowerCase().includes(query)) ||
                 (t.locationDetail && t.locationDetail.toLowerCase().includes(query)) ||
                 (t.notes && t.notes.toLowerCase().includes(query))
             );
@@ -956,9 +962,10 @@ function renderMonitor() {
             listEl.innerHTML = filtered.map(ticket => Components.monitorCard(ticket)).join('');
         } else {
             listEl.innerHTML = `
-                <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
-                    <span class="material-symbols-outlined" style="font-size: 3rem; margin-bottom: 0.5rem; opacity: 0.5;">search_off</span>
-                    <p>ไม่พบรายการที่ค้นหา</p>
+                <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+                    <span class="material-symbols-outlined" style="font-size: 3.5rem; margin-bottom: 0.75rem; opacity: 0.5;">inbox</span>
+                    <p style="font-size: 1rem;">ไม่พบรายการทิคเก็ต</p>
+                    <p style="font-size: 0.8rem;">ลองปรับตัวกรองหรือค้นหาใหม่</p>
                 </div>
             `;
         }
@@ -967,10 +974,31 @@ function renderMonitor() {
         countLabel.textContent = `แสดง ${filtered.length} รายการ`;
     }
 
-    // Attach Events
-    filterPriority.addEventListener('change', applyFilters);
-    filterStatus.addEventListener('change', applyFilters);
+    // Event Listeners for Chips
+    function setupChipGroup(groupElement, groupName) {
+        groupElement.addEventListener('click', (e) => {
+            const btn = e.target.closest('.filter-chip');
+            if (!btn) return;
+
+            // Update UI
+            groupElement.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Update State
+            const val = btn.dataset.value;
+            if (groupName === 'status') currentStatus = val;
+            if (groupName === 'priority') currentPriority = val;
+
+            applyFilters();
+        });
+    }
+
+    setupChipGroup(statusFilters, 'status');
+    setupChipGroup(priorityFilters, 'priority');
     searchInput.addEventListener('input', applyFilters);
+
+    // Initial Render
+    applyFilters();
 }
 
 function renderTicketList() {

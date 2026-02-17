@@ -52,57 +52,49 @@ const Components = {
         `;
     },
 
-    // Monitor Ticket Card (Big & Easy to Read version)
+    // Monitor Ticket Card (Big & Easy to Read version, No Assignees)
     monitorCard(ticket) {
         const hasOperation = ticket.operation && ticket.operation !== '-';
 
         return `
-            <div class="ticket-card" onclick="showTicketDetail(${ticket.id})" style="flex-direction: column; height: auto; padding: 1.25rem;">
+            <div class="ticket-card" onclick="showTicketDetail(${ticket.id})" style="flex-direction: column; height: auto; padding: 1.5rem;">
                 <!-- Header: ID + Title -->
-                <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.75rem; gap: 1rem;">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; gap: 1rem;">
                     <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0;">
-                        <span style="color: var(--text-muted); font-weight: 800; font-size: 1.1rem; flex-shrink: 0;">#${ticket.id}</span>
-                        <h3 style="font-size: 1.25rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); line-height: 1.3;">${ticket.title}</h3>
+                        <span style="color: var(--text-muted); font-weight: 800; font-size: 1.25rem; flex-shrink: 0;">#${ticket.id}</span>
+                        <h3 style="font-size: 1.5rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); line-height: 1.3;">${ticket.title}</h3>
                     </div>
                 </div>
 
                 <!-- Badges Row (Bigger) -->
-                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem;">
-                    ${ticket.priority === 'urgent' ? '<span class="badge urgent" style="font-size: 0.9rem; padding: 0.4rem 1rem;">เร่งด่วน</span>' : ''}
-                    <span class="badge ${getStatusClass(ticket.status)}" style="font-size: 0.9rem; padding: 0.4rem 1rem;">${getStatusLabel(ticket.status)}</span>
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.25rem;">
+                    ${ticket.priority === 'urgent' ? '<span class="badge urgent" style="font-size: 1rem; padding: 0.5rem 1.25rem;">เร่งด่วน</span>' : ''}
+                    <span class="badge ${getStatusClass(ticket.status)}" style="font-size: 1rem; padding: 0.5rem 1.25rem;">${getStatusLabel(ticket.status)}</span>
                 </div>
 
-                <!-- Zone + Date + Damage Type (Bigger Icons & Text) -->
-                <div style="display: flex; align-items: center; gap: 1.25rem; color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.95rem; flex-wrap: wrap;">
-                    <div style="display: flex; align-items: center; gap: 0.4rem;">
-                        <span class="material-symbols-outlined" style="font-size: 1.35rem;">location_on</span>
+                <!-- Zone + Date + Damage Type (Big Icons & Text) -->
+                <div style="display: flex; align-items: center; gap: 1.5rem; color: var(--text-secondary); margin-bottom: 1.25rem; font-size: 1.1rem; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="font-size: 1.5rem;">location_on</span>
                         <span style="font-weight: 500;">${ticket.zoneName}</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 0.4rem;">
-                        <span class="material-symbols-outlined" style="font-size: 1.35rem;">calendar_today</span>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="font-size: 1.5rem;">calendar_today</span>
                         <span>${formatShortDate(ticket.date)}</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 0.4rem;">
-                        <span class="material-symbols-outlined" style="font-size: 1.35rem;">park</span>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="font-size: 1.5rem;">park</span>
                         <span>${getDamageTypeName(ticket.damageType)}</span>
                     </div>
                 </div>
 
-                <!-- Operation (Highlighted & Big) -->
+                <!-- Operation (Highlighted, Very Big) -->
                 ${hasOperation ? `
-                <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1rem; padding: 0.75rem 1rem; background: #f0fdf4; border-radius: 0.75rem; border: 1px solid #bbf7d0;">
-                    <span class="material-symbols-outlined" style="font-size: 1.5rem; color: #16a34a; flex-shrink: 0; margin-top: 2px;">construction</span>
-                    <span style="font-size: 1rem; color: #15803d; line-height: 1.4; font-weight: 500;">${ticket.operation}</span>
+                <div style="display: flex; align-items: flex-start; gap: 1rem; margin-top: auto; padding: 1rem 1.25rem; background: #ecfdf5; border-radius: 1rem; border: 2px solid #a7f3d0;">
+                    <span class="material-symbols-outlined" style="font-size: 2rem; color: #16a34a; flex-shrink: 0;">construction</span>
+                    <span style="font-size: 1.25rem; color: #15803d; line-height: 1.4; font-weight: 600;">${ticket.operation}</span>
                 </div>
                 ` : ''}
-
-                <!-- Assignees -->
-                <div style="display: flex; flex-direction: column; gap: 0.5rem; border-top: 1px solid var(--border); padding-top: 1rem; margin-top: auto;">
-                    <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">ผู้รับผิดชอบ:</span>
-                    <div style="transform: scale(1.1); transform-origin: left;">
-                        ${this.renderAssignees(ticket.assignees)}
-                    </div>
-                </div>
             </div>
         `;
     },
