@@ -4,26 +4,58 @@
  */
 
 const Components = {
-    // Ticket Card Component
+    // Ticket Card Component (List Style)
     ticketCard(ticket) {
+        // limit images to 4 thumbnails for the list view
+        const displayImages = ticket.images ? ticket.images.slice(0, 4) : [];
+        const hasImages = displayImages.length > 0;
+
         return `
-            <div class="ticket-card" onclick="showTicketDetail(${ticket.id})">
-                <div class="ticket-card-image">
-                    <img src="${ticket.images[0]}" alt="${ticket.title}">
-                </div>
-                <div class="ticket-card-content">
-                    <div class="ticket-card-header">
-                        <span class="ticket-card-id">#${ticket.id}</span>
-                        <div class="ticket-card-badges">
-                            ${ticket.priority === 'urgent' ? '<span class="badge urgent">เร่งด่วน</span>' : ''}
-                            <span class="badge ${getStatusClass(ticket.status)}">${getStatusLabel(ticket.status)}</span>
-                        </div>
+            <div class="ticket-list-item" onclick="showTicketDetail(${ticket.id})">
+                <!-- Header: ID + Badge -->
+                <div class="ticket-list-header">
+                    <span class="ticket-list-id">#${ticket.id}</span>
+                    <div style="display: flex; gap: 0.5rem;">
+                        ${ticket.priority === 'urgent' ? '<span class="badge urgent">เร่งด่วน</span>' : ''}
+                        <span class="badge ${getStatusClass(ticket.status)}">${getStatusLabel(ticket.status)}</span>
                     </div>
-                    <h3 class="ticket-card-title">${ticket.title}</h3>
-                    <p class="ticket-card-desc">${ticket.description}</p>
-                    <div class="ticket-card-footer">
-                        <span class="ticket-card-category">${getDamageTypeName(ticket.damageType)}</span>
-                        <span class="ticket-card-date">${formatDate(ticket.date)}</span>
+                </div>
+
+                <!-- Title -->
+                <h3 class="ticket-list-title">${ticket.title}</h3>
+
+                <!-- Full Description -->
+                <p class="ticket-list-desc">
+                    ${ticket.description || 'ไม่มีรายละเอียดเพิ่มเติม'}
+                </p>
+
+                <!-- Thumbnails (Ready to expand) -->
+                ${hasImages ? `
+                <div class="ticket-list-thumbs">
+                    ${displayImages.map(img => `
+                        <img src="${img}" alt="Thumbnail" class="ticket-list-thumb">
+                    `).join('')}
+                    ${ticket.images.length > 4 ? `
+                        <div class="ticket-list-thumb" style="display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: var(--text-muted); font-weight: 600; font-size: 0.9rem;">
+                            +${ticket.images.length - 4}
+                        </div>
+                    ` : ''}
+                </div>
+                ` : ''}
+
+                <!-- Footer Meta -->
+                <div class="ticket-list-meta">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">location_on</span>
+                        <span>${ticket.zoneName}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">calendar_today</span>
+                        <span>${formatShortDate(ticket.date)}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">park</span>
+                        <span>${getDamageTypeName(ticket.damageType)}</span>
                     </div>
                 </div>
             </div>

@@ -1053,27 +1053,68 @@ function renderTicketList() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Search -->
-        <div class="search-box">
-            <span class="material-symbols-outlined icon">search</span>
-            <input type="text" placeholder="ค้นหาทิคเก็ต..." id="search-input">
+        <!-- Search & Filter Toggle Row -->
+        <div style="display: flex; gap: 0.75rem; padding: 0 1rem; margin-bottom: 0.75rem; align-items: center;">
+            <div class="search-box" style="flex: 1; margin: 0; height: 3rem;">
+                <span class="material-symbols-outlined icon">search</span>
+                <input type="text" placeholder="ค้นหาทิคเก็ต..." id="search-input">
+            </div>
+            <button id="filter-toggle-btn">
+                <span class="material-symbols-outlined" style="font-size: 1.5rem;">tune</span>
+            </button>
         </div>
 
-        <!-- Filter Tabs -->
-        <div class="filter-tabs" id="filter-tabs">
-            <button class="filter-tab active" data-filter="all">ทิคเก็ตทั้งหมด</button>
-            <button class="filter-tab" data-filter="urgent">ทิคเก็ตเร่งด่วน</button>
-            <button class="filter-tab" data-filter="not-urgent">ทิคเก็ตไม่เร่งด่วน</button>
+        <!-- Collapsible Filter Panel -->
+        <div id="ticket-filter-panel" class="monitor-filter-panel">
+            <div style="padding: 1rem 1.25rem; background: var(--card); margin: 0 1rem; border-radius: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+                
+                <!-- Status Group -->
+                <div style="margin-bottom: 1.25rem;">
+                    <span class="filter-group-header">สถานะทิคเก็ต</span>
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;" id="status-filters">
+                        <button class="modern-filter-chip active" data-group="status" data-value="all">ทั้งหมด</button>
+                        <button class="modern-filter-chip" data-group="status" data-value="new">
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">new_releases</span>
+                            ใหม่
+                        </button>
+                        <button class="modern-filter-chip" data-group="status" data-value="inProgress">
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">hourglass_top</span>
+                            ดำเนินการ
+                        </button>
+                        <button class="modern-filter-chip" data-group="status" data-value="completed">
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">check_circle</span>
+                            เสร็จสิ้น
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Priority Group -->
+                <div>
+                    <span class="filter-group-header">ความเร่งด่วน</span>
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;" id="priority-filters">
+                        <button class="modern-filter-chip active" data-group="priority" data-value="all">ทั้งหมด</button>
+                        <button class="modern-filter-chip" data-group="priority" data-value="urgent">
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #ef4444;">error</span>
+                            เร่งด่วน
+                        </button>
+                        <button class="modern-filter-chip" data-group="priority" data-value="not-urgent">
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #22c55e;">check_circle</span>
+                            ไม่เร่งด่วน
+                        </button>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         <!-- Ticket Count -->
-        <div style="padding: 0 1.5rem; margin-bottom: 0.5rem;">
-            <p style="font-size: 0.875rem; color: var(--text-muted);">ทั้งหมด ${MOCK_DATA.tickets.length} รายการ</p>
+        <div style="padding: 0 1.5rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="list-count"></p>
         </div>
 
         <!-- Ticket List -->
         <div class="ticket-list pb-safe" id="ticket-list">
-            ${MOCK_DATA.tickets.map(ticket => Components.ticketCard(ticket)).join('')}
+            <!-- Content rendered by JS -->
         </div>
 
         <!-- Floating Action Button -->
@@ -1083,8 +1124,104 @@ function renderTicketList() {
         </button>
     `;
 
-    initFilterTabs();
-    initSearch();
+    // --- Logic ---
+    const filterToggleBtn = document.getElementById('filter-toggle-btn');
+    const filterPanel = document.getElementById('ticket-filter-panel');
+    const statusFilters = document.getElementById('status-filters');
+    const priorityFilters = document.getElementById('priority-filters');
+    const searchInput = document.getElementById('search-input');
+    const countLabel = document.getElementById('list-count');
+
+    // Toggle Panel Visibility
+    filterToggleBtn.addEventListener('click', () => {
+        const isOpen = filterPanel.classList.contains('open');
+        if (isOpen) {
+            filterPanel.classList.remove('open');
+            filterToggleBtn.classList.remove('active');
+        } else {
+            filterPanel.classList.add('open');
+            filterToggleBtn.classList.add('active');
+        }
+    });
+
+    // Default Filters
+    let currentStatus = 'all'; // Default to ALL for general list
+    let currentPriority = 'all';
+
+    function applyFilters() {
+        const query = searchInput.value.toLowerCase().trim();
+        let filtered = MOCK_DATA.tickets;
+
+        // 1. Status Filter
+        if (currentStatus !== 'all') {
+            filtered = filtered.filter(t => t.status === currentStatus);
+        }
+
+        // 2. Priority Filter
+        if (currentPriority === 'urgent') {
+            filtered = filtered.filter(t => t.priority === 'urgent');
+        } else if (currentPriority === 'not-urgent') {
+            filtered = filtered.filter(t => t.priority !== 'urgent');
+        }
+
+        // 3. Search Filter
+        if (query) {
+            filtered = filtered.filter(t =>
+                t.title.toLowerCase().includes(query) ||
+                t.description.toLowerCase().includes(query) ||
+                t.zoneName.toLowerCase().includes(query) ||
+                t.id.toString().includes(query) ||
+                (t.treeType && t.treeType.toLowerCase().includes(query)) ||
+                (t.operation && t.operation.toLowerCase().includes(query)) ||
+                (t.assignees && t.assignees.join(' ').toLowerCase().includes(query)) ||
+                (t.locationDetail && t.locationDetail.toLowerCase().includes(query)) ||
+                (t.notes && t.notes.toLowerCase().includes(query))
+            );
+        }
+
+        // Render
+        const listEl = document.getElementById('ticket-list');
+        if (filtered.length > 0) {
+            listEl.innerHTML = filtered.map(ticket => Components.ticketCard(ticket)).join('');
+        } else {
+            listEl.innerHTML = `
+                <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+                    <span class="material-symbols-outlined" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;">inbox</span>
+                    <p style="font-size: 1.1rem; font-weight: 500;">ไม่พบรายการทิคเก็ต</p>
+                    <p style="font-size: 0.9rem; opacity: 0.7;">ลองปรับตัวกรองหรือค้นหาใหม่</p>
+                </div>
+            `;
+        }
+
+        // Update Count
+        countLabel.textContent = `ทั้งหมด ${filtered.length} รายการ`;
+    }
+
+    // Event Listeners for Chips
+    function setupChipGroup(groupElement, groupName) {
+        groupElement.addEventListener('click', (e) => {
+            const btn = e.target.closest('.modern-filter-chip');
+            if (!btn) return;
+
+            // Update UI
+            groupElement.querySelectorAll('.modern-filter-chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Update State
+            const val = btn.dataset.value;
+            if (groupName === 'status') currentStatus = val;
+            if (groupName === 'priority') currentPriority = val;
+
+            applyFilters();
+        });
+    }
+
+    setupChipGroup(statusFilters, 'status');
+    setupChipGroup(priorityFilters, 'priority');
+    searchInput.addEventListener('input', applyFilters);
+
+    // Initial Render
+    applyFilters();
 }
 
 function renderTicketDetail(params) {
