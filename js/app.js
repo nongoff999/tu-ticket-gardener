@@ -480,9 +480,9 @@ function renderDashboard() {
         </div>
 
         <!-- Floating Action Button -->
-        <button class="fab-btn fab-btn-expanded" onclick="router.navigate('/add')" style="position: fixed; bottom: 6rem; right: 1.5rem; height: 3.5rem; padding: 0 1.5rem; border-radius: 9999px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: none; cursor: pointer; z-index: 50; font-weight: 600; font-size: 1rem;">
-            <span>Add Ticket</span>
-            <span class="material-symbols-outlined" style="font-size: 1.5rem;">arrow_forward</span>
+        <button class="fab-btn" onclick="router.navigate('/add')">
+            <span class="fab-text">Add Ticket</span>
+            <span class="material-symbols-outlined" style="font-size: 1.75rem;">add</span>
         </button>
 
         <div class="safe-area-bottom"></div>
@@ -970,9 +970,9 @@ function renderTicketList() {
         </div>
 
         <!-- Floating Action Button -->
-        <button class="fab-btn fab-btn-expanded" onclick="router.navigate('/add')" style="position: fixed; bottom: 6rem; right: 1.5rem; height: 3.5rem; padding: 0 1.5rem; border-radius: 9999px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: none; cursor: pointer; z-index: 50; font-weight: 600; font-size: 1rem;">
-            <span>Add Ticket</span>
-            <span class="material-symbols-outlined" style="font-size: 1.5rem;">arrow_forward</span>
+        <button class="fab-btn" onclick="router.navigate('/add')">
+            <span class="fab-text">Add Ticket</span>
+            <span class="material-symbols-outlined" style="font-size: 1.75rem;">add</span>
         </button>
     `;
 
