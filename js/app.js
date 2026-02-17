@@ -962,6 +962,11 @@ function renderTicketList() {
         <div class="ticket-list pb-safe" id="ticket-list">
             ${MOCK_DATA.tickets.map(ticket => Components.ticketCard(ticket)).join('')}
         </div>
+
+        <!-- Floating Action Button -->
+        <button class="fab-btn" onclick="router.navigate('/add')" style="position: fixed; bottom: 6rem; right: 1.5rem; width: 3.5rem; height: 3.5rem; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: none; cursor: pointer; z-index: 50;">
+            <span class="material-symbols-outlined" style="font-size: 1.75rem;">add</span>
+        </button>
     `;
 
     initFilterTabs();
