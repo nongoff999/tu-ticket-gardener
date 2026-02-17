@@ -1384,7 +1384,7 @@ function renderTimeline(ticket) {
     const timelineItems = [];
 
     // 1. Open Info (oldest)
-    let openerName = MOCK_DATA.user?.name || 'ผู้ใช้';
+    let openerName = MOCK_DATA.user?.name || 'Security Guard';
     if (ticket.locationDetail && ticket.locationDetail.includes('Ticket By Name:')) {
         openerName = ticket.locationDetail.split('Ticket By Name: ')[1].split(' เมื่อ ')[0];
     }
@@ -1927,7 +1927,7 @@ function renderEditTicket(params) {
         const oldStatus = ticket.status;
         const newStatus = status;
         const nowStr = new Date().toISOString();
-        const userName = MOCK_DATA.user?.name || 'ผู้ใช้';
+        const userName = MOCK_DATA.user?.name || 'Security Guard';
 
         if (newStatus === 'inProgress' && (oldStatus === 'new' || !ticket.startedAt)) {
             ticket.startedAt = nowStr;
@@ -2069,6 +2069,26 @@ function filterTickets(filter) {
 
     // Store current filter for search integration
     AppState.currentFilter = filter;
+
+    // Also apply current search query if any
+    const searchInput = document.getElementById('search-input');
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    if (query) {
+        filtered = filtered.filter(t =>
+            t.title.toLowerCase().includes(query) ||
+            t.description.toLowerCase().includes(query) ||
+            t.zoneName.toLowerCase().includes(query) ||
+            t.id.toString().includes(query) ||
+            (t.treeType && t.treeType.toLowerCase().includes(query)) ||
+            (t.status && getStatusLabel(t.status).toLowerCase().includes(query)) ||
+            (t.priority === 'urgent' && 'เร่งด่วน'.includes(query)) ||
+            (t.priority !== 'urgent' && 'ปกติ'.includes(query)) ||
+            (t.operation && t.operation.toLowerCase().includes(query)) ||
+            (t.assignees && t.assignees.join(' ').toLowerCase().includes(query)) ||
+            (t.locationDetail && t.locationDetail.toLowerCase().includes(query)) ||
+            (t.notes && t.notes.toLowerCase().includes(query))
+        );
+    }
 
     const isMonitor = AppState.currentPage === 'monitor';
     ticketList.innerHTML = filtered.map(ticket =>
