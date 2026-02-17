@@ -879,16 +879,29 @@ function renderMonitor() {
     const content = document.getElementById('main-content');
     content.innerHTML = `
         <!-- Search -->
-        <div class="search-box">
+        <div class="search-box" style="margin-bottom: 0.75rem;">
             <span class="material-symbols-outlined icon">search</span>
             <input type="text" placeholder="ค้นหาทิคเก็ต..." id="search-input">
         </div>
 
-        <!-- Filter Tabs -->
-        <div class="filter-tabs" id="filter-tabs">
-            <button class="filter-tab active" data-filter="all">ทิคเก็ตทั้งหมด</button>
-            <button class="filter-tab" data-filter="urgent">ทิคเก็ตเร่งด่วน</button>
-            <button class="filter-tab" data-filter="not-urgent">ทิคเก็ตไม่เร่งด่วน</button>
+        <!-- Filter Dropdowns -->
+        <div style="display: flex; gap: 0.5rem; padding: 0 1rem; margin-bottom: 1rem;">
+            <select id="filter-priority" style="flex: 1; padding: 0.6rem; border-radius: 0.75rem; border: 1px solid var(--border); background-color: white; color: var(--text-primary); font-size: 0.85rem; outline: none; box-shadow: var(--shadow-sm);">
+                <option value="all">ความเร่งด่วนทั้งหมด</option>
+                <option value="urgent">🔴 เร่งด่วน</option>
+                <option value="not-urgent">🟢 ไม่เร่งด่วน</option>
+            </select>
+            <select id="filter-status" style="flex: 1; padding: 0.6rem; border-radius: 0.75rem; border: 1px solid var(--border); background-color: white; color: var(--text-primary); font-size: 0.85rem; outline: none; box-shadow: var(--shadow-sm);">
+                <option value="all">สถานะทั้งหมด</option>
+                <option value="new">🌟 ทิคเก็ตใหม่</option>
+                <option value="inProgress">⏳ ระหว่างดำเนินการ</option>
+                <option value="completed">✅ ปิดทิคเก็ต</option>
+            </select>
+        </div>
+
+        <!-- Ticket Count -->
+        <div style="padding: 0 1.5rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.8rem; color: var(--text-muted);" id="monitor-count">ทั้งหมด ${MOCK_DATA.tickets.length} รายการ</span>
         </div>
 
         <!-- Ticket List -->
@@ -897,8 +910,67 @@ function renderMonitor() {
         </div>
     `;
 
-    initFilterTabs();
-    initSearch();
+    // --- Filter Logic ---
+    const filterPriority = document.getElementById('filter-priority');
+    const filterStatus = document.getElementById('filter-status');
+    const searchInput = document.getElementById('search-input');
+    const countLabel = document.getElementById('monitor-count');
+
+    function applyFilters() {
+        const priority = filterPriority.value;
+        const status = filterStatus.value;
+        const query = searchInput.value.toLowerCase().trim();
+
+        let filtered = MOCK_DATA.tickets;
+
+        // Priority Filter
+        if (priority === 'urgent') {
+            filtered = filtered.filter(t => t.priority === 'urgent');
+        } else if (priority === 'not-urgent') {
+            filtered = filtered.filter(t => t.priority !== 'urgent');
+        }
+
+        // Status Filter
+        if (status !== 'all') {
+            filtered = filtered.filter(t => t.status === status);
+        }
+
+        // Search Filter
+        if (query) {
+            filtered = filtered.filter(t =>
+                t.title.toLowerCase().includes(query) ||
+                t.description.toLowerCase().includes(query) ||
+                t.zoneName.toLowerCase().includes(query) ||
+                t.id.toString().includes(query) ||
+                (t.treeType && t.treeType.toLowerCase().includes(query)) ||
+                (t.operation && t.operation.toLowerCase().includes(query)) ||
+                (t.assignees && t.assignees.join(' ').toLowerCase().includes(query)) ||
+                (t.locationDetail && t.locationDetail.toLowerCase().includes(query)) ||
+                (t.notes && t.notes.toLowerCase().includes(query))
+            );
+        }
+
+        // Render
+        const listEl = document.getElementById('ticket-list');
+        if (filtered.length > 0) {
+            listEl.innerHTML = filtered.map(ticket => Components.monitorCard(ticket)).join('');
+        } else {
+            listEl.innerHTML = `
+                <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+                    <span class="material-symbols-outlined" style="font-size: 3rem; margin-bottom: 0.5rem; opacity: 0.5;">search_off</span>
+                    <p>ไม่พบรายการที่ค้นหา</p>
+                </div>
+            `;
+        }
+
+        // Update Count
+        countLabel.textContent = `แสดง ${filtered.length} รายการ`;
+    }
+
+    // Attach Events
+    filterPriority.addEventListener('change', applyFilters);
+    filterStatus.addEventListener('change', applyFilters);
+    searchInput.addEventListener('input', applyFilters);
 }
 
 function renderTicketList() {
