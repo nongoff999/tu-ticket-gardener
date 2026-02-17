@@ -254,6 +254,12 @@ function initDrawer() {
 }
 
 function openDrawer() {
+    // If desktop (min-width 1024), toggle collapse instead of opening overlay
+    if (window.innerWidth >= 1024) {
+        document.querySelector('.app-container').classList.toggle('sidebar-collapsed');
+        return;
+    }
+
     const drawer = document.getElementById('drawer');
     const overlay = document.getElementById('drawer-overlay');
     drawer.classList.add('active');
@@ -262,6 +268,8 @@ function openDrawer() {
 }
 
 function closeDrawer() {
+    if (window.innerWidth >= 1024) return;
+
     const drawer = document.getElementById('drawer');
     const overlay = document.getElementById('drawer-overlay');
     drawer.classList.remove('active');
@@ -379,8 +387,7 @@ function renderDashboard() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Stats Grid (Compact Row - Responsive via CSS) -->
-        <div class="stats-compact-row">
+        <div class="stats-compact-row desktop-3-col">
             
             <div class="stat-card yellow">
                 <div style="position: relative; z-index: 10;">
@@ -398,14 +405,6 @@ function renderDashboard() {
                 <span class="material-symbols-outlined stat-card-icon">settings_suggest</span>
             </div>
 
-            <div class="stat-card grey">
-                <div style="position: relative; z-index: 10;">
-                    <p class="stat-card-label">เสร็จสิ้น (ช่วงเวลา)</p>
-                    <p class="stat-card-value">${stats.completed}</p>
-                </div>
-                <span class="material-symbols-outlined stat-card-icon">task_alt</span>
-            </div>
-
             <div class="stat-card pink">
                 <div style="position: relative; z-index: 10;">
                     <p class="stat-card-label">งานเร่งด่วน</p>
@@ -417,59 +416,61 @@ function renderDashboard() {
         </div>
         
         <div class="dashboard-container">
-            <!-- Chart Card (Simplified - Custom Only) -->
-            <div class="chart-card col-span-2">
+            <!-- Chart Card (Large) -->
+            <div class="chart-card col-span-12">
                 <div class="chart-header" style="margin-bottom: 1.5rem;">
-                    <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0 0 1rem 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="material-symbols-outlined" style="color: var(--primary);">analytics</span>
-                        รายงานจำนวนทิคเก็ต
+                    <h2 style="font-size: 1.25rem; font-weight: 800; margin: 0 0 1rem 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="color: var(--primary); font-size: 1.5rem;">analytics</span>
+                        รายงานจำนวนทิคเก็ตสะสม
                     </h2>
                     
-                    <div class="custom-date-range" style="width: 100%;">
-                        <div style="position: relative; width: 100%;">
-                            <span class="material-symbols-outlined" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 1.25rem; pointer-events: none;">calendar_month</span>
+                    <div class="custom-date-range" style="width: 100%; max-width: 400px;">
+                        <div style="position: relative;">
+                            <span class="material-symbols-outlined" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 1.25rem; pointer-events: none;">calendar_month</span>
                             <input type="text" id="date-range-picker" readonly 
                                 placeholder="เลือกช่วงเวลา..."
-                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 1px solid #e2e8f0; border-radius: 1rem; font-family: 'Kanit', sans-serif; font-size: 0.95rem; color:#1e293b; outline: none; background: white; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s;">
+                                style="width: 100%; padding: 0.875rem 1rem 0.875rem 3rem; border: 1.5px solid #e2e8f0; border-radius: 1.25rem; font-family: 'Kanit', sans-serif; font-size: 1rem; color:#1e293b; outline: none; background: white; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s;">
                         </div>
                     </div>
                 </div>
 
-                ${generateChartSVG(AppState.dashboardPeriod, AppState.selectedDate)}
+                ${generateChartSVG(AppState.dashboardPeriod, AppState.selectedDate, true)}
                 
-                <div class="chart-legend" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                    <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #fbbf24; border-radius: 2px;"></div>
-                        <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">ทิคเก็ตเปิดใหม่</span>
+                <div class="chart-legend" style="display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap; padding-top: 1rem; border-top: 1px solid #f1f5f9;">
+                    <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="chart-legend-color" style="width: 1.25rem; height: 1.25rem; background: #fbbf24; border-radius: 4px;"></div>
+                        <span class="chart-legend-text" style="font-size: 0.9rem; font-weight: 600; color: #475569;">ทิคเก็ตเปิดใหม่</span>
                     </div>
-                    <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #cbd5e1; border-radius: 2px;"></div>
-                        <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนที่เสร็จสิ้น</span>
+                    <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="chart-legend-color" style="width: 1.25rem; height: 1.25rem; background: #cbd5e1; border-radius: 4px;"></div>
+                        <span class="chart-legend-text" style="font-size: 0.9rem; font-weight: 600; color: #475569;">จำนวนที่เสร็จสิ้น</span>
                     </div>
-                    <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div class="chart-legend-color" style="width: 1rem; height: 1rem; background: #f43f5e; border-radius: 2px;"></div>
-                        <span class="chart-legend-text" style="font-size: 0.8rem; color: #475569;">จำนวนที่ค้าง</span>
+                    <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="chart-legend-color" style="width: 1.25rem; height: 1.25rem; background: #f43f5e; border-radius: 4px;"></div>
+                        <span class="chart-legend-text" style="font-size: 0.9rem; font-weight: 600; color: #475569;">จำนวนที่ค้าง</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Risk Area Map Section (New) -->
-            <div class="chart-card" style="padding: 1rem;">
-                <div style="margin-bottom: 1rem; padding: 0.5rem;">
+            <!-- Risk Area Map -->
+            <div class="chart-card col-span-6" style="padding: 1.5rem;">
+                <div style="margin-bottom: 1.25rem;">
                     <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
                         <span class="material-symbols-outlined" style="color: var(--primary);">map</span>
                         แผนที่จุดเกิดเหตุอัจฉริยะ (Garden Maps)
                     </h2>
-                    <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">แสดงตำแหน่งพันธุ์ไม้ที่มีปัญหาตามช่วงเวลาที่เลือก</p>
+                    <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">แสดงตำแหน่งพันธุ์ไม้ที่มีปัญหาตามช่วงเวลาที่เลือก</p>
                 </div>
-                <div id="dashboard-map" style="height: 300px; width: 100%; border-radius: 1rem; border: 1px solid #e2e8f0; z-index: 1;"></div>
+                <div id="dashboard-map" style="height: 380px; width: 100%; border-radius: 1.25rem; border: 1px solid #e2e8f0; z-index: 1;"></div>
             </div>
 
-            <!-- Risk Area Statistics Section (New) -->
-            ${renderRiskHotspotsSection(AppState.dashboardPeriod, AppState.selectedDate)}
+            <!-- Risk Area Statistics -->
+            <div class="chart-card col-span-6">
+                ${renderRiskHotspotsSection(AppState.dashboardPeriod, AppState.selectedDate, true)}
+            </div>
 
-            <!-- Donut Chart Card (Dynamic) -->
-            <div class="col-span-2">
+            <!-- Fallen Trees Section -->
+            <div class="chart-card col-span-12">
                 ${renderFallenTreesSection(AppState.dashboardPeriod, AppState.selectedDate)}
             </div>
         </div>
@@ -783,10 +784,10 @@ function getChartData(period, dateStr) {
     return data;
 }
 
-function generateChartSVG(period, dateStr) {
+function generateChartSVG(period, dateStr, isLarge = false) {
     const data = getChartData(period, dateStr);
-    const height = 220;
-    const width = 340;
+    const height = isLarge ? 320 : 220;
+    const width = isLarge ? 600 : 340;
     const paddingTop = 20;
     const paddingBottom = 30;
     const paddingLeft = 10;
@@ -802,7 +803,7 @@ function generateChartSVG(period, dateStr) {
     const itemWidth = availableWidth / itemCount;
 
     // 3 Bars: New, Pending, Completed
-    const barGroupWidth = itemWidth * 0.8;
+    const barGroupWidth = isLarge ? Math.min(itemWidth * 0.9, 60) : itemWidth * 0.8;
     const singleBarWidth = (barGroupWidth / 3) - 1;
     const gap = (itemWidth - barGroupWidth) / 2;
 
@@ -823,21 +824,21 @@ function generateChartSVG(period, dateStr) {
         // 1. New (Yellow)
         const h1 = (data.series.new[i] / maxVal) * chartHeight;
         const y1 = height - paddingBottom - h1;
-        if (h1 > 0) svgContent += `<rect x="${xBase}" y="${y1}" width="${singleBarWidth}" height="${h1}" fill="#fbbf24" rx="2" />`;
+        if (h1 > 0) svgContent += `<rect x="${xBase}" y="${y1}" width="${singleBarWidth}" height="${h1}" fill="#fbbf24" rx="${isLarge ? 4 : 2}" />`;
 
         // 2. Completed (Gray)
         const h3 = (data.series.completed[i] / maxVal) * chartHeight;
         const y3 = height - paddingBottom - h3;
-        if (h3 > 0) svgContent += `<rect x="${xBase + singleBarWidth + 1}" y="${y3}" width="${singleBarWidth}" height="${h3}" fill="#cbd5e1" rx="2" />`;
+        if (h3 > 0) svgContent += `<rect x="${xBase + singleBarWidth + 1}" y="${y3}" width="${singleBarWidth}" height="${h3}" fill="#cbd5e1" rx="${isLarge ? 4 : 2}" />`;
 
         // 3. Pending (Red)
         const h2 = (data.series.pending[i] / maxVal) * chartHeight;
         const y2 = height - paddingBottom - h2;
-        if (h2 > 0) svgContent += `<rect x="${xBase + (singleBarWidth + 1) * 2}" y="${y2}" width="${singleBarWidth}" height="${h2}" fill="#f43f5e" rx="2" />`;
+        if (h2 > 0) svgContent += `<rect x="${xBase + (singleBarWidth + 1) * 2}" y="${y2}" width="${singleBarWidth}" height="${h2}" fill="#f43f5e" rx="${isLarge ? 4 : 2}" />`;
 
         // Label
         if (label) {
-            svgContent += `<text x="${xBase + barGroupWidth / 2}" y="${height - 10}" font-size="9" fill="#94a3b8" text-anchor="middle" font-family="sans-serif">${label}</text>`;
+            svgContent += `<text x="${xBase + barGroupWidth / 2}" y="${height - 10}" font-size="${isLarge ? 11 : 9}" fill="#94a3b8" text-anchor="middle" font-family="sans-serif">${label}</text>`;
         }
     });
 
