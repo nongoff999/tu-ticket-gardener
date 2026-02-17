@@ -10,7 +10,8 @@ const AppState = {
     selectedTicket: null,
     isDrawerOpen: false,
     selectedDate: new Date().toISOString().split('T')[0], // Default to today
-    selectedReport: null
+    selectedReport: null,
+    currentFilter: 'all'
 };
 
 // Initialize App
@@ -875,25 +876,8 @@ function renderMonitor() {
 
     document.getElementById('page-title').textContent = 'GARDEN MONITOR';
 
-    const urgentCount = MOCK_DATA.tickets.filter(t => t.priority === 'urgent').length;
-    const normalCount = MOCK_DATA.tickets.filter(t => t.priority === 'normal').length;
-
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Summary Cards -->
-        <div class="summary-cards">
-            <div class="summary-card urgent">
-                <p class="summary-card-label">ทิคเก็ตเร่งด่วน</p>
-                <p class="summary-card-value">${urgentCount}</p>
-                <span class="material-symbols-outlined summary-card-icon">notifications</span>
-            </div>
-            <div class="summary-card normal">
-                <p class="summary-card-label">ทิคเก็ตปกติ</p>
-                <p class="summary-card-value">${normalCount}</p>
-                <span class="material-symbols-outlined summary-card-icon">confirmation_number</span>
-            </div>
-        </div>
-
         <!-- Search -->
         <div class="search-box">
             <span class="material-symbols-outlined icon">search</span>
@@ -902,10 +886,9 @@ function renderMonitor() {
 
         <!-- Filter Tabs -->
         <div class="filter-tabs" id="filter-tabs">
-            <button class="filter-tab active" data-filter="all">ทั้งหมด</button>
-            <button class="filter-tab" data-filter="new">ทิคเก็ตใหม่</button>
-            <button class="filter-tab" data-filter="inProgress">ระหว่างดำเนินการ</button>
-            <button class="filter-tab" data-filter="completed">เสร็จสิ้น</button>
+            <button class="filter-tab active" data-filter="all">ทิคเก็ตทั้งหมด</button>
+            <button class="filter-tab" data-filter="urgent">ทิคเก็ตเร่งด่วน</button>
+            <button class="filter-tab" data-filter="not-urgent">ทิคเก็ตไม่เร่งด่วน</button>
         </div>
 
         <!-- Ticket List -->
@@ -927,18 +910,19 @@ function renderTicketList() {
 
     document.getElementById('page-title').textContent = 'TICKET LISTS';
 
-    const urgentCount = MOCK_DATA.tickets.filter(t => t.priority === 'urgent').length;
-    const normalCount = MOCK_DATA.tickets.filter(t => t.priority === 'normal').length;
-
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Summary Cards -->
-        <div class="summary-cards">
-            <div class="summary-card urgent">
-                <p class="summary-card-label">ทิคเก็ตเร่งด่วน</p>
-                <p class="summary-card-value">${urgentCount}</p>
-                <span class="material-symbols-outlined summary-card-icon">notifications_active</span>
-            </div>
+        <!-- Search -->
+        <div class="search-box">
+            <span class="material-symbols-outlined icon">search</span>
+            <input type="text" placeholder="ค้นหาทิคเก็ต..." id="search-input">
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs" id="filter-tabs">
+            <button class="filter-tab active" data-filter="all">ทิคเก็ตทั้งหมด</button>
+            <button class="filter-tab" data-filter="urgent">ทิคเก็ตเร่งด่วน</button>
+            <button class="filter-tab" data-filter="not-urgent">ทิคเก็ตไม่เร่งด่วน</button>
         </div>
 
         <!-- Ticket Count -->
@@ -957,6 +941,9 @@ function renderTicketList() {
             <span class="material-symbols-outlined" style="font-size: 1.75rem;">add</span>
         </button>
     `;
+
+    initFilterTabs();
+    initSearch();
 }
 
 function renderTicketDetail(params) {
@@ -1059,7 +1046,7 @@ function renderTicketDetail(params) {
                 ` : ''}
                 ${ticket.circumference && ticket.circumference != 0 ? `
                 <div class="detail-info-item">
-                    <span class="detail-info-label">เส้นรอบวง :</span>
+                    <span class="detail-info-label">ขนาดลำต้น :</span>
                     <span class="detail-info-value">${ticket.circumference} นิ้ว</span>
                 </div>
                 ` : ''}
@@ -1175,7 +1162,7 @@ function renderAddTicket() {
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">สถานที่เกิดเหตุ (พิมพ์ระบุ) <span class="required">*</span></label>
+                    <label class="form-label">สถานที่เกิดเหตุ (พิมพ์ระบุ)</label>
                     <input type="text" id="ticket-location-name" class="form-input" placeholder="เช่น หน้าตึกคณะ, ใกล้เสาไฟ, ข้างโรงอาหาร...">
                 </div>
 
@@ -1330,7 +1317,6 @@ function renderAddTicket() {
         const errors = [];
         if (!finalDescription) errors.push('รายละเอียด (Ticket Description)');
         if (!zoneId) errors.push('โซนพื้นที่');
-        if (!locationName) errors.push('สถานที่เกิดเหตุ (ระบุชัดเจน)');
         if (uploadedImages.length === 0) errors.push('รูปภาพ (อย่างน้อย 1 รูป)');
 
         if (errors.length > 0) {
@@ -1352,7 +1338,10 @@ function renderAddTicket() {
         else if (finalDescription === 'กิ่งหัก/ฉีก') damageType = 'broken';
         else if (finalDescription === 'ลำต้นเอียง') damageType = 'tilted';
 
-        const autoTitle = `${finalDescription} (${locationName})`;
+        const zoneShortName = zoneObj?.name.split(' (')[0]?.replace(/^โซน/, '') || '';
+        const damagePart = finalDescription || '';
+        const zonePart = zoneShortName ? `โซน${zoneShortName}` : '';
+        const autoTitle = [damagePart, zonePart].filter(Boolean).join(' ');
 
         const newTicket = {
             id: Math.floor(Math.random() * 100000), // Simple random ID
@@ -1391,11 +1380,71 @@ function renderAddTicket() {
 }
 
 function renderTimeline(ticket) {
-    // 1. Open Info
+    // Build timeline items, then reverse so latest is on top
+    const timelineItems = [];
+
+    // 1. Open Info (oldest)
     let openerName = MOCK_DATA.user?.name || 'ผู้ใช้';
     if (ticket.locationDetail && ticket.locationDetail.includes('Ticket By Name:')) {
         openerName = ticket.locationDetail.split('Ticket By Name: ')[1].split(' เมื่อ ')[0];
     }
+
+    timelineItems.push({
+        icon: 'notification_important',
+        gradient: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+        title: `เปิดทิคเก็ตใหม่โดย ${openerName}`,
+        detail: `${new Date(ticket.date).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${new Date(ticket.date).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}`,
+        order: 1
+    });
+
+    // 2. In Progress
+    if (ticket.startedAt || (ticket.assignees && ticket.assignees.length > 0)) {
+        timelineItems.push({
+            icon: 'settings_suggest',
+            gradient: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)',
+            title: 'เข้าดำเนินการโดย',
+            detail: `${ticket.assignees && ticket.assignees.length > 0 ? ticket.assignees.join(', ') : 'รอการมอบหมาย'}${ticket.startedAt ? `<br>เริ่มเมื่อ: ${new Date(ticket.startedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}`,
+            order: 2
+        });
+    }
+
+    // 3. Completed (newest)
+    if (ticket.completedAt) {
+        timelineItems.push({
+            icon: 'task_alt',
+            gradient: 'linear-gradient(135deg, #34d399 0%, #10b981 100%)',
+            title: 'งานเสร็จสิ้น',
+            detail: `เสร็จสิ้นโดยทีมผู้รับผิดชอบ<br>เมื่อ: ${new Date(ticket.completedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
+            order: 3
+        });
+    }
+
+    // Reverse to show latest first
+    timelineItems.reverse();
+
+    // Render: first item is full color, rest are gray
+    const html = timelineItems.map((item, index) => {
+        const isOld = index > 0; // Not the latest item
+        const gradientStyle = isOld ? 'background: #cbd5e1;' : `background: ${item.gradient};`;
+        const textStyle = isOld ? 'color: #94a3b8;' : 'color: var(--text-primary);';
+        const detailStyle = isOld ? 'color: #cbd5e1;' : 'color: var(--text-secondary);';
+
+        return `
+            <div style="display: flex; gap: 0.75rem; align-items: start;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; ${gradientStyle} display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <span class="material-symbols-outlined" style="font-size: 1.25rem; color: white;">${item.icon}</span>
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 500; ${textStyle} margin-bottom: 0.25rem;">
+                        ${item.title}
+                    </div>
+                    <div style="font-size: 0.8rem; ${detailStyle}">
+                        ${item.detail}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
 
     return `
     <div style="margin: 1.5rem 0; padding: 1rem; background: var(--surface); border-radius: 0.75rem; border-left: 4px solid var(--primary);">
@@ -1403,56 +1452,7 @@ function renderTimeline(ticket) {
             ไทม์ไลน์ความคืบหน้า
         </h3>
         <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <!-- Timeline Item: Open Ticket -->
-            <div style="display: flex; gap: 0.75rem; align-items: start;">
-                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <span class="material-symbols-outlined" style="font-size: 1.25rem; color: white;">notification_important</span>
-                </div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
-                        เปิดทิคเก็ตใหม่โดย ${openerName}
-                    </div>
-                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
-                        ${new Date(ticket.date).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${new Date(ticket.date).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                </div>
-            </div>
-            
-            ${ticket.startedAt || (ticket.assignees && ticket.assignees.length > 0) ? ` 
-            <!-- Timeline Item: In Progress -->
-            <div style="display: flex; gap: 0.75rem; align-items: start;">
-                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <span class="material-symbols-outlined" style="font-size: 1.25rem; color: white;">settings_suggest</span>
-                </div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
-                        เข้าดำเนินการโดย
-                    </div>
-                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
-                        ${ticket.assignees && ticket.assignees.length > 0 ? ticket.assignees.join(', ') : 'รอการมอบหมาย'}
-                        ${ticket.startedAt ? `<br>เริ่มเมื่อ: ${new Date(ticket.startedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}
-                    </div>
-                </div>
-            </div>
-            ` : ''}
-            
-            ${ticket.completedAt ? ` 
-            <!-- Timeline Item: Completed -->
-            <div style="display: flex; gap: 0.75rem; align-items: start;">
-                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #34d399 0%, #10b981 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <span class="material-symbols-outlined" style="font-size: 1.25rem; color: white;">task_alt</span>
-                </div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;">
-                        งานเสร็จสิ้น
-                    </div>
-                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
-                        เสร็จสิ้นโดยทีมผู้รับผิดชอบ
-                        <br>เมื่อ: ${new Date(ticket.completedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                </div>
-            </div>
-            ` : ''}
+            ${html}
         </div>
     </div>
     `;
@@ -1472,142 +1472,156 @@ function renderEditTicket(params) {
 
     document.getElementById('page-title').textContent = 'EDIT TICKET';
 
-    // Status Stepper Logic
-    // Default to 'inProgress' if 'new' (User request: "ตอนแก้ไขให้เปิดมา ที่status ระหว่างดำเนินการ รอไว้เลย")
-    const currentStatus = ticket.status === 'new' ? 'inProgress' : ticket.status;
+    // Determine current damage description for buttons
+    let currentDamageDesc = ticket.description || '';
+    const standardDescriptions = ['โค่นล้ม', 'กิ่งหัก/ฉีก', 'ลำต้นเอียง'];
+    const isOtherDesc = !standardDescriptions.includes(currentDamageDesc);
 
-    const isNew = currentStatus === 'new';
-    const isPro = currentStatus === 'inProgress';
-    const isComp = currentStatus === 'completed';
+    // Status: only inProgress or completed
+    const currentStatus = ticket.status === 'new' ? 'inProgress' : ticket.status;
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
         <div style="padding: 0 1rem;">
             <form id="ticket-form">
+                <!-- 1. Ticket Name (Read-only) -->
+                <div class="form-group">
+                    <label class="form-label">Ticket Name</label>
+                    <input type="text" id="edit-ticket-title" class="form-input" value="${ticket.title}" readonly style="background: #f8fafc; cursor: not-allowed; color: #64748b;">
+                </div>
+
+                <!-- 2. Ticket Status -->
                 <div class="form-group">
                     <label class="form-label">Ticket Status <span class="required">*</span></label>
-                    <div class="status-stepper">
-                        <!-- Step 1: New -->
-                        <div class="step-item ${isNew ? 'active' : 'passed disabled'}" data-value="new">
-                            <div class="step-circle">1</div>
-                            <div class="step-label">ทิคเก็ตใหม่</div>
-                        </div>
-                        <div class="step-line ${isPro || isComp ? 'active' : ''}"></div>
-                        
-                        <!-- Step 2: In Progress -->
-                        <div class="step-item ${isPro ? 'active' : (isComp ? 'passed disabled' : '')}" data-value="inProgress">
-                            <div class="step-circle">2</div>
-                            <div class="step-label">ระหว่างดำเนินการ</div>
-                        </div>
-                        <div class="step-line ${isComp ? 'active' : ''}"></div>
-                        
-                        <!-- Step 3: Completed -->
-                        <div class="step-item ${isComp ? 'active' : ''}" data-value="completed">
-                            <div class="step-circle">3</div>
-                            <div class="step-label">ปิดทิคเก็ต</div>
-                        </div>
-                    </div>
-                    <div style="text-align: center; font-size: 0.8rem; color: #64748b; margin-top: -0.5rem; margin-bottom: 1rem;">
-                        (สามารถกดเลือกสถานะได้ด้วยตัวเอง)
+                    <div class="priority-toggle">
+                        <button type="button" class="priority-btn status-btn ${currentStatus === 'inProgress' ? 'active' : ''}" data-value="inProgress" style="background: ${currentStatus === 'inProgress' ? '#8b5cf6' : ''}; color: ${currentStatus === 'inProgress' ? 'white' : ''};">ระหว่างดำเนินการ</button>
+                        <button type="button" class="priority-btn status-btn ${currentStatus === 'completed' ? 'active' : ''}" data-value="completed" style="background: ${currentStatus === 'completed' ? '#10b981' : ''}; color: ${currentStatus === 'completed' ? 'white' : ''};">ปิดทิคเก็ต</button>
                     </div>
                     <input type="hidden" id="edit-ticket-status" value="${currentStatus}">
                 </div>
 
+                <!-- 3. Priority -->
                 <div class="form-group">
                     <label class="form-label">ลำดับความสำคัญ <span class="required">*</span></label>
                     <div class="priority-toggle">
-                        <button type="button" class="priority-btn normal ${ticket.priority === 'normal' ? 'active' : ''}">ปกติ</button>
+                        <button type="button" class="priority-btn normal ${ticket.priority !== 'urgent' ? 'active' : ''}">ไม่เร่งด่วน</button>
                         <button type="button" class="priority-btn urgent ${ticket.priority === 'urgent' ? 'active' : ''}">เร่งด่วน</button>
                     </div>
                 </div>
 
+                <!-- 4. ลักษณะความเสียหาย -->
                 <div class="form-group">
-                    <label class="form-label">ผู้รับผิดชอบ</label>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <input type="text" id="edit-ticket-assignee" class="form-input" value="${ticket.assignee || ''}" placeholder="ระบุชื่อผู้รับผิดชอบ" style="flex: 1;">
-                        <button type="button" class="btn" onclick="document.getElementById('edit-ticket-assignee').value = ''" style="background: #fee2e2; color: #ef4444; width: auto; padding: 0 1rem;">
-                            <span class="material-symbols-outlined">close</span>
-                        </button>
+                    <label class="form-label">ลักษณะความเสียหาย <span class="required">*</span></label>
+                    <div class="description-toggle" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                        <button type="button" class="desc-btn ${currentDamageDesc === 'โค่นล้ม' ? 'active' : ''}" data-value="โค่นล้ม">โค่นล้ม</button>
+                        <button type="button" class="desc-btn ${currentDamageDesc === 'กิ่งหัก/ฉีก' ? 'active' : ''}" data-value="กิ่งหัก/ฉีก">กิ่งหัก/ฉีก</button>
+                        <button type="button" class="desc-btn ${currentDamageDesc === 'ลำต้นเอียง' ? 'active' : ''}" data-value="ลำต้นเอียง">ลำต้นเอียง</button>
+                        <button type="button" class="desc-btn ${isOtherDesc ? 'active' : ''}" data-value="other">อื่นๆ</button>
                     </div>
+                    <!-- 5. รายละเอียดเพิ่มเติม -->
+                    <textarea id="ticket-description-custom" class="form-textarea" rows="3" placeholder="ระบุรายละเอียดเพิ่มเติม..." style="display: ${isOtherDesc ? 'block' : 'none'};">${isOtherDesc ? currentDamageDesc : ''}</textarea>
                 </div>
 
+                <!-- 6. โซนพื้นที่ -->
                 <div class="form-group">
-                    <label class="form-label">Ticket Name <span class="required">*</span></label>
-                    <input type="text" id="edit-ticket-title" class="form-input" value="${ticket.title}">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Ticket Description</label>
-                    <textarea id="edit-ticket-description" class="form-textarea" rows="3">${ticket.description}</textarea>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Ticket Type</label>
-                    <div class="tags-container">
-                        ${MOCK_DATA.damageTypes.map(dt => `
-                            <button type="button" class="tag ${ticket.damageType === dt.id ? 'active' : ''}" data-value="${dt.id}">
-                                ${dt.name}
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">การดำเนินงาน</label>
-                    <select class="form-select" id="operation-select">
-                        ${MOCK_DATA.operations.map(op => `
-                            <option ${ticket.operation === op ? 'selected' : ''}>${op}</option>
-                        `).join('')}
-                        <option value="other" ${!MOCK_DATA.operations.includes(ticket.operation) && ticket.operation ? 'selected' : ''}>อื่นๆ โปรดระบุ</option>
+                    <label class="form-label">โซนพื้นที่ <span class="required">*</span></label>
+                    <select id="edit-ticket-zone" class="form-select">
+                        <option value="" disabled>เลือกโซน</option>
+                        ${MOCK_DATA.zones.map(z => `<option value="${z.id}" ${ticket.zone === z.id ? 'selected' : ''}>${z.name.split(' (')[0]}</option>`).join('')}
                     </select>
                 </div>
 
-                <div class="form-group" id="operation-other-container" style="display: ${!MOCK_DATA.operations.includes(ticket.operation) && ticket.operation ? 'block' : 'none'};">
-                    <label class="form-label">ระบุการดำเนินงาน</label>
-                    <input type="text" class="form-input" id="operation-other-input" value="${!MOCK_DATA.operations.includes(ticket.operation) ? ticket.operation : ''}" placeholder="โปรดระบุขั้นตอนการดำเนินงาน">
+                <!-- 7. สถานที่เกิดเหตุ -->
+                <div class="form-group">
+                    <label class="form-label">สถานที่เกิดเหตุ (พิมพ์ระบุ)</label>
+                    <input type="text" id="edit-ticket-locationDetail" class="form-input" value="${ticket.locationDetail || ''}" placeholder="เช่น หน้าตึกคณะ, ใกล้เสาไฟ, ข้างโรงอาหาร...">
                 </div>
 
+                <!-- 8. รูปภาพก่อนดำเนินการ (from ADD TICKET) -->
+                <div class="form-group">
+                    <label class="form-label">รูปภาพก่อนดำเนินการ <span class="required">*</span> <span class="image-count" id="before-image-count">(${ticket.images ? ticket.images.length : 0}/6)</span></label>
+                    <input type="file" id="image-input" accept="image/*" multiple style="display: none;">
+                    <div class="image-grid" id="image-grid">
+                        <div class="image-add" id="image-add-btn">
+                            <span class="material-symbols-outlined" style="font-size: 1.5rem;">add</span>
+                            <span class="label">เพิ่มรูป</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. ชนิดพันธุ์ต้นไม้ -->
                 <div class="form-group">
                     <label class="form-label">ชนิดพันธุ์ต้นไม้</label>
                     <select class="form-select" id="edit-ticket-treeType">
+                        <option value="-" ${!ticket.treeType || ticket.treeType === '-' ? 'selected' : ''}>-- ไม่ระบุ --</option>
                         ${MOCK_DATA.treeTypes.map(tt => `
                             <option ${ticket.treeType === tt ? 'selected' : ''}>${tt}</option>
                         `).join('')}
                     </select>
                 </div>
 
+                <!-- 10. ขนาดลำต้น (นิ้ว) -->
                 <div class="form-group">
-                    <label class="form-label text-center">เส้นรอบวง (นิ้ว)</label>
+                    <label class="form-label text-center">ขนาดลำต้น (นิ้ว)</label>
                     <div class="number-input" style="width: 100%;">
                         <button type="button" class="number-btn minus"><span class="material-symbols-outlined">remove</span></button>
-                        <input type="number" value="${ticket.circumference}" id="circumference">
-                        <button type="button" class="number-btn plus"><span class="material-symbols-outlined">add</span></button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label text-center">จำนวน</label>
-                    <div class="number-input" style="width: 100%;">
-                        <button type="button" class="number-btn minus"><span class="material-symbols-outlined">remove</span></button>
-                        <input type="number" value="${ticket.quantity}" id="quantity">
+                        <input type="number" value="${ticket.circumference || 0}" id="circumference">
                         <button type="button" class="number-btn plus"><span class="material-symbols-outlined">add</span></button>
                     </div>
                 </div>
 
+                <!-- 11. จำนวน(ต้น) -->
+                <div class="form-group">
+                    <label class="form-label text-center">จำนวน (ต้น)</label>
+                    <div class="number-input" style="width: 100%;">
+                        <button type="button" class="number-btn minus"><span class="material-symbols-outlined">remove</span></button>
+                        <input type="number" value="${ticket.quantity || 1}" id="quantity">
+                        <button type="button" class="number-btn plus"><span class="material-symbols-outlined">add</span></button>
+                    </div>
+                </div>
+
+                <!-- 12. ผลกระทบที่ได้รับ -->
                 <div class="form-group">
                     <label class="form-label">ผลกระทบที่ได้รับ</label>
-                    <input type="text" id="edit-ticket-impact" class="form-input" value="${ticket.impact}">
+                    <input type="text" id="edit-ticket-impact" class="form-input" value="${ticket.impact || ''}" placeholder="ระบุผลกระทบ เช่น ขวางถนน, เสียหายต่อรถยนต์...">
                 </div>
 
+                <!-- 13. การดำเนินงาน -->
                 <div class="form-group">
-                    <label class="form-label">สถานที่เกิดเหตุ (โซน)</label>
-                    <input type="text" id="edit-ticket-zoneName" class="form-input" value="${ticket.zoneName}">
+                    <label class="form-label">การดำเนินงาน</label>
+                    <select class="form-select" id="operation-select">
+                        <option value="-" ${!ticket.operation || ticket.operation === '-' ? 'selected' : ''}>-- ไม่ระบุ --</option>
+                        ${MOCK_DATA.operations.map(op => `
+                            <option ${ticket.operation === op ? 'selected' : ''}>${op}</option>
+                        `).join('')}
+                        <option value="other" ${ticket.operation && ticket.operation !== '-' && !MOCK_DATA.operations.includes(ticket.operation) ? 'selected' : ''}>อื่นๆ โปรดระบุ</option>
+                    </select>
                 </div>
 
+                <div class="form-group" id="operation-other-container" style="display: ${ticket.operation && ticket.operation !== '-' && !MOCK_DATA.operations.includes(ticket.operation) ? 'block' : 'none'};">
+                    <label class="form-label">ระบุการดำเนินงาน</label>
+                    <input type="text" class="form-input" id="operation-other-input" value="${ticket.operation && !MOCK_DATA.operations.includes(ticket.operation) && ticket.operation !== '-' ? ticket.operation : ''}" placeholder="โปรดระบุขั้นตอนการดำเนินงาน">
+                </div>
+
+                <!-- 14. รูปภาพระหว่างดำเนินการ -->
+                <div class="form-group">
+                    <label class="form-label">รูปภาพระหว่างดำเนินการ <span class="image-count" id="progress-image-count">(${ticket.progressImages ? ticket.progressImages.length : 0}/6)</span></label>
+                    <input type="file" id="progress-image-input" accept="image/*" multiple style="display: none;">
+                    <div class="image-grid" id="progress-image-grid">
+                        <div class="image-add" id="progress-image-add-btn">
+                            <span class="material-symbols-outlined" style="font-size: 1.5rem;">add</span>
+                            <span class="label">เพิ่มรูป</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 15. หมายเหตุ -->
                 <div class="form-group">
                     <label class="form-label">หมายเหตุ</label>
-                    <input type="text" id="edit-ticket-notes" class="form-input" value="${ticket.notes || ''}">
+                    <input type="text" id="edit-ticket-notes" class="form-input" value="${ticket.notes || ''}" placeholder="ระบุหมายเหตุเพิ่มเติม...">
                 </div>
 
+                <!-- 16. พิกัดสถานที่ (GPS) -->
                 <div class="form-group">
                     <label class="form-label">พิกัดสถานที่ (GPS)</label>
                     <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
@@ -1629,17 +1643,6 @@ function renderEditTicket(params) {
                     <input type="hidden" id="edit-ticket-lng" value="${ticket.lng || ''}">
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">รูปภาพ <span class="required">*</span> <span class="image-count">(${ticket.images.length}/6)</span></label>
-                    <input type="file" id="image-input" accept="image/*" multiple style="display: none;">
-                    <div class="image-grid" id="image-grid">
-                        <div class="image-add" id="image-add-btn">
-                            <span class="material-symbols-outlined" style="font-size: 1.5rem;">add</span>
-                    <span class="label">เพิ่มรูป</span>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="sticky-footer">
                     <button type="submit" class="btn btn-primary" style="width: 100%; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                         <span class="material-symbols-outlined">save</span>
@@ -1649,6 +1652,7 @@ function renderEditTicket(params) {
             </form>
             <div style="height: 1rem;"></div>
             
+            <!-- 17. Timeline (latest on top, oldest in gray) -->
             ${renderTimeline(ticket)}
             <div style="height: 6rem;"></div>
         </div>
@@ -1656,8 +1660,31 @@ function renderEditTicket(params) {
         <div class="safe-area-bottom"></div>
     `;
 
+    // Status toggle
+    const statusBtns = content.querySelectorAll('.status-btn');
+    const statusInput = content.querySelector('#edit-ticket-status');
+    statusBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            statusBtns.forEach(b => {
+                b.classList.remove('active');
+                b.style.background = '';
+                b.style.color = '';
+            });
+            this.classList.add('active');
+            const val = this.dataset.value;
+            statusInput.value = val;
+            if (val === 'inProgress') {
+                this.style.background = '#8b5cf6';
+                this.style.color = 'white';
+            } else {
+                this.style.background = '#10b981';
+                this.style.color = 'white';
+            }
+        });
+    });
+
     // Priority toggle
-    const priorityBtns = content.querySelectorAll('.priority-btn');
+    const priorityBtns = content.querySelectorAll('.priority-btn:not(.status-btn)');
     priorityBtns.forEach(btn => {
         btn.addEventListener('click', function () {
             priorityBtns.forEach(b => b.classList.remove('active'));
@@ -1665,95 +1692,19 @@ function renderEditTicket(params) {
         });
     });
 
-    // Status Stepper Logic
-    const stepper = content.querySelector('.status-stepper');
-    const statusInput = content.querySelector('#edit-ticket-status');
-    if (stepper) {
-        const steps = stepper.querySelectorAll('.step-item');
-        const lines = stepper.querySelectorAll('.step-line');
-
-        steps.forEach((step, index) => {
-            step.addEventListener('click', function () {
-                if (this.classList.contains('disabled')) return;
-
-                const newValue = this.dataset.value;
-                statusInput.value = newValue;
-
-                // Re-evaluate visuals based on selection, strictly preserving original 'locked' history
-                const originalStatus = ticket.status;
-
-                // User Request: "2 ไป 3 ได้ แต่ไป 1 ไม่ได้นะ มันผ่านไปแล้ว"
-                // Logic:
-                // If original is New: All enabled.
-                // If original is InProgress: New is locked. InProgress <-> Completed enabled.
-                // If original is Completed: New & InProgress locked. (Actually, if user edits a Completed ticket, can they go back to InProgress? Usually no, but user said "2 ไป 3 ได้". Maybe they mean during the *current edit* of a NEW ticket?)
-
-                // Wait, if I open a NEW ticket, it auto-jumps to InProgress.
-                // So originalStatus = 'new', currentStatus = 'inProgress'.
-                // User says: "Can go 2->3, but not 1".
-                // So even if original was New, once we are at 'InProgress' (which is default for edit), we shouldn't go back to New?
-                // The auto-jump logic set `currentStatus` to `inProgress`.
-                // So effectively, for Edit Ticket:
-                // - Step 1 (New) is ALWAYS disabled/locked because we are already "working on it".
-                // - We can only toggle between 2 (InProgress) and 3 (Completed).
-
-                // Exception: Unless we want to allow reverting a "Just Created" ticket back to New? 
-                // User said "มันผ่านไปแล้ว" (It's passed). So Step 1 is history.
-
-                steps.forEach(s => {
-                    const val = s.dataset.value;
-
-                    // Lock Step 1 (New) ALWAYS in Edit Mode (since we are auto-jumping to 2)
-                    // Lock Step 2 (InProgress) ONLY if original was Completed (Cannot reverse a closed ticket?) 
-                    // Wait, user said "2 ไป 3 ได้".
-                    // If original was Completed, is it locked?
-                    // "ระบบล็อคอัจฉริยะ" from previous turn.
-
-                    let isLocked = false;
-
-                    if (val === 'new') {
-                        isLocked = true; // Always lock New in Edit Mode
-                    } else if (val === 'inProgress') {
-                        // Lock InProgress only if original was Completed?
-                        if (originalStatus === 'completed') {
-                            isLocked = true;
-                        }
-                    }
-
-                    let cls = 'step-item';
-                    if (isLocked) cls += ' disabled';
-
-                    // Visual state based on CURRENT SELECTION (newValue)
-                    if (val === newValue) {
-                        cls += ' active';
-                    } else if (
-                        (newValue === 'inProgress' && val === 'new') ||
-                        (newValue === 'completed' && (val === 'new' || val === 'inProgress'))
-                    ) {
-                        cls += ' passed';
-                    }
-
-                    s.className = cls;
-                });
-
-                // Update lines
-                lines.forEach((l) => l.classList.remove('active'));
-                if (newValue === 'inProgress' || newValue === 'completed') {
-                    lines[0].classList.add('active');
-                }
-                if (newValue === 'completed') {
-                    lines[1].classList.add('active');
-                }
-            });
-        });
-    }
-
-    // Tags
-    const tags = content.querySelectorAll('.tag');
-    tags.forEach(tag => {
-        tag.addEventListener('click', function () {
-            tags.forEach(t => t.classList.remove('active'));
+    // Description toggle - Damage buttons
+    const descBtns = content.querySelectorAll('.desc-btn');
+    const customDesc = content.querySelector('#ticket-description-custom');
+    descBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            descBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
+            if (this.dataset.value === 'other') {
+                customDesc.style.display = 'block';
+                customDesc.focus();
+            } else {
+                customDesc.style.display = 'none';
+            }
         });
     });
 
@@ -1775,22 +1726,90 @@ function renderEditTicket(params) {
     // Operation Select Change
     const opSelect = content.querySelector('#operation-select');
     const opOtherContainer = content.querySelector('#operation-other-container');
+    if (opSelect) {
+        opSelect.addEventListener('change', function () {
+            if (this.value === 'other') {
+                opOtherContainer.style.display = 'block';
+                setTimeout(() => {
+                    content.querySelector('#operation-other-input').focus();
+                }, 100);
+            } else {
+                opOtherContainer.style.display = 'none';
+            }
+        });
+    }
 
-    opSelect.addEventListener('change', function () {
-        if (this.value === 'other') {
-            opOtherContainer.style.display = 'block';
-            setTimeout(() => {
-                content.querySelector('#operation-other-input').focus();
-            }, 100);
-        } else {
-            opOtherContainer.style.display = 'none';
-        }
-    });
-
-    // Image upload functionality with existing images
+    // Image upload - Before (from ADD TICKET)
     const uploadedImages = [];
     const MAX_IMAGES = 6;
     initImageUpload(content, uploadedImages, MAX_IMAGES, ticket.images);
+
+    // Image upload - Progress (new upload)
+    const progressImages = [];
+    const progressGrid = content.querySelector('#progress-image-grid');
+    const progressInput = content.querySelector('#progress-image-input');
+    const progressAddBtn = content.querySelector('#progress-image-add-btn');
+
+    // Initialize progress images with existing ones
+    if (ticket.progressImages && ticket.progressImages.length > 0) {
+        ticket.progressImages.forEach(imgUrl => {
+            progressImages.push({ url: imgUrl, file: null });
+        });
+    }
+
+    function updateProgressImageGrid() {
+        const countEl = content.querySelector('#progress-image-count');
+        if (countEl) countEl.textContent = `(${progressImages.length}/6)`;
+
+        progressGrid.innerHTML = '';
+        progressImages.forEach((img, index) => {
+            progressGrid.innerHTML += `
+                <div class="image-preview" style="position: relative;">
+                    <img src="${img.url}" alt="Progress image ${index + 1}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0.5rem;">
+                    <button type="button" class="image-remove-btn" onclick="removeProgressImage(${index})" style="position: absolute; top: 4px; right: 4px; background: rgba(239,68,68,0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                        <span class="material-symbols-outlined" style="font-size: 0.9rem;">close</span>
+                    </button>
+                </div>
+            `;
+        });
+        if (progressImages.length < 6) {
+            progressGrid.innerHTML += `
+                <div class="image-add" id="progress-image-add-btn-inner">
+                    <span class="material-symbols-outlined" style="font-size: 1.5rem;">add</span>
+                    <span class="label">เพิ่มรูป</span>
+                </div>
+            `;
+            const innerAddBtn = progressGrid.querySelector('#progress-image-add-btn-inner');
+            if (innerAddBtn) {
+                innerAddBtn.addEventListener('click', () => progressInput.click());
+            }
+        }
+    }
+
+    window.removeProgressImage = function (index) {
+        progressImages.splice(index, 1);
+        updateProgressImageGrid();
+    };
+
+    if (progressAddBtn) {
+        progressAddBtn.addEventListener('click', () => progressInput.click());
+    }
+
+    progressInput.addEventListener('change', function (e) {
+        const files = Array.from(e.target.files);
+        files.forEach(file => {
+            if (progressImages.length >= 6) return;
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                progressImages.push({ url: event.target.result, file: file });
+                updateProgressImageGrid();
+            };
+            reader.readAsDataURL(file);
+        });
+        e.target.value = '';
+    });
+
+    updateProgressImageGrid();
 
     // GPS Location Functionality for Edit
     const getLocationBtn = content.querySelector('#get-location-btn');
@@ -1817,7 +1836,7 @@ function renderEditTicket(params) {
                     latInput.value = lat;
                     lngInput.value = lng;
                     coordsDisplay.value = `Lat: ${lat}, Long: ${lng}`;
-                    coordsDisplay.style.color = '#10B981'; // Green
+                    coordsDisplay.style.color = '#10B981';
                     coordsDisplay.style.fontWeight = '700';
                     coordsDisplay.style.borderColor = '#10B981';
 
@@ -1853,25 +1872,38 @@ function renderEditTicket(params) {
     form.addEventListener('submit', function (e) {
         e.preventDefault();
         if (uploadedImages.length === 0) {
-            showPopup('ข้อมูลไม่ครบถ้วน', 'กรุณาเพิ่มรูปภาพอย่างน้อย 1 รูป', 'error');
+            showPopup('ข้อมูลไม่ครบถ้วน', 'กรุณาเพิ่มรูปภาพก่อนดำเนินการอย่างน้อย 1 รูป', 'error');
             return;
         }
 
-        // Gather values using IDs to prevent index mapping issues
-        // Gather values using IDs to prevent index mapping issues
+        // Get description
+        const activeDescBtn = content.querySelector('.desc-btn.active');
+        let finalDescription = '';
+        if (activeDescBtn) {
+            if (activeDescBtn.dataset.value === 'other') {
+                finalDescription = content.querySelector('#ticket-description-custom').value.trim();
+            } else {
+                finalDescription = activeDescBtn.dataset.value;
+            }
+        }
+
+        // Map description to damage type
+        let damageType = 'other';
+        if (finalDescription === 'โค่นล้ม') damageType = 'fallen';
+        else if (finalDescription === 'กิ่งหัก/ฉีก') damageType = 'broken';
+        else if (finalDescription === 'ลำต้นเอียง') damageType = 'tilted';
+
         const status = form.querySelector('#edit-ticket-status').value;
         const isUrgent = form.querySelector('.priority-btn.urgent').classList.contains('active');
-        const title = document.getElementById('edit-ticket-title').value.trim();
-        const description = document.getElementById('edit-ticket-description').value.trim();
-        const resultImpact = document.getElementById('edit-ticket-impact').value.trim();
-        const zoneName = document.getElementById('edit-ticket-zoneName').value.trim();
-        const notes = document.getElementById('edit-ticket-notes').value.trim();
+        const locationDetail = document.getElementById('edit-ticket-locationDetail').value.trim();
+        const zoneId = document.getElementById('edit-ticket-zone').value;
         const lat = document.getElementById('edit-ticket-lat').value;
         const lng = document.getElementById('edit-ticket-lng').value;
-
-        // Tags (Damage Type)
-        const activeTag = form.querySelector('.tag.active');
-        const damageTypeId = activeTag ? activeTag.dataset.value : ticket.damageType;
+        const treeType = document.getElementById('edit-ticket-treeType').value;
+        const circumference = parseInt(document.getElementById('circumference').value) || 0;
+        const quantity = parseInt(document.getElementById('quantity').value) || 1;
+        const resultImpact = document.getElementById('edit-ticket-impact').value.trim();
+        const notes = document.getElementById('edit-ticket-notes').value.trim();
 
         // Operation
         const opSelectInput = document.getElementById('operation-select');
@@ -1880,14 +1912,18 @@ function renderEditTicket(params) {
             operation = document.getElementById('operation-other-input').value.trim();
         }
 
-        // Tree Type
-        const treeType = document.getElementById('edit-ticket-treeType').value;
+        // Rebuild zone name
+        const zoneObj = MOCK_DATA.zones.find(z => z.id === zoneId);
+        const zoneShortName = zoneObj?.name.split(' (')[0]?.replace(/^โซน/, '') || '';
+        const zoneName = locationDetail ? `${zoneObj?.name.split(' (')[0] || ''} - ${locationDetail}` : (zoneObj?.name.split(' (')[0] || ticket.zoneName);
 
-        // Numbers
-        const circumference = parseInt(document.getElementById('circumference').value) || 0;
-        const quantity = parseInt(document.getElementById('quantity').value) || 1;
+        // Auto title: "ต้นนนทรี โค่นล้ม โซนหอพัก"
+        const treePart = treeType && treeType !== '-' ? treeType : '';
+        const damagePart = finalDescription || '';
+        const zonePart = zoneShortName ? `โซน${zoneShortName}` : '';
+        const autoTitle = [treePart, damagePart, zonePart].filter(Boolean).join(' ');
 
-        // Update Timestamps based on Status Change
+        // Update Timestamps
         const oldStatus = ticket.status;
         const newStatus = status;
         const nowStr = new Date().toISOString();
@@ -1898,7 +1934,7 @@ function renderEditTicket(params) {
             ticket.startedBy = userName;
         } else if (newStatus === 'completed') {
             if (oldStatus === 'new' || !ticket.startedAt) {
-                ticket.startedAt = nowStr; // Assume started same time if jumped
+                ticket.startedAt = nowStr;
                 ticket.startedBy = userName;
             }
             if (oldStatus !== 'completed' || !ticket.completedAt) {
@@ -1908,23 +1944,25 @@ function renderEditTicket(params) {
         }
 
         // Update Ticket Object
+        ticket.title = autoTitle;
+        ticket.description = finalDescription;
         ticket.status = status;
-        ticket.assignee = document.getElementById('edit-ticket-assignee').value.trim();
         ticket.priority = isUrgent ? 'urgent' : 'normal';
-        ticket.title = title;
-        ticket.description = description;
-        ticket.category = damageTypeId;
-        ticket.damageType = damageTypeId;
+        ticket.category = damageType;
+        ticket.damageType = damageType;
+        ticket.zone = zoneId;
+        ticket.zoneName = zoneName;
+        ticket.locationDetail = locationDetail;
         ticket.operation = operation;
         ticket.treeType = treeType;
         ticket.circumference = circumference;
         ticket.quantity = quantity;
         ticket.impact = resultImpact;
-        ticket.zoneName = zoneName;
         ticket.notes = notes;
         ticket.lat = lat;
         ticket.lng = lng;
         ticket.images = uploadedImages.map(img => img.url);
+        ticket.progressImages = progressImages.map(img => img.url);
 
         // Update in Array (Reference is same, but good to be explicit if replacing object)
         // Since we modified properies of `ticket` which is a reference to the object in MOCK_DATA array, 
@@ -2017,13 +2055,20 @@ function filterTickets(filter) {
 
     let filtered = MOCK_DATA.tickets;
 
-    if (filter !== 'all') {
+    if (filter === 'urgent') {
+        filtered = MOCK_DATA.tickets.filter(t => t.priority === 'urgent');
+    } else if (filter === 'not-urgent') {
+        filtered = MOCK_DATA.tickets.filter(t => t.priority !== 'urgent');
+    } else if (filter !== 'all') {
         if (['new', 'inProgress', 'completed', 'pending'].includes(filter)) {
             filtered = MOCK_DATA.tickets.filter(t => t.status === filter);
         } else {
             filtered = MOCK_DATA.tickets.filter(t => t.category === filter);
         }
     }
+
+    // Store current filter for search integration
+    AppState.currentFilter = filter;
 
     const isMonitor = AppState.currentPage === 'monitor';
     ticketList.innerHTML = filtered.map(ticket =>
@@ -2040,11 +2085,35 @@ function initSearch() {
         const ticketList = document.getElementById('ticket-list');
         if (!ticketList) return;
 
-        const filtered = MOCK_DATA.tickets.filter(t =>
+        // Apply current filter first
+        let base = MOCK_DATA.tickets;
+        const currentFilter = AppState.currentFilter || 'all';
+        if (currentFilter === 'urgent') {
+            base = base.filter(t => t.priority === 'urgent');
+        } else if (currentFilter === 'not-urgent') {
+            base = base.filter(t => t.priority !== 'urgent');
+        } else if (currentFilter !== 'all') {
+            if (['new', 'inProgress', 'completed', 'pending'].includes(currentFilter)) {
+                base = base.filter(t => t.status === currentFilter);
+            } else {
+                base = base.filter(t => t.category === currentFilter);
+            }
+        }
+
+        // Then search across all fields
+        const filtered = base.filter(t =>
             t.title.toLowerCase().includes(query) ||
             t.description.toLowerCase().includes(query) ||
             t.zoneName.toLowerCase().includes(query) ||
-            t.id.toString().includes(query)
+            t.id.toString().includes(query) ||
+            (t.treeType && t.treeType.toLowerCase().includes(query)) ||
+            (t.status && getStatusLabel(t.status).toLowerCase().includes(query)) ||
+            (t.priority === 'urgent' && 'เร่งด่วน'.includes(query)) ||
+            (t.priority !== 'urgent' && 'ปกติ'.includes(query)) ||
+            (t.operation && t.operation.toLowerCase().includes(query)) ||
+            (t.assignees && t.assignees.join(' ').toLowerCase().includes(query)) ||
+            (t.locationDetail && t.locationDetail.toLowerCase().includes(query)) ||
+            (t.notes && t.notes.toLowerCase().includes(query))
         );
 
         const isMonitor = AppState.currentPage === 'monitor';
