@@ -256,7 +256,7 @@ function initDrawer() {
 function openDrawer() {
     // If desktop (min-width 1024), toggle collapse instead of opening overlay
     if (window.innerWidth >= 1024) {
-        document.querySelector('.app-container').classList.toggle('sidebar-collapsed');
+        document.body.classList.toggle('sidebar-collapsed');
         return;
     }
 
@@ -270,7 +270,7 @@ function openDrawer() {
 function closeDrawer() {
     // If desktop (min-width 1024), collapse the sidebar instead of closing overlay
     if (window.innerWidth >= 1024) {
-        document.querySelector('.app-container').classList.add('sidebar-collapsed');
+        document.body.classList.add('sidebar-collapsed');
         return;
     }
 
