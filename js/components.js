@@ -25,7 +25,7 @@ const Components = {
                 <div class="tli-info">
                     <div class="tli-id">#${ticket.id}</div>
                     <h3 class="tli-title">${ticket.title}</h3>
-                    <p class="tli-desc">${ticket.description || ''}</p>
+                    <p class="tli-desc">${ticket.damageType !== 'other' ? getDamageTypeName(ticket.damageType) : (ticket.description || '')}</p>
                 </div>
 
                 <!-- Right: Meta -->

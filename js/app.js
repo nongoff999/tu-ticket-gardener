@@ -1436,11 +1436,11 @@ function renderTicketDetail(params) {
 
             <div class="detail-description">
                 <span class="detail-info-label">Ticket Description :</span>
-                <p style="margin-top: 0.5rem;">${ticket.description}</p>
+                <p style="margin-top: 0.5rem;">${ticket.damageType !== 'other' ? getDamageTypeName(ticket.damageType) : ticket.description}</p>
             </div>
 
             <div class="detail-info-grid" style="margin-top: 1.5rem;">
-                ${ticket.operation && ticket.operation !== '-' ? `
+                ${ticket.operation && ticket.operation !== '-' && ticket.operation.trim() !== '' ? `
                 <div class="detail-info-item">
                     <span class="detail-info-label">การดำเนินงาน :</span>
                     <span class="detail-info-value">${ticket.operation}</span>
@@ -1456,25 +1456,25 @@ function renderTicketDetail(params) {
                     <span class="detail-info-value">${ticket.locationDetail}</span>
                 </div>
                 ` : ''}
-                ${ticket.treeType && ticket.treeType !== '-' ? `
+                ${ticket.treeType && ticket.treeType !== '-' && ticket.treeType.trim() !== '' ? `
                 <div class="detail-info-item">
                     <span class="detail-info-label">ชนิดพันธุ์ไม้ :</span>
                     <span class="detail-info-value">${ticket.treeType}</span>
                 </div>
                 ` : ''}
-                ${ticket.circumference && ticket.circumference != 0 ? `
+                ${ticket.circumference && ticket.circumference != 0 && ticket.circumference !== '-' ? `
                 <div class="detail-info-item">
                     <span class="detail-info-label">ขนาดลำต้น :</span>
                     <span class="detail-info-value">${ticket.circumference} นิ้ว</span>
                 </div>
                 ` : ''}
-                ${ticket.quantity ? `
+                ${ticket.quantity && ticket.quantity != 0 && ticket.quantity !== '-' ? `
                 <div class="detail-info-item">
                     <span class="detail-info-label">จำนวน :</span>
                     <span class="detail-info-value">${ticket.quantity} ต้น</span>
                 </div>
                 ` : ''}
-                ${ticket.notes ? `
+                ${ticket.notes && ticket.notes !== '-' && ticket.notes.trim() !== '' ? `
                 <div class="detail-info-item full">
                     <span class="detail-info-label">หมายเหตุ :</span>
                     <span class="detail-info-value">${ticket.notes}</span>
