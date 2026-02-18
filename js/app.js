@@ -1060,6 +1060,16 @@ function renderTicketList() {
                 <span class="material-symbols-outlined icon">search</span>
                 <input type="text" placeholder="ค้นหาทิคเก็ต..." id="search-input">
             </div>
+
+            <div class="view-toggle">
+                <button class="view-toggle-btn" id="view-grid-btn">
+                    <span class="material-symbols-outlined">grid_view</span>
+                </button>
+                <button class="view-toggle-btn active" id="view-list-btn">
+                    <span class="material-symbols-outlined">view_list</span>
+                </button>
+            </div>
+
             <button id="filter-toggle-btn">
                 <span class="material-symbols-outlined" style="font-size: 1.5rem;">tune</span>
             </button>
@@ -1076,7 +1086,7 @@ function renderTicketList() {
                         <button class="modern-filter-chip active" data-group="status" data-value="all">ทั้งหมด</button>
                         <button class="modern-filter-chip" data-group="status" data-value="new">
                             <span class="material-symbols-outlined" style="font-size: 1.1rem;">new_releases</span>
-                            ใหม่
+                            ทิคเก็ตใหม่
                         </button>
                         <button class="modern-filter-chip" data-group="status" data-value="inProgress">
                             <span class="material-symbols-outlined" style="font-size: 1.1rem;">hourglass_top</span>
@@ -1108,21 +1118,16 @@ function renderTicketList() {
             </div>
         </div>
 
-        <!-- Ticket Count -->
         <div style="padding: 0 1.5rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="list-count"></p>
+            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="ticket-list-count"></span>
         </div>
 
-        <!-- Ticket List -->
         <div class="ticket-list pb-safe" id="ticket-list">
-            <!-- Content rendered by JS -->
+            <!-- Content -->
         </div>
-
-        <!-- Floating Action Button -->
-        <button class="fab-btn" onclick="router.navigate('/add')">
-            <span class="fab-text">Add Ticket</span>
-            <span class="material-symbols-outlined" style="font-size: 1.75rem;">add</span>
-        </button>
+        
+        <!-- Pagination -->
+        <div id="pagination-container" style="padding-bottom: 2rem;"></div>
     `;
 
     // --- Logic ---
@@ -1131,9 +1136,9 @@ function renderTicketList() {
     const statusFilters = document.getElementById('status-filters');
     const priorityFilters = document.getElementById('priority-filters');
     const searchInput = document.getElementById('search-input');
-    const countLabel = document.getElementById('list-count');
+    const countLabel = document.getElementById('ticket-list-count');
 
-    // Toggle Panel Visibility
+    // Toggle Panel
     filterToggleBtn.addEventListener('click', () => {
         const isOpen = filterPanel.classList.contains('open');
         if (isOpen) {
@@ -1146,73 +1151,94 @@ function renderTicketList() {
     });
 
     // Default Filters
-    let currentStatus = 'all'; // Default to ALL for general list
+    if (!AppState.ticketViewMode) AppState.ticketViewMode = 'list';
+
+    // Check if variables are already declared in this scope? (They are let/const)
+    // We are replacing the whole function body essentially from earlier view.
+    // Assuming this replaces existing vars.
+    let currentStatus = 'all';
     let currentPriority = 'all';
 
     function applyFilters() {
         const query = searchInput.value.toLowerCase().trim();
         let filtered = MOCK_DATA.tickets;
 
-        // 1. Status Filter
-        if (currentStatus !== 'all') {
-            filtered = filtered.filter(t => t.status === currentStatus);
-        }
+        if (currentStatus !== 'all') filtered = filtered.filter(t => t.status === currentStatus);
 
-        // 2. Priority Filter
-        if (currentPriority === 'urgent') {
-            filtered = filtered.filter(t => t.priority === 'urgent');
-        } else if (currentPriority === 'not-urgent') {
-            filtered = filtered.filter(t => t.priority !== 'urgent');
-        }
+        if (currentPriority === 'urgent') filtered = filtered.filter(t => t.priority === 'urgent');
+        else if (currentPriority === 'not-urgent') filtered = filtered.filter(t => t.priority !== 'urgent');
 
-        // 3. Search Filter
         if (query) {
             filtered = filtered.filter(t =>
                 t.title.toLowerCase().includes(query) ||
                 t.description.toLowerCase().includes(query) ||
                 t.zoneName.toLowerCase().includes(query) ||
                 t.id.toString().includes(query) ||
-                (t.treeType && t.treeType.toLowerCase().includes(query)) ||
-                (t.operation && t.operation.toLowerCase().includes(query)) ||
-                (t.assignees && t.assignees.join(' ').toLowerCase().includes(query)) ||
-                (t.locationDetail && t.locationDetail.toLowerCase().includes(query)) ||
-                (t.notes && t.notes.toLowerCase().includes(query))
+                (t.treeType && t.treeType.toLowerCase().includes(query))
             );
         }
 
         // Render
         const listEl = document.getElementById('ticket-list');
+
+        // Toggle View Mode Layout
+        if (AppState.ticketViewMode === 'grid') {
+            listEl.style.display = 'grid';
+            listEl.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+            listEl.style.gap = '1.5rem';
+        } else {
+            listEl.style.display = 'flex';
+            listEl.style.flexDirection = 'column';
+            listEl.style.gap = '0.75rem';
+            listEl.style.gridTemplateColumns = 'none';
+        }
+
         if (filtered.length > 0) {
-            listEl.innerHTML = filtered.map(ticket => Components.ticketCard(ticket)).join('');
+            if (AppState.ticketViewMode === 'grid') {
+                listEl.innerHTML = filtered.map(ticket => Components.monitorCard(ticket)).join('');
+            } else {
+                listEl.innerHTML = filtered.map(ticket => Components.ticketCard(ticket)).join('');
+            }
         } else {
             listEl.innerHTML = `
-                <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+                <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted); grid-column: 1 / -1;">
                     <span class="material-symbols-outlined" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;">inbox</span>
                     <p style="font-size: 1.1rem; font-weight: 500;">ไม่พบรายการทิคเก็ต</p>
-                    <p style="font-size: 0.9rem; opacity: 0.7;">ลองปรับตัวกรองหรือค้นหาใหม่</p>
                 </div>
             `;
         }
 
-        // Update Count
-        countLabel.textContent = `ทั้งหมด ${filtered.length} รายการ`;
+        countLabel.textContent = `แสดง ${filtered.length} รายการ`;
+        renderPagination(Math.ceil(filtered.length / 10));
     }
 
-    // Event Listeners for Chips
+    function renderPagination(totalPages) {
+        const container = document.getElementById('pagination-container');
+        if (!container) return;
+        if (totalPages <= 1) { container.innerHTML = ''; return; }
+
+        container.innerHTML = `
+            <div class="pagination">
+                <button class="page-btn"><span class="material-symbols-outlined">chevron_left</span></button>
+                <button class="page-btn active">1</button>
+                ${totalPages > 1 ? '<button class="page-btn">2</button>' : ''}
+                ${totalPages > 2 ? '<button class="page-btn">3</button>' : ''}
+                ${totalPages > 3 ? `<button class="page-btn">${totalPages}</button>` : ''}
+                <button class="page-btn"><span class="material-symbols-outlined">chevron_right</span></button>
+            </div>
+        `;
+    }
+
+    // Event Listeners
     function setupChipGroup(groupElement, groupName) {
         groupElement.addEventListener('click', (e) => {
             const btn = e.target.closest('.modern-filter-chip');
             if (!btn) return;
-
-            // Update UI
             groupElement.querySelectorAll('.modern-filter-chip').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-
-            // Update State
             const val = btn.dataset.value;
             if (groupName === 'status') currentStatus = val;
             if (groupName === 'priority') currentPriority = val;
-
             applyFilters();
         });
     }
@@ -1221,8 +1247,26 @@ function renderTicketList() {
     setupChipGroup(priorityFilters, 'priority');
     searchInput.addEventListener('input', applyFilters);
 
-    // Initial Render
+    // View Toggle Listeners
+    const gridBtn = document.getElementById('view-grid-btn');
+    const listBtn = document.getElementById('view-list-btn');
+
+    function updateViewToggleUI() {
+        if (AppState.ticketViewMode === 'grid') {
+            gridBtn.classList.add('active');
+            listBtn.classList.remove('active');
+        } else {
+            gridBtn.classList.remove('active');
+            listBtn.classList.add('active');
+        }
+    }
+
+    gridBtn.addEventListener('click', () => { AppState.ticketViewMode = 'grid'; updateViewToggleUI(); applyFilters(); });
+    listBtn.addEventListener('click', () => { AppState.ticketViewMode = 'list'; updateViewToggleUI(); applyFilters(); });
+
+    updateViewToggleUI();
     applyFilters();
+
 }
 
 function renderTicketDetail(params) {

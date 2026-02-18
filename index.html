@@ -143,67 +143,53 @@
                 <div class="drawer-logo-icon">
                     <span class="material-symbols-outlined fill" style="font-size: 1.25rem;">eco</span>
                 </div>
-                <span class="drawer-logo-text">TU <span>TICKET</span></span>
+                <span class="drawer-logo-text">GARDEN <span>SYS</span></span>
             </div>
-            <button class="header-btn" onclick="closeDrawer()">
+            <button class="header-btn desktop-hidden" onclick="closeDrawer()">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
 
-        <div class="drawer-profile">
-            <div class="drawer-profile-avatar">
-                <span class="material-symbols-outlined">person</span>
-            </div>
-            <div class="drawer-profile-info">
-                <div class="drawer-profile-name">สมชาย การดี <span
-                        style="font-size: 0.65rem; color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 4px; margin-left: 4px;">v1.2.0</span>
-                </div>
-                <div class="drawer-profile-role">หัวหน้าช่างสวน</div>
-                <p id="device-info"
-                    style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.25rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">
-                </p>
-            </div>
-        </div>
-
-        <nav class="drawer-nav">
-            <a href="#/dashboard" class="drawer-nav-item" onclick="closeDrawer()">
+        <nav class="drawer-nav" style="flex: 1;">
+            <a href="javascript:void(0)" onclick="navigateTo('dashboard')" class="drawer-nav-item">
                 <span class="material-symbols-outlined">dashboard</span>
-                <span>DASHBOARD</span>
+                <span>ภาพรวม (Dashboard)</span>
             </a>
-            <a href="#/monitor" class="drawer-nav-item" onclick="closeDrawer()">
+            <a href="javascript:void(0)" onclick="navigateTo('monitor')" class="drawer-nav-item">
                 <span class="material-symbols-outlined">monitoring</span>
-                <span>MONITOR</span>
+                <span>การติดตาม (Monitor)</span>
             </a>
-            <a href="#/tickets" class="drawer-nav-item" onclick="closeDrawer()">
+            <a href="javascript:void(0)" onclick="navigateTo('tickets')" class="drawer-nav-item">
                 <span class="material-symbols-outlined">confirmation_number</span>
-                <span>TICKET LIST</span>
+                <span>รายการแจ้งซ่อม (Lists)</span>
             </a>
-            <a href="#/reports" class="drawer-nav-item" onclick="closeDrawer()">
+            <a href="javascript:void(0)" onclick="navigateTo('reports')" class="drawer-nav-item">
                 <span class="material-symbols-outlined">summarize</span>
-                <span>REPORTS</span>
-            </a>
-            <a href="#/add" class="drawer-nav-item" onclick="closeDrawer()">
-                <span class="material-symbols-outlined">add_circle</span>
-                <span>ADD TICKET</span>
+                <span>รายงาน (Reports)</span>
             </a>
         </nav>
 
-        <div class="drawer-footer">
-            <button class="logout-btn" onclick="logout()" style="margin-bottom: 1rem;">
-                <span class="material-symbols-outlined">logout</span>
-                <span>LOG OUT</span>
-            </button>
+        <div class="drawer-footer" style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border);">
 
-            <div class="drawer-version">Version 1.2.0 (TU Rangsit)</div>
-
-            <div
-                style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed rgba(0,0,0,0.1); text-align: center;">
-                <button onclick="checkForUpdate()" class="update-check-btn"
-                    style="background: none; border: none; font-size: 0.8rem; color: var(--primary); font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; transition: opacity 0.2s;">
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">cloud_sync</span>
-                    อัปเดตเวอร์ชันล่าสุด
+            <div class="drawer-profile"
+                style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background: var(--background); border-radius: 0.75rem;">
+                <div class="drawer-profile-avatar" style="width: 2.5rem; height: 2.5rem; flex-shrink: 0;">
+                    <img src="https://ui-avatars.com/api/?name=Somchai+Gardee&background=0ea5e9&color=fff&size=64"
+                        alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                </div>
+                <div class="drawer-profile-info" style="flex: 1; min-width: 0;">
+                    <div class="drawer-profile-name"
+                        style="font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        สมชาย การดี</div>
+                    <div class="drawer-profile-role" style="font-size: 0.7rem; color: var(--text-muted);">Admin Profile
+                    </div>
+                </div>
+                <button onclick="logout()"
+                    style="background: none; border: none; color: var(--text-muted); cursor: pointer;">
+                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">logout</span>
                 </button>
             </div>
+
         </div>
     </aside>
 
