@@ -1007,7 +1007,8 @@ function renderMonitor() {
     viewListBtn.addEventListener('click', () => setView('list'));
     viewGridBtn.addEventListener('click', () => setView('grid'));
 
-    // Restore View Mode
+    // Default to Grid View
+    if (!AppState.viewMode) AppState.viewMode = 'grid';
     if (AppState.viewMode === 'grid') setView('grid');
 
     // Default Filters
@@ -1256,7 +1257,8 @@ function renderTicketList() {
     viewListBtn.addEventListener('click', () => setView('list'));
     viewGridBtn.addEventListener('click', () => setView('grid'));
 
-    // Restore View Mode
+    // Default to Grid View
+    if (!AppState.viewMode) AppState.viewMode = 'grid';
     if (AppState.viewMode === 'grid') setView('grid');
 
     // Default Filters

@@ -3112,23 +3112,100 @@ body.login-mode #main-content {
         background: var(--background);
     }
 
-    /* Grid Layout Styles */
+    /* Grid Layout Styles (Beautiful Cards) */
     .ticket-list.grid-view {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         /* Responsive Grid */
-        gap: 1rem;
+        gap: 1.25rem;
     }
 
-    /* Adjust card for grid view */
+    /* Card Styling in Grid */
     .ticket-list.grid-view .ticket-list-item {
-        height: auto;
+        height: 100%;
         margin-bottom: 0;
+        padding: 1.25rem;
+        border-radius: 1.5rem;
+        border: 1px solid transparent;
+        /* Cleaner look */
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        /* Soft shadow */
+        background: white;
+    }
+
+    .ticket-list.grid-view .ticket-list-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    }
+
+    /* Header: ID and Badge Stacked */
+    .ticket-list.grid-view .ticket-list-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .ticket-list.grid-view .ticket-list-id {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .ticket-list.grid-view .ticket-list-title {
+        font-size: 1.15rem;
+        /* Larger Title */
+        margin-bottom: 0.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .ticket-list.grid-view .ticket-list-desc {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+
+    /* Image: Big & Wide */
+    .ticket-list.grid-view .ticket-list-thumbs {
+        margin: 0 -1.25rem 1rem -1.25rem;
+        /* Edge to edge? Or just normal */
+        margin: 0 0 1rem 0;
+        width: 100%;
     }
 
     .ticket-list.grid-view .ticket-list-thumb {
-        height: 140px;
-        /* Bigger thumb in grid? */
         width: 100%;
-        /* Full width in grid? */
+        height: 180px;
+        /* Big Thumbnail */
+        border-radius: 1rem;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
     }
+
+    /* Footer: Stacked vertically with icons */
+    .ticket-list.grid-view .ticket-list-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
+        border-top: none;
+        padding-top: 0.5rem;
+    }
+
+    .ticket-list.grid-view .ticket-list-meta>div {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .ticket-list.grid-view .material-symbols-outlined {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+    }
+}
