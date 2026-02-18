@@ -29,17 +29,17 @@ const Components = {
                     ${ticket.description || 'ไม่มีรายละเอียดเพิ่มเติม'}
                 </p>
 
-                <!-- Thumbnails (Ready to expand) -->
+                <!-- Single Thumbnail (With count if more) -->
                 ${hasImages ? `
-                <div class="ticket-list-thumbs">
-                    ${displayImages.map(img => `
-                        <img src="${img}" alt="Thumbnail" class="ticket-list-thumb">
-                    `).join('')}
-                    ${ticket.images.length > 4 ? `
-                        <div class="ticket-list-thumb" style="display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: var(--text-muted); font-weight: 600; font-size: 0.9rem;">
-                            +${ticket.images.length - 4}
-                        </div>
-                    ` : ''}
+                <div style="margin-bottom: 1rem;">
+                    <div style="position: relative; width: 6rem; height: 6rem; border-radius: 0.75rem; overflow: hidden; border: 1px solid var(--border);">
+                        <img src="${displayImages[0]}" alt="Thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
+                        ${ticket.images.length > 1 ? `
+                            <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 1.25rem;">
+                                +${ticket.images.length - 1}
+                            </div>
+                        ` : ''}
+                    </div>
                 </div>
                 ` : ''}
 
