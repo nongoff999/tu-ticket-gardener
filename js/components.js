@@ -69,6 +69,57 @@ const Components = {
         `;
     },
 
+    // Grid Card Component (For Dashboard Grid View)
+    gridCard(ticket) {
+        const displayImages = ticket.images ? ticket.images.slice(0, 1) : []; // Show 1 main image
+        const hasImages = displayImages.length > 0;
+
+        return `
+            <div class="ticket-card" onclick="showTicketDetail(${ticket.id})" style="flex-direction: column; padding: 0; overflow: hidden; height: 100%; border: 1px solid var(--border); border-radius: 1rem; transition: transform 0.2s, box-shadow 0.2s;">
+                
+                <!-- Image Section -->
+                <div style="width: 100%; height: 12rem; background: #f1f5f9; position: relative;">
+                    ${hasImages ? `
+                        <img src="${displayImages[0]}" alt="Thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
+                    ` : `
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #cbd5e1;">
+                            <span class="material-symbols-outlined" style="font-size: 3rem;">image_not_supported</span>
+                        </div>
+                    `}
+                    
+                    <!-- Floating Priority Badge -->
+                    ${ticket.priority === 'urgent' ? `
+                        <div style="position: absolute; top: 0.75rem; right: 0.75rem; background: #ef4444; color: white; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            เร่งด่วน
+                        </div>
+                    ` : ''}
+                    
+                    <!-- Floating Status Badge -->
+                    <div style="position: absolute; top: 0.75rem; left: 0.75rem;">
+                         <span class="badge ${getStatusClass(ticket.status)}" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid white;">${getStatusLabel(ticket.status)}</span>
+                    </div>
+                </div>
+
+                <!-- Content Section -->
+                <div style="padding: 1rem; display: flex; flex-direction: column; flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.8rem; font-weight: 800; color: var(--primary);">#${ticket.id}</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">${formatShortDate(ticket.date)}</span>
+                    </div>
+
+                    <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                        ${ticket.title}
+                    </h3>
+                    
+                    <div style="margin-top: auto; display: flex; align-items: center; gap: 0.25rem; color: var(--text-secondary); font-size: 0.8rem;">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">location_on</span>
+                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ticket.zoneName}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
     // Helper: Render Assignees with Avatars
     renderAssignees(assignees, size = 'small') {
         const avatarSize = size === 'large' ? '32px' : '20px';

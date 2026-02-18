@@ -1195,7 +1195,7 @@ function renderTicketList() {
 
         if (filtered.length > 0) {
             if (AppState.ticketViewMode === 'grid') {
-                listEl.innerHTML = filtered.map(ticket => Components.monitorCard(ticket)).join('');
+                listEl.innerHTML = filtered.map(ticket => Components.gridCard(ticket)).join('');
             } else {
                 listEl.innerHTML = filtered.map(ticket => Components.ticketCard(ticket)).join('');
             }

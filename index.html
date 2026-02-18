@@ -139,11 +139,19 @@
     <!-- Drawer -->
     <aside class="drawer" id="drawer">
         <div class="drawer-header">
-            <div class="drawer-logo">
-                <div class="drawer-logo-icon">
-                    <span class="material-symbols-outlined fill" style="font-size: 1.25rem;">eco</span>
+            <div class="drawer-logo" style="flex-direction: column; align-items: flex-start; gap: 0;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="material-symbols-outlined fill"
+                        style="color: var(--primary); font-size: 1.5rem;">eco</span>
+                    <span
+                        style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; color: var(--text-primary);">
+                        GARDEN <span style="color: var(--primary);">SYS</span>
+                    </span>
                 </div>
-                <span class="drawer-logo-text">GARDEN <span>SYS</span></span>
+                <div
+                    style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.05em; padding-left: 2.25rem; margin-top: -0.25rem; text-transform: uppercase;">
+                    TU TICKET GARDENER
+                </div>
             </div>
             <button class="header-btn desktop-hidden" onclick="closeDrawer()">
                 <span class="material-symbols-outlined">close</span>
