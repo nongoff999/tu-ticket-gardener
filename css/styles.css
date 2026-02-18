@@ -3137,9 +3137,9 @@ body.login-mode #main-content {
     /* Thumbnail */
     .tli-thumb {
         flex-shrink: 0;
-        width: 5rem;
-        height: 5rem;
-        border-radius: 0.75rem;
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 0.5rem;
         overflow: hidden;
         background: #f1f5f9;
         display: flex;

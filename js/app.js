@@ -1468,14 +1468,14 @@ function renderTicketDetail(params) {
                     <span class="detail-info-value">${ticket.circumference} นิ้ว</span>
                 </div>
                 ` : ''}
-                ${ticket.assignees && ticket.assignees.length > 0 ? `
                 <div class="detail-info-item full">
                     <span class="detail-info-label">ผู้รับผิดชอบ :</span>
                     <div class="detail-info-value" style="margin-top: 0.5rem;">
-                        ${Components.renderAssignees(ticket.assignees, 'large')}
+                        ${ticket.assignees && ticket.assignees.length > 0
+            ? Components.renderAssignees(ticket.assignees, 'large')
+            : '<span style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">รอการมอบหมาย</span>'}
                     </div>
                 </div>
-                ` : ''}
                 ${ticket.notes ? `
                 <div class="detail-info-item full">
                     <span class="detail-info-label">หมายเหตุ :</span>
