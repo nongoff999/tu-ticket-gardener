@@ -211,6 +211,42 @@ window.logout = function () {
     });
 };
 
+// Safer Back Navigation
+function goBack() {
+    const currentPage = AppState.currentPage;
+
+    // If we have history, use it (but check if it's safe)
+    if (history.length > 2) {
+        history.back();
+        return;
+    }
+
+    // Smart Fallback
+    switch (currentPage) {
+        case 'add':
+        case 'add-select':
+        case 'monitor':
+        case 'reports':
+        case 'tickets':
+            router.navigate('/dashboard');
+            break;
+        case 'ticket':
+            router.navigate('/tickets');
+            break;
+        case 'edit':
+            // Go back to detail if we have ID, otherwise list
+            if (AppState.selectedTicket) router.navigate('/ticket/' + AppState.selectedTicket.id);
+            else router.navigate('/tickets');
+            break;
+        case 'report-detail':
+            router.navigate('/reports');
+            break;
+        default:
+            router.navigate('/dashboard');
+    }
+}
+window.goBack = goBack;
+
 // Router Setup
 function initRouter() {
     // Auth Guard

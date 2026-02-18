@@ -186,18 +186,23 @@ body,
 }
 
 .back-nav-btn {
-    width: 2.5rem;
     height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 0.25rem;
+    padding: 0 1rem 0 0.5rem;
     background: var(--primary-light);
     color: var(--primary);
     border: none;
-    border-radius: 50%;
+    border-radius: 9999px;
+    /* Pill shape */
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(2, 132, 199, 0.1);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
 .back-nav-btn:hover {
