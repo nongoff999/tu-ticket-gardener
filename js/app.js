@@ -1468,6 +1468,12 @@ function renderTicketDetail(params) {
                     <span class="detail-info-value">${ticket.circumference} นิ้ว</span>
                 </div>
                 ` : ''}
+                ${ticket.quantity ? `
+                <div class="detail-info-item">
+                    <span class="detail-info-label">จำนวน :</span>
+                    <span class="detail-info-value">${ticket.quantity} ต้น</span>
+                </div>
+                ` : ''}
                 <div class="detail-info-item full">
                     <span class="detail-info-label">ผู้รับผิดชอบ :</span>
                     <div class="detail-info-value" style="margin-top: 0.5rem;">
@@ -1491,9 +1497,6 @@ function renderTicketDetail(params) {
         <!-- Sticky Footer for Edit Button -->
         <!-- Sticky Footer for Actions -->
         <div class="sticky-footer" style="display: flex; gap: 0.75rem;">
-            <button class="btn" onclick="deleteTicket(${ticket.id})" style="width: auto; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #fee2e2; color: #ef4444; flex: 0 0 auto; padding: 0 1.25rem;">
-                <span class="material-symbols-outlined">delete</span>
-            </button>
             <button class="btn btn-primary" onclick="router.navigate('/edit/${ticket.id}')" style="flex: 1; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                 <span class="material-symbols-outlined">edit_note</span>
                 แก้ไขข้อมูลทิคเก็ต
