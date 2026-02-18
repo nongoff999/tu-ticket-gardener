@@ -2004,6 +2004,27 @@ function renderEditTicket(params) {
                     <input type="text" id="edit-ticket-impact" class="form-input" value="${ticket.impact || ''}" placeholder="ระบุผลกระทบ เช่น ขวางถนน, เสียหายต่อรถยนต์...">
                 </div>
 
+                <!-- 12.5 ผู้รับผิดชอบ -->
+                <div class="form-group">
+                    <label class="form-label">ผู้รับผิดชอบ</label>
+                    <div id="assignee-chips" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        ${(ticket.assignees || []).map((name, i) => `
+                            <div class="assignee-chip" style="display: flex; align-items: center; gap: 0.35rem; background: #eff6ff; border: 1px solid #bfdbfe; padding: 0.35rem 0.5rem 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; color: #1e40af;">
+                                <span>${name}</span>
+                                <button type="button" class="remove-assignee-btn" data-index="${i}" style="background: none; border: none; cursor: pointer; color: #ef4444; display: flex; align-items: center; padding: 0; margin: 0;">
+                                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">close</span>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="assignee-input" class="form-input" placeholder="ระบุชื่อผู้รับผิดชอบ" style="flex: 1;">
+                        <button type="button" id="add-assignee-btn" style="flex-shrink: 0; background: var(--primary); color: white; border: none; border-radius: 0.75rem; padding: 0 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; font-size: 0.9rem;">
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">add</span> เพิ่ม
+                        </button>
+                    </div>
+                </div>
+
                 <!-- 13. การดำเนินงาน -->
                 <div class="form-group">
                     <label class="form-label">การดำเนินงาน</label>
@@ -2156,6 +2177,53 @@ function renderEditTicket(params) {
             }
         });
     }
+
+    // Assignee Management
+    const editAssignees = [...(ticket.assignees || [])];
+    function renderAssigneeChips() {
+        const container = content.querySelector('#assignee-chips');
+        container.innerHTML = editAssignees.map((name, i) => `
+            <div class="assignee-chip" style="display: flex; align-items: center; gap: 0.35rem; background: #eff6ff; border: 1px solid #bfdbfe; padding: 0.35rem 0.5rem 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; color: #1e40af;">
+                <span>${name}</span>
+                <button type="button" class="remove-assignee-btn" data-index="${i}" style="background: none; border: none; cursor: pointer; color: #ef4444; display: flex; align-items: center; padding: 0; margin: 0;">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">close</span>
+                </button>
+            </div>
+        `).join('');
+        container.querySelectorAll('.remove-assignee-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                editAssignees.splice(parseInt(this.dataset.index), 1);
+                renderAssigneeChips();
+            });
+        });
+    }
+
+    const addAssigneeBtn = content.querySelector('#add-assignee-btn');
+    const assigneeInput = content.querySelector('#assignee-input');
+    if (addAssigneeBtn) {
+        addAssigneeBtn.addEventListener('click', () => {
+            const name = assigneeInput.value.trim();
+            if (name) {
+                editAssignees.push(name);
+                assigneeInput.value = '';
+                renderAssigneeChips();
+            }
+        });
+        assigneeInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addAssigneeBtn.click();
+            }
+        });
+    }
+
+    // Setup initial remove buttons
+    content.querySelectorAll('#assignee-chips .remove-assignee-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            editAssignees.splice(parseInt(this.dataset.index), 1);
+            renderAssigneeChips();
+        });
+    });
 
     // Image upload - Before (from ADD TICKET)
     const uploadedImages = [];
@@ -2379,6 +2447,7 @@ function renderEditTicket(params) {
         ticket.notes = notes;
         ticket.lat = lat;
         ticket.lng = lng;
+        ticket.assignees = [...editAssignees];
         ticket.images = uploadedImages.map(img => img.url);
         ticket.progressImages = progressImages.map(img => img.url);
 

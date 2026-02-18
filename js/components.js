@@ -6,57 +6,47 @@
 const Components = {
     // Ticket Card Component (List Style)
     ticketCard(ticket) {
-        // limit images to 4 thumbnails for the list view
         const displayImages = ticket.images ? ticket.images.slice(0, 4) : [];
         const hasImages = displayImages.length > 0;
 
         return `
             <div class="ticket-list-item" onclick="showTicketDetail(${ticket.id})">
-                <!-- Header: ID + Badge -->
-                <div class="ticket-list-header">
-                    <span class="ticket-list-id">#${ticket.id}</span>
-                    <div style="display: flex; gap: 0.5rem;">
+                <!-- Left: Thumbnail -->
+                <div class="tli-thumb">
+                    ${hasImages ? `
+                        <img src="${displayImages[0]}" alt="Thumbnail">
+                        ${ticket.images.length > 1 ? `<span class="tli-thumb-count">+${ticket.images.length - 1} รูป</span>` : ''}
+                    ` : `
+                        <span class="material-symbols-outlined" style="font-size: 2.5rem; color: var(--text-muted); opacity: 0.4;">image</span>
+                    `}
+                </div>
+
+                <!-- Center: Info -->
+                <div class="tli-info">
+                    <div class="tli-id">#${ticket.id}</div>
+                    <h3 class="tli-title">${ticket.title}</h3>
+                    <p class="tli-desc">${ticket.description || ''}</p>
+                </div>
+
+                <!-- Right: Meta -->
+                <div class="tli-meta">
+                    <div class="tli-badges">
                         ${ticket.priority === 'urgent' ? '<span class="badge urgent">เร่งด่วน</span>' : ''}
                         <span class="badge ${getStatusClass(ticket.status)}">${getStatusLabel(ticket.status)}</span>
                     </div>
-                </div>
-
-                <!-- Title -->
-                <h3 class="ticket-list-title">${ticket.title}</h3>
-
-                <!-- Full Description -->
-                <p class="ticket-list-desc">
-                    ${ticket.description || 'ไม่มีรายละเอียดเพิ่มเติม'}
-                </p>
-
-                <!-- Single Thumbnail (With count if more) -->
-                ${hasImages ? `
-                <div style="margin-bottom: 1rem;">
-                    <div style="position: relative; width: 6rem; height: 6rem; border-radius: 0.75rem; overflow: hidden; border: 1px solid var(--border);">
-                        <img src="${displayImages[0]}" alt="Thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
-                        ${ticket.images.length > 1 ? `
-                            <div style="position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.6); color: white; padding: 0.1rem 0.5rem; border-top-left-radius: 0.5rem; font-size: 0.8rem; font-weight: 600;">
-                                +${ticket.images.length - 1}
-                            </div>
-                        ` : ''}
+                    <div class="tli-location">
+                        <span class="material-symbols-outlined">location_on</span>
+                        <span>${ticket.zoneName}${ticket.locationDetail ? ' - ' + ticket.locationDetail : ''}</span>
                     </div>
-                </div>
-                ` : ''}
-
-                <!-- Footer Meta -->
-                <div class="ticket-list-meta">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="material-symbols-outlined" style="font-size: 1rem;">location_on</span>
-                        <span>${ticket.zoneName}</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="material-symbols-outlined" style="font-size: 1rem;">calendar_today</span>
+                    <div class="tli-date">
+                        <span class="material-symbols-outlined">calendar_today</span>
                         <span>${formatShortDate(ticket.date)}</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="material-symbols-outlined" style="font-size: 1rem;">park</span>
-                        <span>${getDamageTypeName(ticket.damageType)}</span>
-                    </div>
+                </div>
+
+                <!-- Far Right: Detail Link -->
+                <div class="tli-action">
+                    <span>รายละเอียด</span>
                 </div>
             </div>
         `;
