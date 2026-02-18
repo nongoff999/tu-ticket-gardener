@@ -996,21 +996,21 @@ function renderMonitor() {
             listContainer.classList.add('grid-view');
             viewGridBtn.classList.add('active');
             viewListBtn.classList.remove('active');
-            AppState.viewMode = 'grid';
+            AppState.monitorViewMode = 'grid';
         } else {
             listContainer.classList.remove('grid-view');
             viewListBtn.classList.add('active');
             viewGridBtn.classList.remove('active');
-            AppState.viewMode = 'list';
+            AppState.monitorViewMode = 'list';
         }
     }
 
     viewListBtn.addEventListener('click', () => setView('list'));
     viewGridBtn.addEventListener('click', () => setView('grid'));
 
-    // Default to Grid View
-    if (!AppState.viewMode) AppState.viewMode = 'grid';
-    if (AppState.viewMode === 'grid') setView('grid');
+    // Default to Grid View for Monitor
+    if (!AppState.monitorViewMode) AppState.monitorViewMode = 'grid';
+    setView(AppState.monitorViewMode);
 
     // Default Filters
     let currentStatus = 'new';
@@ -1179,10 +1179,10 @@ function renderTicketList() {
                     <span class="filter-group-header">มุมมอง & การเรียงลำดับ</span>
                     <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
                         <div class="view-switcher">
-                            <button class="view-btn" data-view="list" id="view-list-btn">
+                            <button class="view-btn active" data-view="list" id="view-list-btn">
                                 <span class="material-symbols-outlined">view_list</span>
                             </button>
-                            <button class="view-btn active" data-view="grid" id="view-grid-btn">
+                            <button class="view-btn" data-view="grid" id="view-grid-btn">
                                 <span class="material-symbols-outlined">grid_view</span>
                             </button>
                         </div>
@@ -1247,21 +1247,21 @@ function renderTicketList() {
             listContainer.classList.add('grid-view');
             viewGridBtn.classList.add('active');
             viewListBtn.classList.remove('active');
-            AppState.viewMode = 'grid';
+            AppState.ticketViewMode = 'grid';
         } else {
             listContainer.classList.remove('grid-view');
             viewListBtn.classList.add('active');
             viewGridBtn.classList.remove('active');
-            AppState.viewMode = 'list';
+            AppState.ticketViewMode = 'list';
         }
     }
 
     viewListBtn.addEventListener('click', () => setView('list'));
     viewGridBtn.addEventListener('click', () => setView('grid'));
 
-    // Default to Grid View
-    if (!AppState.viewMode) AppState.viewMode = 'grid';
-    if (AppState.viewMode === 'grid') setView('grid');
+    // Default to List View for Tickets
+    if (!AppState.ticketViewMode) AppState.ticketViewMode = 'list';
+    setView(AppState.ticketViewMode);
 
     // Default Filters
     let currentStatus = 'all';
