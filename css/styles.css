@@ -3050,3 +3050,85 @@ body.login-mode #main-content {
         font-size: 0.8rem;
         color: var(--text-muted);
     }
+
+    /* --- Toolbar (View Switcher + Sort) --- */
+    .toolbar-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 1rem;
+        margin-bottom: 1rem;
+        gap: 1rem;
+    }
+
+    .view-switcher {
+        display: flex;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        padding: 0.25rem;
+        gap: 0.25rem;
+    }
+
+    .view-btn {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.5rem;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .view-btn.active {
+        background: #eff6ff;
+        /* Light blue bg */
+        color: var(--primary);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .sort-dropdown {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 0.5rem 1rem;
+        border-radius: 0.75rem;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+        appearance: none;
+        /* simple button look */
+    }
+
+    .sort-dropdown:active {
+        background: var(--background);
+    }
+
+    /* Grid Layout Styles */
+    .ticket-list.grid-view {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        /* Responsive Grid */
+        gap: 1rem;
+    }
+
+    /* Adjust card for grid view */
+    .ticket-list.grid-view .ticket-list-item {
+        height: auto;
+        margin-bottom: 0;
+    }
+
+    .ticket-list.grid-view .ticket-list-thumb {
+        height: 140px;
+        /* Bigger thumb in grid? */
+        width: 100%;
+        /* Full width in grid? */
+    }

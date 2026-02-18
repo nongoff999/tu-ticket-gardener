@@ -932,6 +932,26 @@ function renderMonitor() {
             </div>
         </div>
 
+        <!-- Toolbar: View Switcher & Sort -->
+        <div class="toolbar-row">
+            <!-- View Switcher -->
+            <div class="view-switcher">
+                <button class="view-btn active" data-view="list" id="view-list-btn">
+                    <span class="material-symbols-outlined">view_list</span>
+                </button>
+                <button class="view-btn" data-view="grid" id="view-grid-btn">
+                    <span class="material-symbols-outlined">grid_view</span>
+                </button>
+            </div>
+            
+            <!-- Sort Dropdown -->
+            <select class="sort-dropdown" id="sort-select" style="border: none; outline: none; font-family: inherit;">
+                <option value="latest">เรียงตาม: ล่าสุด</option>
+                <option value="oldest">เรียงตาม: เก่าสุด</option>
+                <option value="priority">เรียงตาม: ความเร่งด่วน</option>
+            </select>
+        </div>
+        
         <!-- Ticket Count -->
         <div style="padding: 0 1.5rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="monitor-count"></span>
@@ -951,6 +971,12 @@ function renderMonitor() {
     const searchInput = document.getElementById('search-input');
     const countLabel = document.getElementById('monitor-count');
 
+    // New Controls
+    const viewListBtn = document.getElementById('view-list-btn');
+    const viewGridBtn = document.getElementById('view-grid-btn');
+    const sortSelect = document.getElementById('sort-select');
+    const listContainer = document.getElementById('ticket-list');
+
     // Toggle Panel Visibility
     filterToggleBtn.addEventListener('click', () => {
         const isOpen = filterPanel.classList.contains('open');
@@ -963,13 +989,40 @@ function renderMonitor() {
         }
     });
 
+    // View Switching
+    function setView(view) {
+        if (view === 'grid') {
+            listContainer.classList.add('grid-view');
+            viewGridBtn.classList.add('active');
+            viewListBtn.classList.remove('active');
+            AppState.viewMode = 'grid';
+        } else {
+            listContainer.classList.remove('grid-view');
+            viewListBtn.classList.add('active');
+            viewGridBtn.classList.remove('active');
+            AppState.viewMode = 'list';
+        }
+    }
+
+    viewListBtn.addEventListener('click', () => setView('list'));
+    viewGridBtn.addEventListener('click', () => setView('grid'));
+
+    // Restore View Mode
+    if (AppState.viewMode === 'grid') setView('grid');
+
     // Default Filters
     let currentStatus = 'new';
     let currentPriority = 'all';
+    let currentSort = 'latest';
+
+    sortSelect.addEventListener('change', (e) => {
+        currentSort = e.target.value;
+        applyFilters();
+    });
 
     function applyFilters() {
         const query = searchInput.value.toLowerCase().trim();
-        let filtered = MOCK_DATA.tickets;
+        let filtered = [...MOCK_DATA.tickets];
 
         // 1. Status Filter
         if (currentStatus !== 'all') {
@@ -996,6 +1049,21 @@ function renderMonitor() {
                 (t.notes && t.notes.toLowerCase().includes(query))
             );
         }
+
+        // 4. Sorting
+        filtered.sort((a, b) => {
+            if (currentSort === 'latest') { // Newest ID/Date first
+                return b.id - a.id;
+            } else if (currentSort === 'oldest') {
+                return a.id - b.id;
+            } else if (currentSort === 'priority') {
+                // Urgent first, then latest
+                if (a.priority === 'urgent' && b.priority !== 'urgent') return -1;
+                if (a.priority !== 'urgent' && b.priority === 'urgent') return 1;
+                return b.id - a.id;
+            }
+            return 0;
+        });
 
         // Render
         const listEl = document.getElementById('ticket-list');
@@ -1107,6 +1175,26 @@ function renderTicketList() {
             </div>
         </div>
 
+        <!-- Toolbar: View Switcher & Sort -->
+        <div class="toolbar-row">
+            <!-- View Switcher -->
+            <div class="view-switcher">
+                <button class="view-btn active" data-view="list" id="view-list-btn">
+                    <span class="material-symbols-outlined">view_list</span>
+                </button>
+                <button class="view-btn" data-view="grid" id="view-grid-btn">
+                    <span class="material-symbols-outlined">grid_view</span>
+                </button>
+            </div>
+            
+            <!-- Sort Dropdown -->
+            <select class="sort-dropdown" id="sort-select" style="border: none; outline: none; font-family: inherit;">
+                <option value="latest">เรียงตาม: ล่าสุด</option>
+                <option value="oldest">เรียงตาม: เก่าสุด</option>
+                <option value="priority">เรียงตาม: ความเร่งด่วน</option>
+            </select>
+        </div>
+
         <!-- Ticket Count -->
         <div style="padding: 0 1.5rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
             <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="list-count"></p>
@@ -1132,6 +1220,12 @@ function renderTicketList() {
     const searchInput = document.getElementById('search-input');
     const countLabel = document.getElementById('list-count');
 
+    // New Controls
+    const viewListBtn = document.getElementById('view-list-btn');
+    const viewGridBtn = document.getElementById('view-grid-btn');
+    const sortSelect = document.getElementById('sort-select');
+    const listContainer = document.getElementById('ticket-list');
+
     // Toggle Panel Visibility
     filterToggleBtn.addEventListener('click', () => {
         const isOpen = filterPanel.classList.contains('open');
@@ -1144,13 +1238,40 @@ function renderTicketList() {
         }
     });
 
+    // View Switching
+    function setView(view) {
+        if (view === 'grid') {
+            listContainer.classList.add('grid-view');
+            viewGridBtn.classList.add('active');
+            viewListBtn.classList.remove('active');
+            AppState.viewMode = 'grid';
+        } else {
+            listContainer.classList.remove('grid-view');
+            viewListBtn.classList.add('active');
+            viewGridBtn.classList.remove('active');
+            AppState.viewMode = 'list';
+        }
+    }
+
+    viewListBtn.addEventListener('click', () => setView('list'));
+    viewGridBtn.addEventListener('click', () => setView('grid'));
+
+    // Restore View Mode
+    if (AppState.viewMode === 'grid') setView('grid');
+
     // Default Filters
-    let currentStatus = 'all'; // Default to ALL for general list
+    let currentStatus = 'all';
     let currentPriority = 'all';
+    let currentSort = 'latest';
+
+    sortSelect.addEventListener('change', (e) => {
+        currentSort = e.target.value;
+        applyFilters();
+    });
 
     function applyFilters() {
         const query = searchInput.value.toLowerCase().trim();
-        let filtered = MOCK_DATA.tickets;
+        let filtered = [...MOCK_DATA.tickets]; // Copy
 
         // 1. Status Filter
         if (currentStatus !== 'all') {
@@ -1178,6 +1299,21 @@ function renderTicketList() {
                 (t.notes && t.notes.toLowerCase().includes(query))
             );
         }
+
+        // 4. Sorting
+        filtered.sort((a, b) => {
+            if (currentSort === 'latest') { // Newest ID/Date first
+                return b.id - a.id;
+            } else if (currentSort === 'oldest') {
+                return a.id - b.id;
+            } else if (currentSort === 'priority') {
+                // Urgent first, then latest
+                if (a.priority === 'urgent' && b.priority !== 'urgent') return -1;
+                if (a.priority !== 'urgent' && b.priority === 'urgent') return 1;
+                return b.id - a.id;
+            }
+            return 0;
+        });
 
         // Render
         const listEl = document.getElementById('ticket-list');
