@@ -1468,12 +1468,7 @@ function renderTicketDetail(params) {
                     <span class="detail-info-value">${ticket.circumference} นิ้ว</span>
                 </div>
                 ` : ''}
-                ${ticket.quantity && ticket.quantity != 0 && ticket.quantity !== '-' ? `
-                <div class="detail-info-item">
-                    <span class="detail-info-label">จำนวน :</span>
-                    <span class="detail-info-value">${ticket.quantity} ต้น</span>
-                </div>
-                ` : ''}
+
                 ${ticket.notes && ticket.notes !== '-' && ticket.notes.trim() !== '' ? `
                 <div class="detail-info-item full">
                     <span class="detail-info-label">หมายเหตุ :</span>
