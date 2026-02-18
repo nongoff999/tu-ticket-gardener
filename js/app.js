@@ -929,27 +929,28 @@ function renderMonitor() {
                     </div>
                 </div>
 
-            </div>
-        </div>
+                <!-- View & Sort Group -->
+                <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border);">
+                    <span class="filter-group-header">มุมมอง & การเรียงลำดับ</span>
+                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                        <div class="view-switcher">
+                            <button class="view-btn" data-view="list" id="view-list-btn">
+                                <span class="material-symbols-outlined">view_list</span>
+                            </button>
+                            <button class="view-btn active" data-view="grid" id="view-grid-btn">
+                                <span class="material-symbols-outlined">grid_view</span>
+                            </button>
+                        </div>
+                        
+                        <select class="sort-dropdown" id="sort-select" style="border: none; outline: none; font-family: inherit;">
+                            <option value="latest">เรียงตาม: ล่าสุด</option>
+                            <option value="oldest">เรียงตาม: เก่าสุด</option>
+                            <option value="priority">เรียงตาม: ความเร่งด่วน</option>
+                        </select>
+                    </div>
+                </div>
 
-        <!-- Toolbar: View Switcher & Sort -->
-        <div class="toolbar-row">
-            <!-- View Switcher -->
-            <div class="view-switcher">
-                <button class="view-btn active" data-view="list" id="view-list-btn">
-                    <span class="material-symbols-outlined">view_list</span>
-                </button>
-                <button class="view-btn" data-view="grid" id="view-grid-btn">
-                    <span class="material-symbols-outlined">grid_view</span>
-                </button>
             </div>
-            
-            <!-- Sort Dropdown -->
-            <select class="sort-dropdown" id="sort-select" style="border: none; outline: none; font-family: inherit;">
-                <option value="latest">เรียงตาม: ล่าสุด</option>
-                <option value="oldest">เรียงตาม: เก่าสุด</option>
-                <option value="priority">เรียงตาม: ความเร่งด่วน</option>
-            </select>
         </div>
         
         <!-- Ticket Count -->
@@ -1173,27 +1174,28 @@ function renderTicketList() {
                     </div>
                 </div>
 
-            </div>
-        </div>
+                <!-- View & Sort Group -->
+                <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border);">
+                    <span class="filter-group-header">มุมมอง & การเรียงลำดับ</span>
+                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                        <div class="view-switcher">
+                            <button class="view-btn" data-view="list" id="view-list-btn">
+                                <span class="material-symbols-outlined">view_list</span>
+                            </button>
+                            <button class="view-btn active" data-view="grid" id="view-grid-btn">
+                                <span class="material-symbols-outlined">grid_view</span>
+                            </button>
+                        </div>
+                        
+                        <select class="sort-dropdown" id="sort-select" style="border: none; outline: none; font-family: inherit;">
+                            <option value="latest">เรียงตาม: ล่าสุด</option>
+                            <option value="oldest">เรียงตาม: เก่าสุด</option>
+                            <option value="priority">เรียงตาม: ความเร่งด่วน</option>
+                        </select>
+                    </div>
+                </div>
 
-        <!-- Toolbar: View Switcher & Sort -->
-        <div class="toolbar-row">
-            <!-- View Switcher -->
-            <div class="view-switcher">
-                <button class="view-btn active" data-view="list" id="view-list-btn">
-                    <span class="material-symbols-outlined">view_list</span>
-                </button>
-                <button class="view-btn" data-view="grid" id="view-grid-btn">
-                    <span class="material-symbols-outlined">grid_view</span>
-                </button>
             </div>
-            
-            <!-- Sort Dropdown -->
-            <select class="sort-dropdown" id="sort-select" style="border: none; outline: none; font-family: inherit;">
-                <option value="latest">เรียงตาม: ล่าสุด</option>
-                <option value="oldest">เรียงตาม: เก่าสุด</option>
-                <option value="priority">เรียงตาม: ความเร่งด่วน</option>
-            </select>
         </div>
 
         <!-- Ticket Count -->
