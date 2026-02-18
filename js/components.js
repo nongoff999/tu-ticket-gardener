@@ -4,116 +4,58 @@
  */
 
 const Components = {
-    // Ticket Card Component (Organized Horizontal List)
+    // Ticket Card Component (List Style)
     ticketCard(ticket) {
         // limit images to 4 thumbnails for the list view
         const displayImages = ticket.images ? ticket.images.slice(0, 4) : [];
         const hasImages = displayImages.length > 0;
 
         return `
-            <div class="ticket-list-item" onclick="showTicketDetail(${ticket.id})" style="flex-direction: row; align-items: flex-start; gap: 1rem; padding: 1rem;">
-                <!-- Left: Image (Fixed Square) -->
+            <div class="ticket-list-item" onclick="showTicketDetail(${ticket.id})">
+                <!-- Header: ID + Badge -->
+                <div class="ticket-list-header">
+                    <span class="ticket-list-id">#${ticket.id}</span>
+                    <div style="display: flex; gap: 0.5rem;">
+                        ${ticket.priority === 'urgent' ? '<span class="badge urgent">เร่งด่วน</span>' : ''}
+                        <span class="badge ${getStatusClass(ticket.status)}">${getStatusLabel(ticket.status)}</span>
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <h3 class="ticket-list-title">${ticket.title}</h3>
+
+                <!-- Full Description -->
+                <p class="ticket-list-desc">
+                    ${ticket.description || 'ไม่มีรายละเอียดเพิ่มเติม'}
+                </p>
+
+                <!-- Single Thumbnail (With count if more) -->
                 ${hasImages ? `
-                <div style="flex-shrink: 0; width: 6.5rem; height: 6.5rem; border-radius: 0.75rem; overflow: hidden; position: relative; border: 1px solid var(--border);">
-                    <img src="${displayImages[0]}" alt="Thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
-                    ${ticket.images.length > 1 ? `
-                        <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.1rem;">
-                            +${ticket.images.length - 1}
-                        </div>
-                    ` : ''}
-                </div>
-                ` : `
-                <!-- No Image Placeholder / Icon -->
-                <div style="flex-shrink: 0; width: 6.5rem; height: 6.5rem; border-radius: 0.75rem; background: var(--background); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); color: var(--text-muted); opacity: 0.5;">
-                    <span class="material-symbols-outlined" style="font-size: 2.5rem;">image_not_supported</span>
-                </div>
-                `}
-
-                <!-- Right: Content -->
-                <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;">
-                    
-                    <!-- Top Row: ID + Status + Priority -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.35rem;">
-                        <span style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted);">#${ticket.id}</span>
-                        <div style="display: flex; gap: 0.25rem;">
-                             ${ticket.priority === 'urgent' ?
-                '<span style="font-size: 0.7rem; font-weight: 700; color: #ef4444; background: #fee2e2; padding: 0.15rem 0.5rem; border-radius: 0.5rem;">เร่งด่วน</span>' : ''
-            }
-                             <span class="badge ${getStatusClass(ticket.status)}" style="padding: 0.15rem 0.5rem; font-size: 0.7rem;">${getStatusLabel(ticket.status)}</span>
-                        </div>
-                    </div>
-
-                    <!-- Title -->
-                    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem; line-height: 1.3;">
-                        ${ticket.title}
-                    </h3>
-
-                    <!-- Description (Full) -->
-                    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.75rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
-                        ${ticket.description || 'ไม่มีรายละเอียดเพิ่มเติม'}
-                    </p>
-
-                    <!-- Bottom Meta: Location | Date -->
-                    <div style="margin-top: auto; display: flex; align-items: center; gap: 0.75rem; font-size: 0.75rem; color: var(--text-muted);">
-                        <div style="display: flex; align-items: center; gap: 0.25rem;">
-                            <span class="material-symbols-outlined" style="font-size: 1rem;">location_on</span>
-                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ticket.zoneName}</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 0.25rem;">
-                            <span class="material-symbols-outlined" style="font-size: 1rem;">calendar_today</span>
-                            <span>${formatShortDate(ticket.date)}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    // Grid Card Component (For Dashboard Grid View)
-    gridCard(ticket) {
-        const displayImages = ticket.images ? ticket.images.slice(0, 1) : []; // Show 1 main image
-        const hasImages = displayImages.length > 0;
-
-        return `
-            <div class="ticket-card" onclick="showTicketDetail(${ticket.id})" style="flex-direction: column; padding: 0; overflow: hidden; height: 100%; border: 1px solid var(--border); border-radius: 1rem; transition: transform 0.2s, box-shadow 0.2s;">
-                
-                <!-- Image Section -->
-                <div style="width: 100%; height: 12rem; background: #f1f5f9; position: relative;">
-                    ${hasImages ? `
+                <div style="margin-bottom: 1rem;">
+                    <div style="position: relative; width: 6rem; height: 6rem; border-radius: 0.75rem; overflow: hidden; border: 1px solid var(--border);">
                         <img src="${displayImages[0]}" alt="Thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
-                    ` : `
-                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #cbd5e1;">
-                            <span class="material-symbols-outlined" style="font-size: 3rem;">image_not_supported</span>
-                        </div>
-                    `}
-                    
-                    <!-- Floating Priority Badge -->
-                    ${ticket.priority === 'urgent' ? `
-                        <div style="position: absolute; top: 0.75rem; right: 0.75rem; background: #ef4444; color: white; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            เร่งด่วน
-                        </div>
-                    ` : ''}
-                    
-                    <!-- Floating Status Badge -->
-                    <div style="position: absolute; top: 0.75rem; left: 0.75rem;">
-                         <span class="badge ${getStatusClass(ticket.status)}" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid white;">${getStatusLabel(ticket.status)}</span>
+                        ${ticket.images.length > 1 ? `
+                            <div style="position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.6); color: white; padding: 0.1rem 0.5rem; border-top-left-radius: 0.5rem; font-size: 0.8rem; font-weight: 600;">
+                                +${ticket.images.length - 1}
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
+                ` : ''}
 
-                <!-- Content Section -->
-                <div style="padding: 1rem; display: flex; flex-direction: column; flex: 1;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <span style="font-size: 0.8rem; font-weight: 800; color: var(--primary);">#${ticket.id}</span>
-                        <span style="font-size: 0.75rem; color: var(--text-muted);">${formatShortDate(ticket.date)}</span>
-                    </div>
-
-                    <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                        ${ticket.title}
-                    </h3>
-                    
-                    <div style="margin-top: auto; display: flex; align-items: center; gap: 0.25rem; color: var(--text-secondary); font-size: 0.8rem;">
+                <!-- Footer Meta -->
+                <div class="ticket-list-meta">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="material-symbols-outlined" style="font-size: 1rem;">location_on</span>
-                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ticket.zoneName}</span>
+                        <span>${ticket.zoneName}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">calendar_today</span>
+                        <span>${formatShortDate(ticket.date)}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">park</span>
+                        <span>${getDamageTypeName(ticket.damageType)}</span>
                     </div>
                 </div>
             </div>

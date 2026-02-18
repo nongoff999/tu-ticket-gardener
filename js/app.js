@@ -237,8 +237,7 @@ function initRouter() {
         .register('/add-select', withAuth(renderCategorySelection))
         .register('/edit', withAuth(renderEditTicket))
         .register('/reports', withAuth(renderReportList))
-        .register('/report-detail', withAuth(reportDetailHandler))
-        .register('/profile', withAuth(renderProfile));
+        .register('/report-detail', withAuth(reportDetailHandler));
 
     // Initial Route Check
     if (!location.hash || location.hash === '#/') {
@@ -1060,16 +1059,6 @@ function renderTicketList() {
                 <span class="material-symbols-outlined icon">search</span>
                 <input type="text" placeholder="ค้นหาทิคเก็ต..." id="search-input">
             </div>
-
-            <div class="view-toggle">
-                <button class="view-toggle-btn" id="view-grid-btn">
-                    <span class="material-symbols-outlined">grid_view</span>
-                </button>
-                <button class="view-toggle-btn active" id="view-list-btn">
-                    <span class="material-symbols-outlined">view_list</span>
-                </button>
-            </div>
-
             <button id="filter-toggle-btn">
                 <span class="material-symbols-outlined" style="font-size: 1.5rem;">tune</span>
             </button>
@@ -1086,7 +1075,7 @@ function renderTicketList() {
                         <button class="modern-filter-chip active" data-group="status" data-value="all">ทั้งหมด</button>
                         <button class="modern-filter-chip" data-group="status" data-value="new">
                             <span class="material-symbols-outlined" style="font-size: 1.1rem;">new_releases</span>
-                            ทิคเก็ตใหม่
+                            ใหม่
                         </button>
                         <button class="modern-filter-chip" data-group="status" data-value="inProgress">
                             <span class="material-symbols-outlined" style="font-size: 1.1rem;">hourglass_top</span>
@@ -1118,16 +1107,21 @@ function renderTicketList() {
             </div>
         </div>
 
+        <!-- Ticket Count -->
         <div style="padding: 0 1.5rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="ticket-list-count"></span>
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="list-count"></p>
         </div>
 
+        <!-- Ticket List -->
         <div class="ticket-list pb-safe" id="ticket-list">
-            <!-- Content -->
+            <!-- Content rendered by JS -->
         </div>
-        
-        <!-- Pagination -->
-        <div id="pagination-container" style="padding-bottom: 2rem;"></div>
+
+        <!-- Floating Action Button -->
+        <button class="fab-btn" onclick="router.navigate('/add')">
+            <span class="fab-text">Add Ticket</span>
+            <span class="material-symbols-outlined" style="font-size: 1.75rem;">add</span>
+        </button>
     `;
 
     // --- Logic ---
@@ -1136,9 +1130,9 @@ function renderTicketList() {
     const statusFilters = document.getElementById('status-filters');
     const priorityFilters = document.getElementById('priority-filters');
     const searchInput = document.getElementById('search-input');
-    const countLabel = document.getElementById('ticket-list-count');
+    const countLabel = document.getElementById('list-count');
 
-    // Toggle Panel
+    // Toggle Panel Visibility
     filterToggleBtn.addEventListener('click', () => {
         const isOpen = filterPanel.classList.contains('open');
         if (isOpen) {
@@ -1151,94 +1145,73 @@ function renderTicketList() {
     });
 
     // Default Filters
-    if (!AppState.ticketViewMode) AppState.ticketViewMode = 'list';
-
-    // Check if variables are already declared in this scope? (They are let/const)
-    // We are replacing the whole function body essentially from earlier view.
-    // Assuming this replaces existing vars.
-    let currentStatus = 'all';
+    let currentStatus = 'all'; // Default to ALL for general list
     let currentPriority = 'all';
 
     function applyFilters() {
         const query = searchInput.value.toLowerCase().trim();
         let filtered = MOCK_DATA.tickets;
 
-        if (currentStatus !== 'all') filtered = filtered.filter(t => t.status === currentStatus);
+        // 1. Status Filter
+        if (currentStatus !== 'all') {
+            filtered = filtered.filter(t => t.status === currentStatus);
+        }
 
-        if (currentPriority === 'urgent') filtered = filtered.filter(t => t.priority === 'urgent');
-        else if (currentPriority === 'not-urgent') filtered = filtered.filter(t => t.priority !== 'urgent');
+        // 2. Priority Filter
+        if (currentPriority === 'urgent') {
+            filtered = filtered.filter(t => t.priority === 'urgent');
+        } else if (currentPriority === 'not-urgent') {
+            filtered = filtered.filter(t => t.priority !== 'urgent');
+        }
 
+        // 3. Search Filter
         if (query) {
             filtered = filtered.filter(t =>
                 t.title.toLowerCase().includes(query) ||
                 t.description.toLowerCase().includes(query) ||
                 t.zoneName.toLowerCase().includes(query) ||
                 t.id.toString().includes(query) ||
-                (t.treeType && t.treeType.toLowerCase().includes(query))
+                (t.treeType && t.treeType.toLowerCase().includes(query)) ||
+                (t.operation && t.operation.toLowerCase().includes(query)) ||
+                (t.assignees && t.assignees.join(' ').toLowerCase().includes(query)) ||
+                (t.locationDetail && t.locationDetail.toLowerCase().includes(query)) ||
+                (t.notes && t.notes.toLowerCase().includes(query))
             );
         }
 
         // Render
         const listEl = document.getElementById('ticket-list');
-
-        // Toggle View Mode Layout
-        if (AppState.ticketViewMode === 'grid') {
-            listEl.style.display = 'grid';
-            listEl.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
-            listEl.style.gap = '1.5rem';
-        } else {
-            listEl.style.display = 'flex';
-            listEl.style.flexDirection = 'column';
-            listEl.style.gap = '0.75rem';
-            listEl.style.gridTemplateColumns = 'none';
-        }
-
         if (filtered.length > 0) {
-            if (AppState.ticketViewMode === 'grid') {
-                listEl.innerHTML = filtered.map(ticket => Components.gridCard(ticket)).join('');
-            } else {
-                listEl.innerHTML = filtered.map(ticket => Components.ticketCard(ticket)).join('');
-            }
+            listEl.innerHTML = filtered.map(ticket => Components.ticketCard(ticket)).join('');
         } else {
             listEl.innerHTML = `
-                <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted); grid-column: 1 / -1;">
+                <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
                     <span class="material-symbols-outlined" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;">inbox</span>
                     <p style="font-size: 1.1rem; font-weight: 500;">ไม่พบรายการทิคเก็ต</p>
+                    <p style="font-size: 0.9rem; opacity: 0.7;">ลองปรับตัวกรองหรือค้นหาใหม่</p>
                 </div>
             `;
         }
 
-        countLabel.textContent = `แสดง ${filtered.length} รายการ`;
-        renderPagination(Math.ceil(filtered.length / 10));
+        // Update Count
+        countLabel.textContent = `ทั้งหมด ${filtered.length} รายการ`;
     }
 
-    function renderPagination(totalPages) {
-        const container = document.getElementById('pagination-container');
-        if (!container) return;
-        if (totalPages <= 1) { container.innerHTML = ''; return; }
-
-        container.innerHTML = `
-            <div class="pagination">
-                <button class="page-btn"><span class="material-symbols-outlined">chevron_left</span></button>
-                <button class="page-btn active">1</button>
-                ${totalPages > 1 ? '<button class="page-btn">2</button>' : ''}
-                ${totalPages > 2 ? '<button class="page-btn">3</button>' : ''}
-                ${totalPages > 3 ? `<button class="page-btn">${totalPages}</button>` : ''}
-                <button class="page-btn"><span class="material-symbols-outlined">chevron_right</span></button>
-            </div>
-        `;
-    }
-
-    // Event Listeners
+    // Event Listeners for Chips
     function setupChipGroup(groupElement, groupName) {
         groupElement.addEventListener('click', (e) => {
             const btn = e.target.closest('.modern-filter-chip');
             if (!btn) return;
+
+            // Update UI
             groupElement.querySelectorAll('.modern-filter-chip').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+
+            // Update State
             const val = btn.dataset.value;
             if (groupName === 'status') currentStatus = val;
             if (groupName === 'priority') currentPriority = val;
+
             applyFilters();
         });
     }
@@ -1247,26 +1220,8 @@ function renderTicketList() {
     setupChipGroup(priorityFilters, 'priority');
     searchInput.addEventListener('input', applyFilters);
 
-    // View Toggle Listeners
-    const gridBtn = document.getElementById('view-grid-btn');
-    const listBtn = document.getElementById('view-list-btn');
-
-    function updateViewToggleUI() {
-        if (AppState.ticketViewMode === 'grid') {
-            gridBtn.classList.add('active');
-            listBtn.classList.remove('active');
-        } else {
-            gridBtn.classList.remove('active');
-            listBtn.classList.add('active');
-        }
-    }
-
-    gridBtn.addEventListener('click', () => { AppState.ticketViewMode = 'grid'; updateViewToggleUI(); applyFilters(); });
-    listBtn.addEventListener('click', () => { AppState.ticketViewMode = 'list'; updateViewToggleUI(); applyFilters(); });
-
-    updateViewToggleUI();
+    // Initial Render
     applyFilters();
-
 }
 
 function renderTicketDetail(params) {
@@ -4179,107 +4134,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
-/* --- Bottom Navigation & Profile Helpers --- */
-
-// Helper to update active state for Bottom Nav & Drawer
-window.updateActiveNavItem = function (pageName) {
-    // 1. Update Drawer (if exists)
-    document.querySelectorAll('.drawer-nav-item').forEach(item => {
-        item.classList.remove('active');
-        if (item.getAttribute('href') === `#/${pageName}`) {
-            item.classList.add('active');
-        }
-    });
-
-    // 2. Update Bottom Nav
-    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    const activeBtn = document.getElementById(`nav-${pageName}`);
-    if (activeBtn) activeBtn.classList.add('active');
-
-    // Update Profile Icon Border
-    const profileBtn = document.getElementById('nav-profile');
-    if (pageName === 'profile' && profileBtn) {
-        profileBtn.classList.add('active');
-    }
-};
-
-// Render Profile Page
-window.renderProfile = function () {
-    updateHeaderNav(true);
-    console.log('------------------------------------------');
-    console.log('👤 กำลังแสดงผล Profile Page...');
-    AppState.currentPage = 'profile';
-    updateActiveNavItem('profile');
-
-    document.getElementById('page-title').textContent = 'MY PROFILE';
-
-    const user = MOCK_DATA.user || { name: 'สมชาย การดี', role: 'Staff' };
-
-    const content = document.getElementById('main-content');
-    content.innerHTML = `
-        <div style="padding: 1.5rem; display: flex; flex-direction: column; align-items: center;">
-            
-            <!-- Avatar -->
-            <div style="position: relative; margin-bottom: 1.5rem;">
-                <div style="width: 7rem; height: 7rem; border-radius: 50%; padding: 0.25rem; border: 2px dashed var(--primary);">
-                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0ea5e9&color=fff&size=128" 
-                         alt="Profile" 
-                         style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: var(--shadow-md);">
-                </div>
-                <div style="position: absolute; bottom: 0.5rem; right: 0.5rem; background: #22c55e; color: white; width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: var(--shadow-sm);">
-                    <span class="material-symbols-outlined" style="font-size: 1.2rem;">check</span>
-                </div>
-            </div>
-
-            <!-- Info -->
-            <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">${user.name}</h2>
-            <p style="color: var(--text-muted); font-weight: 500; margin-bottom: 2rem;">${user.role}</p>
-
-            <!-- Menu List -->
-            <div style="width: 100%; display: flex; flex-direction: column; gap: 1rem;">
-                
-                <button class="kpi-card" onclick="showPopup('แก้ไขข้อมูล', 'ระบบแก้ไขข้อมูลส่วนตัวกำลังพัฒนา', 'info')" 
-                    style="display: flex; align-items: center; padding: 1rem; background: white; border: 1px solid var(--border); border-radius: 1rem; width: 100%; text-align: left; box-shadow: var(--shadow-sm);">
-                    <div style="width: 2.5rem; height: 2.5rem; background: #f0f9ff; color: var(--primary); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                        <span class="material-symbols-outlined">edit</span>
-                    </div>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600; color: var(--text-primary);">แก้ไขข้อมูลส่วนตัว</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted);">เปลี่ยนชื่อ, รหัสผ่าน</div>
-                    </div>
-                    <span class="material-symbols-outlined" style="color: #cbd5e1;">chevron_right</span>
-                </button>
-
-                <button class="kpi-card" onclick="showPopup('การตั้งค่า', 'ระบบตั้งค่าแอปพลิเคชันกำลังพัฒนา', 'info')" 
-                    style="display: flex; align-items: center; padding: 1rem; background: white; border: 1px solid var(--border); border-radius: 1rem; width: 100%; text-align: left; box-shadow: var(--shadow-sm);">
-                    <div style="width: 2.5rem; height: 2.5rem; background: #fdf2f8; color: #ec4899; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                        <span class="material-symbols-outlined">settings</span>
-                    </div>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600; color: var(--text-primary);">การตั้งค่าระบบ</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted);">การแจ้งเตือน, ธีม</div>
-                    </div>
-                    <span class="material-symbols-outlined" style="color: #cbd5e1;">chevron_right</span>
-                </button>
-
-                <button class="kpi-card" onclick="logout()" 
-                    style="display: flex; align-items: center; padding: 1rem; background: #fef2f2; border: 1px solid #fee2e2; border-radius: 1rem; width: 100%; text-align: left; margin-top: 1rem;">
-                    <div style="width: 2.5rem; height: 2.5rem; background: #fee2e2; color: #ef4444; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                        <span class="material-symbols-outlined">logout</span>
-                    </div>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600; color: #ef4444;">ออกจากระบบ</div>
-                        <div style="font-size: 0.8rem; color: #f87171;">Log out</div>
-                    </div>
-                </button>
-
-            </div>
-            
-            <p style="margin-top: 2rem; color: #cbd5e1; font-size: 0.75rem;">App Version 1.2.0</p>
-            <div style="height: 4rem;"></div>
-        </div>
-    `;
-};
