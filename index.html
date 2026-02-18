@@ -108,6 +108,31 @@
 
     </div>
 
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="javascript:void(0)" onclick="navigateTo('dashboard')" class="nav-item" id="nav-dashboard">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>หน้าหลัก</span>
+        </a>
+        <a href="javascript:void(0)" onclick="navigateTo('monitor')" class="nav-item" id="nav-monitor">
+            <span class="material-symbols-outlined">monitoring</span>
+            <span>ติดตาม</span>
+        </a>
+        <a href="javascript:void(0)" onclick="navigateTo('tickets')" class="nav-item" id="nav-tickets">
+            <span class="material-symbols-outlined">confirmation_number</span>
+            <span>รายการ</span>
+        </a>
+        <a href="javascript:void(0)" onclick="navigateTo('profile')" class="nav-item" id="nav-profile">
+            <div class="nav-profile-icon">
+                <img src="https://ui-avatars.com/api/?name=Somchai+Gardee&background=0ea5e9&color=fff&size=64"
+                    alt="Profile">
+                <div class="nav-profile-status"></div>
+            </div>
+            <span>โปรไฟล์</span>
+        </a>
+    </nav>
+
+
     <!-- Drawer Overlay -->
     <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
 

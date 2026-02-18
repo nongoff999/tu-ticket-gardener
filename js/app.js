@@ -237,7 +237,8 @@ function initRouter() {
         .register('/add-select', withAuth(renderCategorySelection))
         .register('/edit', withAuth(renderEditTicket))
         .register('/reports', withAuth(renderReportList))
-        .register('/report-detail', withAuth(reportDetailHandler));
+        .register('/report-detail', withAuth(reportDetailHandler))
+        .register('/profile', withAuth(renderProfile));
 
     // Initial Route Check
     if (!location.hash || location.hash === '#/') {
@@ -4134,3 +4135,107 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+/* --- Bottom Navigation & Profile Helpers --- */
+
+// Helper to update active state for Bottom Nav & Drawer
+window.updateActiveNavItem = function (pageName) {
+    // 1. Update Drawer (if exists)
+    document.querySelectorAll('.drawer-nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('href') === `#/${pageName}`) {
+            item.classList.add('active');
+        }
+    });
+
+    // 2. Update Bottom Nav
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    const activeBtn = document.getElementById(`nav-${pageName}`);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    // Update Profile Icon Border
+    const profileBtn = document.getElementById('nav-profile');
+    if (pageName === 'profile' && profileBtn) {
+        profileBtn.classList.add('active');
+    }
+};
+
+// Render Profile Page
+window.renderProfile = function () {
+    updateHeaderNav(true);
+    console.log('------------------------------------------');
+    console.log('👤 กำลังแสดงผล Profile Page...');
+    AppState.currentPage = 'profile';
+    updateActiveNavItem('profile');
+
+    document.getElementById('page-title').textContent = 'MY PROFILE';
+
+    const user = MOCK_DATA.user || { name: 'สมชาย การดี', role: 'Staff' };
+
+    const content = document.getElementById('main-content');
+    content.innerHTML = `
+        <div style="padding: 1.5rem; display: flex; flex-direction: column; align-items: center;">
+            
+            <!-- Avatar -->
+            <div style="position: relative; margin-bottom: 1.5rem;">
+                <div style="width: 7rem; height: 7rem; border-radius: 50%; padding: 0.25rem; border: 2px dashed var(--primary);">
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0ea5e9&color=fff&size=128" 
+                         alt="Profile" 
+                         style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: var(--shadow-md);">
+                </div>
+                <div style="position: absolute; bottom: 0.5rem; right: 0.5rem; background: #22c55e; color: white; width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: var(--shadow-sm);">
+                    <span class="material-symbols-outlined" style="font-size: 1.2rem;">check</span>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">${user.name}</h2>
+            <p style="color: var(--text-muted); font-weight: 500; margin-bottom: 2rem;">${user.role}</p>
+
+            <!-- Menu List -->
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 1rem;">
+                
+                <button class="kpi-card" onclick="showPopup('แก้ไขข้อมูล', 'ระบบแก้ไขข้อมูลส่วนตัวกำลังพัฒนา', 'info')" 
+                    style="display: flex; align-items: center; padding: 1rem; background: white; border: 1px solid var(--border); border-radius: 1rem; width: 100%; text-align: left; box-shadow: var(--shadow-sm);">
+                    <div style="width: 2.5rem; height: 2.5rem; background: #f0f9ff; color: var(--primary); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                        <span class="material-symbols-outlined">edit</span>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: var(--text-primary);">แก้ไขข้อมูลส่วนตัว</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">เปลี่ยนชื่อ, รหัสผ่าน</div>
+                    </div>
+                    <span class="material-symbols-outlined" style="color: #cbd5e1;">chevron_right</span>
+                </button>
+
+                <button class="kpi-card" onclick="showPopup('การตั้งค่า', 'ระบบตั้งค่าแอปพลิเคชันกำลังพัฒนา', 'info')" 
+                    style="display: flex; align-items: center; padding: 1rem; background: white; border: 1px solid var(--border); border-radius: 1rem; width: 100%; text-align: left; box-shadow: var(--shadow-sm);">
+                    <div style="width: 2.5rem; height: 2.5rem; background: #fdf2f8; color: #ec4899; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                        <span class="material-symbols-outlined">settings</span>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: var(--text-primary);">การตั้งค่าระบบ</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">การแจ้งเตือน, ธีม</div>
+                    </div>
+                    <span class="material-symbols-outlined" style="color: #cbd5e1;">chevron_right</span>
+                </button>
+
+                <button class="kpi-card" onclick="logout()" 
+                    style="display: flex; align-items: center; padding: 1rem; background: #fef2f2; border: 1px solid #fee2e2; border-radius: 1rem; width: 100%; text-align: left; margin-top: 1rem;">
+                    <div style="width: 2.5rem; height: 2.5rem; background: #fee2e2; color: #ef4444; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                        <span class="material-symbols-outlined">logout</span>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #ef4444;">ออกจากระบบ</div>
+                        <div style="font-size: 0.8rem; color: #f87171;">Log out</div>
+                    </div>
+                </button>
+
+            </div>
+            
+            <p style="margin-top: 2rem; color: #cbd5e1; font-size: 0.75rem;">App Version 1.2.0</p>
+            <div style="height: 4rem;"></div>
+        </div>
+    `;
+};
