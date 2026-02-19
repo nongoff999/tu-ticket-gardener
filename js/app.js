@@ -11,7 +11,9 @@ const AppState = {
     isDrawerOpen: false,
     selectedDate: new Date().toISOString().split('T')[0], // Default to today
     selectedReport: null,
-    currentFilter: 'all'
+    currentFilter: 'all',
+    ticketsPage: 1,
+    ticketsPerPage: 10
 };
 
 // Initialize App
@@ -1155,19 +1157,44 @@ function renderTicketList() {
         <div class="ticket-list-header">
             <div class="tlh-thumb"></div>
             <div class="tlh-info">รายละเอียดงาน</div>
+            <div class="tlh-meta">ความเร่งด่วน</div>
             <div class="tlh-meta">สถานะ</div>
-            <div class="tlh-date">วันที่</div>
+            <div class="tlh-date">วันที่ / เวลา</div>
             <div class="tlh-action"></div>
         </div>
 
         <!-- Ticket List -->
-        <div class="ticket-list pb-safe" id="ticket-list">
+        <div class="ticket-list" id="ticket-list" style="margin-bottom: 0;">
             <!-- Content rendered by JS -->
+        </div>
+
+        <!-- Standard Table Pagination -->
+        <div class="table-pagination">
+            <div class="rows-per-page">
+                <span>แสดงหน้าละ:</span>
+                <select id="rows-per-page-select" class="rows-select">
+                    <option value="10" ${AppState.ticketsPerPage == 10 ? 'selected' : ''}>10</option>
+                    <option value="25" ${AppState.ticketsPerPage == 25 ? 'selected' : ''}>25</option>
+                    <option value="50" ${AppState.ticketsPerPage == 50 ? 'selected' : ''}>50</option>
+                </select>
+                <span>รายการ</span>
+            </div>
+            
+            <div class="pagination-controls">
+                <div class="pagination-info" id="pagination-info" style="margin-right: 1rem;">แสดง - จาก -</div>
+                <button class="pagination-btn" id="prev-page-btn">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="page-numbers" style="display: flex; gap: 0.25rem;"></div>
+                <button class="pagination-btn" id="next-page-btn">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
         </div>
 
         <!-- Floating Action Button -->
         <button class="fab-btn" onclick="router.navigate('/add')">
-            <span class="fab-text">Add Ticket</span>
+            <span class="fab-text">แจ้งปัญหาใหม่</span>
             <span class="material-symbols-outlined" style="font-size: 1.75rem;">add</span>
         </button>
     `;
@@ -1374,8 +1401,25 @@ function renderTicketList() {
 
         // Render
         const listEl = document.getElementById('ticket-list');
-        if (filtered.length > 0) {
-            listEl.innerHTML = filtered.map(ticket => Components.ticketCard(ticket)).join('');
+        const rowsSelect = document.getElementById('rows-per-page-select');
+        const prevBtn = document.getElementById('prev-page-btn');
+        const nextBtn = document.getElementById('next-page-btn');
+        const infoEl = document.getElementById('pagination-info');
+        const pageNumbersEl = document.getElementById('page-numbers');
+
+        // Pagination Logic
+        const total = filtered.length;
+        const totalPages = Math.ceil(total / AppState.ticketsPerPage);
+
+        // Safety check for current page
+        if (AppState.ticketsPage > totalPages) AppState.ticketsPage = Math.max(1, totalPages);
+
+        const startIdx = (AppState.ticketsPage - 1) * AppState.ticketsPerPage;
+        const endIdx = Math.min(startIdx + AppState.ticketsPerPage, total);
+        const pagedData = filtered.slice(startIdx, endIdx);
+
+        if (pagedData.length > 0) {
+            listEl.innerHTML = pagedData.map(ticket => Components.ticketCard(ticket)).join('');
         } else {
             listEl.innerHTML = `
                 <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
@@ -1386,10 +1430,64 @@ function renderTicketList() {
             `;
         }
 
-        // Update Count
-        countLabel.textContent = `ทั้งหมด ${filtered.length} รายการ`;
+        // --- Update Pagination UI ---
+        infoEl.textContent = total > 0 ? `แสดง ${startIdx + 1}-${endIdx} จาก ${total} รายการ` : 'ไม่พบรายการ';
+        prevBtn.disabled = AppState.ticketsPage <= 1;
+        nextBtn.disabled = AppState.ticketsPage >= totalPages;
+
+        // Render Page Numbers (Show current and neighbor pages)
+        let pageHtml = '';
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= AppState.ticketsPage - 1 && i <= AppState.ticketsPage + 1)) {
+                pageHtml += `<button class="pagination-btn ${i === AppState.ticketsPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            } else if (i === AppState.ticketsPage - 2 || i === AppState.ticketsPage + 2) {
+                pageHtml += `<span style="padding: 0 0.5rem; color: #94a3b8;">...</span>`;
+            }
+        }
+        pageNumbersEl.innerHTML = pageHtml;
+
+        // Page Selectors Listeners
+        pageNumbersEl.querySelectorAll('.pagination-btn').forEach(btn => {
+            btn.onclick = () => {
+                AppState.ticketsPage = parseInt(btn.dataset.page);
+                applyFilters();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+        });
+
+        // Update Count label at top
+        countLabel.textContent = `พบทั้งหมด ${total} รายการ`;
     }
-    searchInput.addEventListener('input', applyFilters);
+
+    // Pagination Controls Setup
+    const rowsSelect = document.getElementById('rows-per-page-select');
+    const prevBtn = document.getElementById('prev-page-btn');
+    const nextBtn = document.getElementById('next-page-btn');
+
+    rowsSelect.onchange = (e) => {
+        AppState.ticketsPerPage = parseInt(e.target.value);
+        AppState.ticketsPage = 1;
+        applyFilters();
+    };
+
+    prevBtn.onclick = () => {
+        if (AppState.ticketsPage > 1) {
+            AppState.ticketsPage--;
+            applyFilters();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    nextBtn.onclick = () => {
+        AppState.ticketsPage++;
+        applyFilters();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    searchInput.addEventListener('input', () => {
+        AppState.ticketsPage = 1; // Reset to page 1 on search
+        applyFilters();
+    });
 
     // Initial Render
     applyFilters();

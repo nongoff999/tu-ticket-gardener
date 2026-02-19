@@ -27,18 +27,23 @@ const Components = {
                     <p class="tli-desc">${ticket.zoneName} - ${ticket.locationDetail || 'ทั่วไป'}</p>
                 </div>
 
-                <!-- Col 3: Tags/Status -->
+                <!-- Col 3: Priority -->
+                <div class="tli-meta">
+                    <span class="badge-tag ${ticket.priority === 'urgent' ? 'urgent' : ''}">${ticket.priority === 'urgent' ? 'เร่งด่วน' : 'ปกติ'}</span>
+                </div>
+
+                <!-- Col 4: Status -->
                 <div class="tli-meta">
                     <span class="badge-tag ${getStatusClass(ticket.status)}">${getStatusLabel(ticket.status)}</span>
-                    ${ticket.priority === 'urgent' ? '<span class="badge-tag urgent">เร่งด่วน</span>' : ''}
                 </div>
 
-                <!-- Col 4: Date -->
+                <!-- Col 5: DateTime (2 lines) -->
                 <div class="tli-date">
-                    ${formatShortDate(ticket.date)}
+                    <span class="date">${formatShortDate(ticket.date)}</span>
+                    <span class="time">${ticket.date.split('T')[1]?.substring(0, 5) || '00:00'} น.</span>
                 </div>
 
-                <!-- Col 5: Action Menu -->
+                <!-- Col 6: Action Menu -->
                 <div class="tli-action">
                     <span class="material-symbols-outlined">more_horiz</span>
                 </div>

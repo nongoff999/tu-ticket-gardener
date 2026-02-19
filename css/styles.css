@@ -2777,6 +2777,113 @@ body.login-mode #main-content {
     color: var(--primary);
 }
 
+/* Standard Table Grid Layout */
+@media (min-width: 1024px) {
+
+    .ticket-list-header,
+    .ticket-list-item {
+        display: grid !important;
+        grid-template-columns: 60px 2.5fr 1fr 1fr 120px 40px;
+        /* Thumb | Details | Priority | Status | DateTime | Action */
+        gap: 1rem;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+    }
+
+    .tli-meta {
+        display: contents;
+        /* Allow children to participate in parent grid */
+    }
+
+    /* Date column 2 lines */
+    .tli-date {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+        font-size: 0.85rem;
+        text-align: left;
+        width: auto;
+    }
+
+    .tli-date .time {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+}
+
+/* Pagination Styling */
+.table-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-top: 1px solid #f1f5f9;
+    border-radius: 0 0 0.75rem 0.75rem;
+    margin-top: -1px;
+    /* Align with table border */
+}
+
+.pagination-info {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pagination-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #64748b;
+    transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: var(--primary);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.rows-per-page {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.rows-select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    outline: none;
+    font-size: 0.85rem;
+    color: #1e293b;
+    background: #f8fafc;
+}
+
 /* Desktop Header Adjustments */
 @media (min-width: 1024px) {
     .ticket-list-header {
