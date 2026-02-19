@@ -1094,9 +1094,8 @@ function renderTicketList() {
                 <span class="material-symbols-outlined icon">search</span>
                 <input type="text" placeholder="ค้นหาทิคเก็ต..." id="search-input">
             </div>
-            <button id="filter-toggle-btn" style="display: flex; align-items: center; gap: 0.5rem; padding: 0 1rem; height: 3rem; border-radius: 999px; border: 1px solid #e2e8f0; background: white; color: #64748b; font-family: 'Kanit', sans-serif; font-weight: 500; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;">
-                <span class="material-symbols-outlined" style="font-size: 1.25rem;">tune</span>
-                ตัวกรอง
+            <button id="filter-toggle-btn" style="width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; transition: all 0.2s;">
+                <span class="material-symbols-outlined" style="font-size: 1.5rem;">tune</span>
             </button>
         </div>
 
