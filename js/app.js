@@ -1103,23 +1103,23 @@ function renderTicketList() {
         <div id="ticket-filter-panel" class="monitor-filter-panel">
             <div style="padding: 1rem 1.25rem; background: var(--card); margin: 0 1rem; border-radius: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
                 
-                <!-- Status Group -->
+                <!-- Status Group (Multi-Select) -->
                 <div style="margin-bottom: 1.25rem;">
                     <span class="filter-group-header">สถานะทิคเก็ต</span>
-                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;" id="status-filters">
-                        <button class="modern-filter-chip active" data-group="status" data-value="all">ทั้งหมด</button>
-                        <button class="modern-filter-chip" data-group="status" data-value="new">
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">new_releases</span>
-                            ใหม่
+                    <div class="filter-dropdown-container" style="position: relative; display: inline-block;">
+                        <button id="status-filter-trigger" class="modern-filter-chip active" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 1rem; border-radius: 1rem; height: auto; border: 1px solid var(--primary); background: #eff6ff;">
+                             <span class="material-symbols-outlined" style="font-size: 1.25rem; color: var(--primary);">filter_list</span>
+                             <div style="text-align: left; display: flex; flex-direction: column;">
+                                 <span style="font-size: 0.65rem; color: var(--primary); font-weight: 500;">สถานะ</span>
+                                 <span id="status-filter-label" style="font-size: 0.9rem; font-weight: 700; color: var(--primary);">ทั้งหมด</span>
+                             </div>
+                             <span class="material-symbols-outlined" style="font-size: 1.5rem; color: var(--primary); margin-left: 0.5rem;">expand_more</span>
                         </button>
-                        <button class="modern-filter-chip" data-group="status" data-value="inProgress">
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">hourglass_top</span>
-                            ดำเนินการ
-                        </button>
-                        <button class="modern-filter-chip" data-group="status" data-value="completed">
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">check_circle</span>
-                            เสร็จสิ้น
-                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="status-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 0.5rem); left: 0; background: white; border: 1px solid var(--border); border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 0.5rem; min-width: 240px; z-index: 100;">
+                            <!-- Items injected by JS -->
+                        </div>
                     </div>
                 </div>
 
@@ -1229,7 +1229,7 @@ function renderTicketList() {
     setView(AppState.ticketViewMode);
 
     // Default Filters
-    let currentStatus = 'all';
+    let selectedStatuses = ['new', 'inProgress', 'completed']; // Multi-select default
     let currentPriority = 'all';
     let currentSort = 'latest';
 
@@ -1238,16 +1238,93 @@ function renderTicketList() {
         applyFilters();
     });
 
+    // --- Status Dropdown Logic (Multi-Select) ---
+    const statusDropdownTrigger = document.getElementById('status-filter-trigger');
+    const statusDropdownMenu = document.getElementById('status-dropdown-menu');
+    let isStatusDropdownOpen = false;
+
+    function toggleStatusDropdown() {
+        isStatusDropdownOpen = !isStatusDropdownOpen;
+        statusDropdownMenu.style.display = isStatusDropdownOpen ? 'block' : 'none';
+        if (isStatusDropdownOpen) renderStatusDropdownItems();
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (isStatusDropdownOpen && !statusDropdownTrigger.contains(e.target) && !statusDropdownMenu.contains(e.target)) {
+            isStatusDropdownOpen = false;
+            statusDropdownMenu.style.display = 'none';
+        }
+    });
+
+    statusDropdownTrigger.addEventListener('click', toggleStatusDropdown);
+
+    function renderStatusDropdownItems() {
+        const statuses = [
+            { id: 'new', label: 'ทิคเก็ตใหม่', color: '#fbbf24' },
+            { id: 'inProgress', label: 'กำลังดำเนินการ', color: '#a855f7' },
+            { id: 'completed', label: 'เสร็จสิ้น', color: '#22c55e' }
+        ];
+
+        // Calculate counts
+        const accounts = { new: 0, inProgress: 0, completed: 0 };
+        MOCK_DATA.tickets.forEach(t => {
+            if (accounts[t.status] !== undefined) accounts[t.status]++;
+        });
+
+        statusDropdownMenu.innerHTML = statuses.map(s => {
+            const isChecked = selectedStatuses.includes(s.id);
+            return `
+                <div class="status-option" data-value="${s.id}" style="padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; border-radius: 0.5rem; transition: background 0.1s; user-select: none;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+                     <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid ${isChecked ? 'var(--primary)' : '#e2e8f0'}; display: flex; align-items: center; justify-content: center; background: ${isChecked ? 'var(--primary)' : 'white'}; transition: all 0.2s;">
+                        <span class="material-symbols-outlined" style="font-size: 14px; color: white; display: ${isChecked ? 'block' : 'none'};">check</span>
+                    </div>
+                    <span style="flex: 1; font-weight: 500; color: var(--text-primary);">${s.label}</span>
+                    <span style="background: #f1f5f9; padding: 0.15rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; color: #64748b; font-weight: 600;">${accounts[s.id]}</span>
+                </div>
+            `;
+        }).join('');
+
+        // Re-attach listeners
+        statusDropdownMenu.querySelectorAll('.status-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation(); // Keep open
+                const val = opt.dataset.value;
+                if (selectedStatuses.includes(val)) {
+                    selectedStatuses = selectedStatuses.filter(s => s !== val);
+                } else {
+                    selectedStatuses.push(val);
+                }
+                renderStatusDropdownItems(); // Re-render checkbox state
+                updateStatusTriggerLabel();
+                applyFilters();
+            });
+        });
+    }
+
+    function updateStatusTriggerLabel() {
+        const label = document.getElementById('status-filter-label');
+        if (selectedStatuses.length === 3) {
+            label.textContent = 'ทั้งหมด';
+        } else if (selectedStatuses.length === 0) {
+            label.textContent = 'ไม่ได้เลือก';
+        } else {
+            label.textContent = `เลือกแล้ว ${selectedStatuses.length} รายการ`;
+        }
+    }
+
     function applyFilters() {
         const query = searchInput.value.toLowerCase().trim();
         let filtered = [...MOCK_DATA.tickets]; // Copy
 
-        // 1. Status Filter
-        if (currentStatus !== 'all') {
-            filtered = filtered.filter(t => t.status === currentStatus);
+        // 1. Status Filter (Multi-Select)
+        if (selectedStatuses.length > 0) {
+            filtered = filtered.filter(t => selectedStatuses.includes(t.status));
+        } else {
+            filtered = []; // None selected
         }
 
-        // 2. Priority Filter
+        // 2. Priority Filter (Single Select)
         if (currentPriority === 'urgent') {
             filtered = filtered.filter(t => t.priority === 'urgent');
         } else if (currentPriority === 'not-urgent') {
@@ -1302,7 +1379,7 @@ function renderTicketList() {
         countLabel.textContent = `ทั้งหมด ${filtered.length} รายการ`;
     }
 
-    // Event Listeners for Chips
+    // Event Listeners for Chips (Priority Only)
     function setupChipGroup(groupElement, groupName) {
         groupElement.addEventListener('click', (e) => {
             const btn = e.target.closest('.modern-filter-chip');
@@ -1314,14 +1391,14 @@ function renderTicketList() {
 
             // Update State
             const val = btn.dataset.value;
-            if (groupName === 'status') currentStatus = val;
+            // if (groupName === 'status') currentStatus = val; // Removed
             if (groupName === 'priority') currentPriority = val;
 
             applyFilters();
         });
     }
 
-    setupChipGroup(statusFilters, 'status');
+    // setupChipGroup(statusFilters, 'status'); // Removed
     setupChipGroup(priorityFilters, 'priority');
     searchInput.addEventListener('input', applyFilters);
 
