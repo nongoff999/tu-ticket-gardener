@@ -1349,7 +1349,10 @@ function renderTicketList() {
     viewGridBtn.addEventListener('click', () => setView('grid'));
 
     // Default to List View for Tickets
-    if (!AppState.ticketViewMode) AppState.ticketViewMode = 'list';
+    // Default View: Grid for Mobile, List for Desktop if not set
+    if (!AppState.ticketViewMode) {
+        AppState.ticketViewMode = window.innerWidth < 768 ? 'grid' : 'list';
+    }
     setView(AppState.ticketViewMode);
 
     // Default Filters
