@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tu-ticket-v3';
+const CACHE_NAME = 'tu-ticket-v4';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -14,7 +14,7 @@ const ASSETS_TO_CACHE = [
 
 // Install Event
 self.addEventListener('install', (event) => {
-    self.skipWaiting(); // Force update
+    self.skipWaiting(); // Force activate immediately
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             console.log('✅ Service Worker: Caching App Shell');
@@ -30,34 +30,46 @@ self.addEventListener('activate', (event) => {
             return Promise.all(
                 cacheNames.map((cache) => {
                     if (cache !== CACHE_NAME) {
-                        console.log('🗑️ Service Worker: Clearing Old Cache');
+                        console.log('🗑️ Service Worker: Clearing Old Cache:', cache);
                         return caches.delete(cache);
                     }
                 })
             );
         })
     );
-    return self.clients.claim();
+    return self.clients.claim(); // Take control of all pages immediately
 });
 
-// Fetch Event
+// Fetch Event — Network-First Strategy
+// Try network first, fall back to cache if offline
 self.addEventListener('fetch', (event) => {
-    // Let external resources (Google Fonts, Google Images) pass through normally
-    // unless we specifically want to cache them later.
-    const isExternal = event.request.url.startsWith('http');
-    const isLocal = event.request.url.includes(self.location.origin);
+    // Skip non-GET requests
+    if (event.request.method !== 'GET') return;
 
-    if (!isLocal && !event.request.url.includes('fonts.googleapis.com')) {
-        return; // Let browser handle external requests
-    }
+    // Let external resources pass through
+    const isLocal = event.request.url.includes(self.location.origin);
+    if (!isLocal) return;
 
     event.respondWith(
-        caches.match(event.request).then((response) => {
-            // Return cache if found, otherwise fetch from network
-            return response || fetch(event.request).catch(() => {
-                // Optional: Return a fallback for images if offline
-                console.log('🌐 Fetch failed, possibly offline');
-            });
-        })
+        fetch(event.request)
+            .then((networkResponse) => {
+                // Got a fresh response from network — update cache
+                if (networkResponse && networkResponse.status === 200) {
+                    const responseClone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, responseClone);
+                    });
+                }
+                return networkResponse;
+            })
+            .catch(() => {
+                // Network failed (offline) — try cache
+                return caches.match(event.request).then((cachedResponse) => {
+                    return cachedResponse || new Response('Offline', {
+                        status: 503,
+                        statusText: 'Service Unavailable'
+                    });
+                });
+            })
     );
 });

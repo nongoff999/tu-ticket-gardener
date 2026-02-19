@@ -99,38 +99,139 @@ function getDeviceInfo() {
     return `${os} (${device})`;
 }
 
-// Check for Update and Reload
+// ============================================
+// Version Management & Auto-Update Detection
+// ============================================
+const APP_VERSION = '1.2.1';
+
+// Manual Update (triggered by button in sidebar)
 async function checkForUpdate() {
-    console.log('🔄 Checking for updates...');
+    console.log('🔄 Force update triggered...');
 
-    // Show feedback
-    showPopup('กำลังอัปเดต', 'ระบบกำลังล้างแคชและดึงข้อมูลล่าสุดจากเซิร์ฟเวอร์...', 'info');
+    // Show visual feedback
+    showPopup('กำลังอัปเดต', 'ระบบกำลังล้างแคชและโหลดเวอร์ชันล่าสุด...', 'info');
 
-    setTimeout(async () => {
-        try {
-            if ('serviceWorker' in navigator) {
-                const registrations = await navigator.serviceWorker.getRegistrations();
-                for (let registration of registrations) {
-                    await registration.unregister();
-                }
+    // Step 1: Disable the button to prevent double-click
+    const btn = document.querySelector('.update-check-btn');
+    if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.innerHTML = `
+            <span class="material-symbols-outlined" style="font-size: 1.1rem; animation: spin 1s linear infinite;">sync</span>
+            กำลังอัปเดต...
+        `;
+    }
+
+    // Add spin animation
+    if (!document.getElementById('spin-style')) {
+        const spinStyle = document.createElement('style');
+        spinStyle.id = 'spin-style';
+        spinStyle.textContent = `@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`;
+        document.head.appendChild(spinStyle);
+    }
+
+    try {
+        // Step 2: Unregister ALL Service Workers
+        if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (const registration of registrations) {
+                await registration.unregister();
+                console.log('✅ Service Worker unregistered');
             }
-
-            // Clear Caches
-            if ('caches' in window) {
-                const cacheNames = await caches.keys();
-                await Promise.all(cacheNames.map(name => caches.delete(name)));
-            }
-        } catch (e) {
-            console.error('Update cleanup failed:', e);
         }
 
-        // Reload
-        window.location.reload(true);
-    }, 1000);
+        // Step 3: Delete ALL Cache Storage
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => {
+                console.log(`🗑️ Deleting cache: ${name}`);
+                return caches.delete(name);
+            }));
+            console.log('✅ All caches cleared');
+        }
+    } catch (e) {
+        console.error('⚠️ Cleanup error (non-fatal):', e);
+    }
+
+    // Step 4: Hard navigate with cache-busting timestamp
+    // Using location.href instead of reload() to force a new navigation
+    // This ensures the browser treats it as a fresh page load
+    setTimeout(() => {
+        const url = new URL(window.location.href);
+        url.searchParams.set('_v', Date.now()); // Cache buster
+        window.location.href = url.toString();
+    }, 1500);
+}
+
+// Auto Version Check (runs periodically)
+async function autoCheckVersion() {
+    try {
+        const res = await fetch('./version.json?t=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+
+        if (data.version && data.version !== APP_VERSION) {
+            console.log(`🆕 New version detected: ${data.version} (current: ${APP_VERSION})`);
+            showUpdateBanner(data.version, data.changelog || '');
+        } else {
+            console.log(`✅ App is up to date (v${APP_VERSION})`);
+        }
+    } catch (e) {
+        // version.json may not exist yet, that's fine
+        console.log('ℹ️ Version check skipped (no version.json)');
+    }
+}
+
+function showUpdateBanner(newVersion, changelog) {
+    // Prevent duplicate banners
+    if (document.getElementById('update-banner')) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'update-banner';
+    banner.innerHTML = `
+        <div style="
+            position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+            background: #1e293b; color: white; padding: 1rem 1.5rem; border-radius: 1rem;
+            display: flex; align-items: center; gap: 1rem; z-index: 10000;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); max-width: 420px; width: calc(100% - 2rem);
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        ">
+            <span class="material-symbols-outlined" style="font-size: 1.5rem; color: #22c55e;">system_update</span>
+            <div style="flex: 1;">
+                <div style="font-weight: 700; font-size: 0.9rem;">พบเวอร์ชันใหม่ v${newVersion}</div>
+                <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">${changelog || 'มีการปรับปรุงใหม่พร้อมให้อัปเดต'}</div>
+            </div>
+            <button onclick="checkForUpdate()" style="
+                background: #22c55e; color: white; border: none; padding: 0.5rem 1rem;
+                border-radius: 0.5rem; font-weight: 700; font-size: 0.8rem; cursor: pointer;
+                white-space: nowrap;
+            ">อัปเดต</button>
+            <button onclick="this.closest('#update-banner').remove()" style="
+                background: none; border: none; color: #64748b; cursor: pointer; padding: 0.25rem;
+            ">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+            </button>
+        </div>
+    `;
+
+    // Add slide-up animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(100%); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(banner);
 }
 
 window.checkForUpdate = checkForUpdate;
 window.forceUpdate = checkForUpdate; // Alias for backward compatibility
+
+// Check for updates 5 seconds after load, then every 5 minutes
+setTimeout(autoCheckVersion, 5000);
+setInterval(autoCheckVersion, 5 * 60 * 1000);
 
 // Router Setup
 // Auth & Login Functions (AD Simulation)
