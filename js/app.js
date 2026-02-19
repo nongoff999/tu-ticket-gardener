@@ -896,14 +896,7 @@ function renderMonitor() {
                 <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border);">
                     <span class="filter-group-header">มุมมอง & การเรียงลำดับ</span>
                     <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                        <div class="view-switcher">
-                            <button class="view-btn" data-view="list" id="view-list-btn">
-                                <span class="material-symbols-outlined">view_list</span>
-                            </button>
-                            <button class="view-btn active" data-view="grid" id="view-grid-btn">
-                                <span class="material-symbols-outlined">grid_view</span>
-                            </button>
-                        </div>
+                    </div>
                         
                         <select class="sort-dropdown" id="sort-select" style="border: none; outline: none; font-family: inherit;">
                             <option value="latest">เรียงตาม: ล่าสุด</option>
@@ -919,6 +912,15 @@ function renderMonitor() {
         <!-- Ticket Count -->
         <div style="padding: 0 1.5rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="monitor-count"></span>
+            
+            <div class="view-switcher">
+                <button class="view-btn" data-view="list" id="view-list-btn">
+                    <span class="material-symbols-outlined">view_list</span>
+                </button>
+                <button class="view-btn active" data-view="grid" id="view-grid-btn">
+                    <span class="material-symbols-outlined">grid_view</span>
+                </button>
+            </div>
         </div>
 
         <!-- Ticket List -->
