@@ -131,13 +131,8 @@
                 <span class="material-symbols-outlined">person</span>
             </div>
             <div class="drawer-profile-info">
-                <div class="drawer-profile-name">สมชาย การดี <span
-                        style="font-size: 0.65rem; color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 4px; margin-left: 4px;">v1.2.0</span>
-                </div>
+                <div class="drawer-profile-name">สมชาย การดี</div>
                 <div class="drawer-profile-role">หัวหน้าช่างสวน</div>
-                <p id="device-info"
-                    style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.25rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">
-                </p>
             </div>
         </div>
 
@@ -165,21 +160,18 @@
         </nav>
 
         <div class="drawer-footer">
-            <button class="logout-btn" onclick="logout()" style="margin-bottom: 1rem;">
-                <span class="material-symbols-outlined">logout</span>
-                <span>LOG OUT</span>
-            </button>
-
-            <div class="drawer-version">Version 1.2.1 (TU Rangsit)</div>
-
-            <div
-                style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed rgba(0,0,0,0.1); text-align: center;">
-                <button onclick="checkForUpdate()" class="update-check-btn"
-                    style="background: none; border: none; font-size: 0.8rem; color: var(--primary); font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; transition: opacity 0.2s;">
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">cloud_sync</span>
-                    อัปเดตเวอร์ชันล่าสุด
+            <div class="drawer-footer-meta">
+                <span class="drawer-version">v1.2.1</span>
+                <span class="drawer-footer-sep">·</span>
+                <button onclick="checkForUpdate()" class="update-check-btn">
+                    <span class="material-symbols-outlined" style="font-size: 0.85rem;">cloud_sync</span>
+                    <span>อัปเดต</span>
                 </button>
             </div>
+            <button class="logout-btn" onclick="logout()">
+                <span class="material-symbols-outlined">logout</span>
+                <span>ออกจากระบบ</span>
+            </button>
         </div>
     </aside>
 
