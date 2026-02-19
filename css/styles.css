@@ -3274,3 +3274,195 @@ body.login-mode #main-content {
         display: none;
     }
 }
+
+/* --- Multi-Select Dropdown Styles --- */
+.filter-dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+
+.filter-chip-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    height: auto;
+    border: 1px solid var(--border);
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-chip-btn.active {
+    border-color: var(--primary);
+    background: #eff6ff;
+}
+
+.filter-chip-btn .chip-icon {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+}
+
+.filter-chip-btn.active .chip-icon,
+.filter-chip-btn.active .chip-label,
+.filter-chip-btn.active .chip-value,
+.filter-chip-btn.active .chip-arrow {
+    color: var(--primary);
+}
+
+.filter-chip-btn .chip-info {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-chip-btn .chip-label {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.filter-chip-btn .chip-value {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.filter-chip-btn .chip-arrow {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    margin-left: 0.5rem;
+}
+
+.filter-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem;
+    min-width: 240px;
+    z-index: 100;
+    max-height: 300px;
+    overflow-y: auto;
+    animation: fadeIn 0.15s ease-out;
+}
+
+.filter-dropdown-menu.show {
+    display: block;
+}
+
+.filter-dropdown-item {
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: background 0.1s;
+    user-select: none;
+}
+
+.filter-dropdown-item:hover {
+    background: #f8fafc;
+}
+
+.checkbox-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    transition: all 0.2s;
+}
+
+.filter-dropdown-item.selected .checkbox-circle {
+    border-color: var(--primary);
+    background: var(--primary);
+}
+
+.checkbox-circle .material-symbols-outlined {
+    font-size: 14px;
+    color: white;
+    display: none;
+}
+
+.filter-dropdown-item.selected .checkbox-circle .material-symbols-outlined {
+    display: block;
+}
+
+.filter-dropdown-item span {
+    flex: 1;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.filter-dropdown-count {
+    background: #f1f5f9;
+    padding: 0.15rem 0.6rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+/* --- Ticket Toolbar & Filter Layout --- */
+.ticket-toolbar {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0 1.5rem 1rem;
+    flex-wrap: wrap;
+}
+
+.ticket-toolbar .search-box {
+    margin: 0;
+    flex: 1;
+    min-width: 240px;
+    /* Ensure it doesn't shrink too small */
+}
+
+/* Ensure Dropdowns don't shrink */
+.ticket-toolbar .filter-dropdown-container {
+    flex-shrink: 0;
+}
+
+.view-switcher {
+    display: flex;
+    gap: 0.25rem;
+    background: white;
+    padding: 0.25rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.view-btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.view-btn.active {
+    background: #eff6ff;
+    color: var(--primary);
+}
+
+.view-btn:hover:not(.active) {
+    background: #f1f5f9;
+}

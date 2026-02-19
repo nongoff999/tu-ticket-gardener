@@ -1088,82 +1088,53 @@ function renderTicketList() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Search & Filter Toggle Row -->
-        <div style="display: flex; gap: 0.75rem; padding: 0 1rem; margin-bottom: 0.75rem; align-items: center;">
-            <div class="search-box" style="flex: 1; margin: 0; height: 3rem;">
+        <!-- Ticket Toolbar (Unified) -->
+        <div class="ticket-toolbar">
+            <!-- Search Box -->
+            <div class="search-box">
                 <span class="material-symbols-outlined icon">search</span>
-                <input type="text" placeholder="ค้นหาทิคเก็ต..." id="search-input">
+                <input type="text" id="search-input" placeholder="ค้นหาทิคเก็ต..." value="">
             </div>
-            <button id="filter-toggle-btn" style="width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; transition: all 0.2s;">
-                <span class="material-symbols-outlined" style="font-size: 1.5rem;">tune</span>
-            </button>
-        </div>
 
-        <!-- Collapsible Filter Panel -->
-        <div id="ticket-filter-panel" class="monitor-filter-panel">
-            <div style="padding: 1rem 1.25rem; background: var(--card); margin: 0 1rem; border-radius: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
-                
-                <!-- Status Group (Multi-Select) -->
-                <div style="margin-bottom: 1.25rem;">
-                    <span class="filter-group-header">สถานะทิคเก็ต</span>
-                    <div class="filter-dropdown-container" style="position: relative; display: inline-block;">
-                        <button id="status-filter-trigger" class="modern-filter-chip active" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 1rem; border-radius: 1rem; height: auto; border: 1px solid var(--primary); background: #eff6ff;">
-                             <span class="material-symbols-outlined" style="font-size: 1.25rem; color: var(--primary);">filter_list</span>
-                             <div style="text-align: left; display: flex; flex-direction: column;">
-                                 <span style="font-size: 0.65rem; color: var(--primary); font-weight: 500;">สถานะ</span>
-                                 <span id="status-filter-label" style="font-size: 0.9rem; font-weight: 700; color: var(--primary);">ทั้งหมด</span>
-                             </div>
-                             <span class="material-symbols-outlined" style="font-size: 1.5rem; color: var(--primary); margin-left: 0.5rem;">expand_more</span>
-                        </button>
+            <!-- Status Filter -->
+            <div class="filter-dropdown-container">
+                <button id="status-filter-trigger" class="filter-chip-btn">
+                     <span class="material-symbols-outlined chip-icon" style="color: var(--primary);">filter_list</span>
+                     <div class="chip-info">
+                         <span class="chip-label">สถานะ</span>
+                         <span id="status-filter-label" class="chip-value">ทั้งหมด</span>
+                     </div>
+                     <span class="material-symbols-outlined chip-arrow">expand_more</span>
+                </button>
+                <div id="status-dropdown-menu" class="filter-dropdown-menu"></div>
+            </div>
 
-                        <!-- Dropdown Menu -->
-                        <div id="status-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 0.5rem); left: 0; background: white; border: 1px solid var(--border); border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 0.5rem; min-width: 240px; z-index: 100;">
-                            <!-- Items injected by JS -->
-                        </div>
-                    </div>
-                </div>
+            <!-- Priority Filter -->
+            <div class="filter-dropdown-container">
+                <button id="priority-filter-trigger" class="filter-chip-btn">
+                     <span class="material-symbols-outlined chip-icon" style="color: #ef4444;">flag</span>
+                     <div class="chip-info">
+                         <span class="chip-label">ความเร่งด่วน</span>
+                         <span id="priority-filter-label" class="chip-value">ทั้งหมด</span>
+                     </div>
+                     <span class="material-symbols-outlined chip-arrow">expand_more</span>
+                </button>
+                <div id="priority-dropdown-menu" class="filter-dropdown-menu"></div>
+            </div>
 
-                <!-- Priority Group (Multi-Select) -->
-                <div>
-                    <span class="filter-group-header">ความเร่งด่วน</span>
-                    <div class="filter-dropdown-container" style="position: relative; display: inline-block;">
-                        <button id="priority-filter-trigger" class="modern-filter-chip active" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 1rem; border-radius: 1rem; height: auto; border: 1px solid var(--primary); background: #eff6ff;">
-                             <span class="material-symbols-outlined" style="font-size: 1.25rem; color: var(--primary);">flag</span>
-                             <div style="text-align: left; display: flex; flex-direction: column;">
-                                 <span style="font-size: 0.65rem; color: var(--primary); font-weight: 500;">ความเร่งด่วน</span>
-                                 <span id="priority-filter-label" style="font-size: 0.9rem; font-weight: 700; color: var(--primary);">ทั้งหมด</span>
-                             </div>
-                             <span class="material-symbols-outlined" style="font-size: 1.5rem; color: var(--primary); margin-left: 0.5rem;">expand_more</span>
-                        </button>
+            <!-- Sort Select -->
+            <div class="sort-container" style="margin-left: auto;">
+                 <select id="sort-select" class="sort-dropdown">
+                    <option value="latest">เรียงตาม: ล่าสุด</option>
+                    <option value="oldest">เรียงตาม: เก่าสุด</option>
+                    <option value="priority">เรียงตาม: ความเร่งด่วน</option>
+                 </select>
+            </div>
 
-                        <!-- Dropdown Menu -->
-                        <div id="priority-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 0.5rem); left: 0; background: white; border: 1px solid var(--border); border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 0.5rem; min-width: 240px; z-index: 100;">
-                            <!-- Items injected by JS -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- View & Sort Group -->
-                <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border);">
-                    <span class="filter-group-header">มุมมอง & การเรียงลำดับ</span>
-                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                        <div class="view-switcher">
-                            <button class="view-btn active" data-view="list" id="view-list-btn">
-                                <span class="material-symbols-outlined">view_list</span>
-                            </button>
-                            <button class="view-btn" data-view="grid" id="view-grid-btn">
-                                <span class="material-symbols-outlined">grid_view</span>
-                            </button>
-                        </div>
-                        
-                        <select class="sort-dropdown" id="sort-select" style="border: none; outline: none; font-family: inherit;">
-                            <option value="latest">เรียงตาม: ล่าสุด</option>
-                            <option value="oldest">เรียงตาม: เก่าสุด</option>
-                            <option value="priority">เรียงตาม: ความเร่งด่วน</option>
-                        </select>
-                    </div>
-                </div>
-
+            <!-- View Switcher -->
+            <div class="view-switcher">
+                <button id="view-list-btn" class="view-btn"> <span class="material-symbols-outlined">view_list</span> </button>
+                <button id="view-grid-btn" class="view-btn"> <span class="material-symbols-outlined">grid_view</span> </button>
             </div>
         </div>
 
@@ -1185,30 +1156,13 @@ function renderTicketList() {
     `;
 
     // --- Logic ---
-    const filterToggleBtn = document.getElementById('filter-toggle-btn');
-    const filterPanel = document.getElementById('ticket-filter-panel');
-    const statusFilters = document.getElementById('status-filters');
-    const priorityFilters = document.getElementById('priority-filters');
+    // --- Logic ---
     const searchInput = document.getElementById('search-input');
     const countLabel = document.getElementById('list-count');
-
-    // New Controls
     const viewListBtn = document.getElementById('view-list-btn');
     const viewGridBtn = document.getElementById('view-grid-btn');
     const sortSelect = document.getElementById('sort-select');
     const listContainer = document.getElementById('ticket-list');
-
-    // Toggle Panel Visibility
-    filterToggleBtn.addEventListener('click', () => {
-        const isOpen = filterPanel.classList.contains('open');
-        if (isOpen) {
-            filterPanel.classList.remove('open');
-            filterToggleBtn.classList.remove('active');
-        } else {
-            filterPanel.classList.add('open');
-            filterToggleBtn.classList.add('active');
-        }
-    });
 
     // View Switching
     function setView(view) {
@@ -1242,160 +1196,119 @@ function renderTicketList() {
         applyFilters();
     });
 
-    // --- Status Dropdown Logic ---
-    const statusDropdownTrigger = document.getElementById('status-filter-trigger');
-    const statusDropdownMenu = document.getElementById('status-dropdown-menu');
-    let isStatusDropdownOpen = false;
+    // --- Generic Multi-Select Helper ---
+    function setupMultiSelect(triggerId, menuId, labelId, getItems, selectedValues, onUpdate) {
+        const trigger = document.getElementById(triggerId);
+        const menu = document.getElementById(menuId);
+        const labelEl = document.getElementById(labelId);
 
-    // --- Priority Dropdown Logic ---
-    const priorityDropdownTrigger = document.getElementById('priority-filter-trigger');
-    const priorityDropdownMenu = document.getElementById('priority-dropdown-menu');
-    let isPriorityDropdownOpen = false;
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const wasShown = menu.classList.contains('show');
+            // Close all first
+            document.querySelectorAll('.filter-dropdown-menu.show').forEach(el => el.classList.remove('show'));
+            // Toggle current
+            if (!wasShown) {
+                menu.classList.add('show');
+                renderItems();
+            }
+        });
 
-    // Toggle Functions
-    function toggleStatusDropdown() {
-        isStatusDropdownOpen = !isStatusDropdownOpen;
-        if (isStatusDropdownOpen) isPriorityDropdownOpen = false; // Close others
-        updateDropdownVisibility();
-        if (isStatusDropdownOpen) renderStatusDropdownItems();
-    }
+        function renderItems() {
+            const items = getItems();
+            menu.innerHTML = items.map(item => {
+                const isSelected = selectedValues.includes(item.id);
+                return `
+                    <div class="filter-dropdown-item ${isSelected ? 'selected' : ''}" data-value="${item.id}">
+                        <div class="checkbox-circle">
+                            <span class="material-symbols-outlined">check</span>
+                        </div>
+                        <span>${item.label}</span>
+                        <span class="filter-dropdown-count">${item.count}</span>
+                    </div>
+                `;
+            }).join('');
 
-    function togglePriorityDropdown() {
-        isPriorityDropdownOpen = !isPriorityDropdownOpen;
-        if (isPriorityDropdownOpen) isStatusDropdownOpen = false; // Close others
-        updateDropdownVisibility();
-        if (isPriorityDropdownOpen) renderPriorityDropdownItems();
-    }
+            menu.querySelectorAll('.filter-dropdown-item').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const val = el.dataset.value;
+                    const idx = selectedValues.indexOf(val);
+                    if (idx > -1) selectedValues.splice(idx, 1);
+                    else selectedValues.push(val);
 
-    function updateDropdownVisibility() {
-        statusDropdownMenu.style.display = isStatusDropdownOpen ? 'block' : 'none';
-        priorityDropdownMenu.style.display = isPriorityDropdownOpen ? 'block' : 'none';
-    }
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', (e) => {
-        let clickedOutsideStatus = !statusDropdownTrigger.contains(e.target) && !statusDropdownMenu.contains(e.target);
-        let clickedOutsidePriority = !priorityDropdownTrigger.contains(e.target) && !priorityDropdownMenu.contains(e.target);
-
-        if (clickedOutsideStatus && isStatusDropdownOpen) {
-            isStatusDropdownOpen = false;
-            updateDropdownVisibility();
+                    renderItems();
+                    updateLabel(items.length);
+                    onUpdate();
+                });
+            });
         }
-        if (clickedOutsidePriority && isPriorityDropdownOpen) {
-            isPriorityDropdownOpen = false;
-            updateDropdownVisibility();
+
+        function updateLabel(totalItems) {
+            // Need total items count. If not passed, we might assume from last render or call getItems().
+            // getItems is cheap.
+            const total = totalItems || getItems().length;
+
+            if (selectedValues.length === total && total > 0) {
+                labelEl.textContent = 'ทั้งหมด';
+            } else if (selectedValues.length === 0) {
+                labelEl.textContent = 'ไม่ได้เลือก';
+            } else {
+                labelEl.textContent = `เลือกแล้ว ${selectedValues.length} รายการ`;
+            }
+        }
+
+        // Return update function to call externally if data changes (e.g. counts)
+        return () => {
+            const items = getItems();
+            updateLabel(items.length);
+            if (menu.classList.contains('show')) renderItems();
+        };
+    }
+
+    // Global Closer
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.filter-dropdown-container')) {
+            document.querySelectorAll('.filter-dropdown-menu.show').forEach(el => el.classList.remove('show'));
         }
     });
 
-    statusDropdownTrigger.addEventListener('click', toggleStatusDropdown);
-    priorityDropdownTrigger.addEventListener('click', togglePriorityDropdown);
+    // Initialize Status Dropdown
+    const updateStatusUI = setupMultiSelect(
+        'status-filter-trigger', 'status-dropdown-menu', 'status-filter-label',
+        () => {
+            const counts = { new: 0, inProgress: 0, completed: 0 };
+            MOCK_DATA.tickets.forEach(t => { if (counts[t.status] !== undefined) counts[t.status]++ });
+            return [
+                { id: 'new', label: 'ทิคเก็ตใหม่', count: counts.new },
+                { id: 'inProgress', label: 'กำลังดำเนินการ', count: counts.inProgress },
+                { id: 'completed', label: 'เสร็จสิ้น', count: counts.completed }
+            ];
+        },
+        selectedStatuses,
+        applyFilters
+    );
+    updateStatusUI(); // Initial label set
 
-    // Render Status Items
-    function renderStatusDropdownItems() {
-        const statuses = [
-            { id: 'new', label: 'ทิคเก็ตใหม่', color: '#fbbf24' },
-            { id: 'inProgress', label: 'กำลังดำเนินการ', color: '#a855f7' },
-            { id: 'completed', label: 'เสร็จสิ้น', color: '#22c55e' }
-        ];
-
-        // Calculate counts
-        const accounts = { new: 0, inProgress: 0, completed: 0 };
-        MOCK_DATA.tickets.forEach(t => { if (accounts[t.status] !== undefined) accounts[t.status]++; });
-
-        statusDropdownMenu.innerHTML = statuses.map(s => {
-            const isChecked = selectedStatuses.includes(s.id);
-            return `
-                <div class="status-option" data-value="${s.id}" style="padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; border-radius: 0.5rem; transition: background 0.1s; user-select: none;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
-                     <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid ${isChecked ? 'var(--primary)' : '#e2e8f0'}; display: flex; align-items: center; justify-content: center; background: ${isChecked ? 'var(--primary)' : 'white'}; transition: all 0.2s;">
-                        <span class="material-symbols-outlined" style="font-size: 14px; color: white; display: ${isChecked ? 'block' : 'none'};">check</span>
-                    </div>
-                    <span style="flex: 1; font-weight: 500; color: var(--text-primary);">${s.label}</span>
-                    <span style="background: #f1f5f9; padding: 0.15rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; color: #64748b; font-weight: 600;">${accounts[s.id]}</span>
-                </div>
-            `;
-        }).join('');
-
-        statusDropdownMenu.querySelectorAll('.status-option').forEach(opt => {
-            opt.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const val = opt.dataset.value;
-                if (selectedStatuses.includes(val)) {
-                    selectedStatuses = selectedStatuses.filter(s => s !== val);
-                } else {
-                    selectedStatuses.push(val);
-                }
-                renderStatusDropdownItems();
-                updateStatusTriggerLabel();
-                applyFilters();
+    // Initialize Priority Dropdown
+    const updatePriorityUI = setupMultiSelect(
+        'priority-filter-trigger', 'priority-dropdown-menu', 'priority-filter-label',
+        () => {
+            const counts = { urgent: 0, 'not-urgent': 0 };
+            MOCK_DATA.tickets.forEach(t => {
+                const key = t.priority === 'urgent' ? 'urgent' : 'not-urgent';
+                counts[key]++;
             });
-        });
-    }
+            return [
+                { id: 'urgent', label: 'เร่งด่วน', count: counts.urgent },
+                { id: 'not-urgent', label: 'ไม่เร่งด่วน', count: counts.not_urgent || counts['not-urgent'] }
+            ];
+        },
+        selectedPriorities,
+        applyFilters
+    );
+    updatePriorityUI();
 
-    // Render Priority Items
-    function renderPriorityDropdownItems() {
-        const priorities = [
-            { id: 'urgent', label: 'เร่งด่วน', color: '#ef4444' },
-            { id: 'not-urgent', label: 'ไม่เร่งด่วน', color: '#22c55e' }
-        ];
-
-        // Calculate counts
-        const accounts = { urgent: 0, 'not-urgent': 0 };
-        MOCK_DATA.tickets.forEach(t => {
-            const key = t.priority === 'urgent' ? 'urgent' : 'not-urgent';
-            accounts[key]++;
-        });
-
-        priorityDropdownMenu.innerHTML = priorities.map(p => {
-            const isChecked = selectedPriorities.includes(p.id);
-            return `
-                <div class="priority-option" data-value="${p.id}" style="padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; border-radius: 0.5rem; transition: background 0.1s; user-select: none;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
-                     <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid ${isChecked ? 'var(--primary)' : '#e2e8f0'}; display: flex; align-items: center; justify-content: center; background: ${isChecked ? 'var(--primary)' : 'white'}; transition: all 0.2s;">
-                        <span class="material-symbols-outlined" style="font-size: 14px; color: white; display: ${isChecked ? 'block' : 'none'};">check</span>
-                    </div>
-                    <span style="flex: 1; font-weight: 500; color: var(--text-primary);">${p.label}</span>
-                    <span style="background: #f1f5f9; padding: 0.15rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; color: #64748b; font-weight: 600;">${accounts[p.id]}</span>
-                </div>
-            `;
-        }).join('');
-
-        priorityDropdownMenu.querySelectorAll('.priority-option').forEach(opt => {
-            opt.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const val = opt.dataset.value;
-                if (selectedPriorities.includes(val)) {
-                    selectedPriorities = selectedPriorities.filter(s => s !== val);
-                } else {
-                    selectedPriorities.push(val);
-                }
-                renderPriorityDropdownItems();
-                updatePriorityTriggerLabel();
-                applyFilters();
-            });
-        });
-    }
-
-    function updateStatusTriggerLabel() {
-        const label = document.getElementById('status-filter-label');
-        if (selectedStatuses.length === 3) {
-            label.textContent = 'ทั้งหมด';
-        } else if (selectedStatuses.length === 0) {
-            label.textContent = 'ไม่ได้เลือก';
-        } else {
-            label.textContent = `เลือกแล้ว ${selectedStatuses.length} รายการ`;
-        }
-    }
-
-    function updatePriorityTriggerLabel() {
-        const label = document.getElementById('priority-filter-label');
-        if (selectedPriorities.length === 2) {
-            label.textContent = 'ทั้งหมด';
-        } else if (selectedPriorities.length === 0) {
-            label.textContent = 'ไม่ได้เลือก';
-        } else {
-            const selected = selectedPriorities[0];
-            label.textContent = selected === 'urgent' ? 'เร่งด่วน' : 'ไม่เร่งด่วน';
-        }
-    }
 
     function applyFilters() {
         const query = searchInput.value.toLowerCase().trim();
