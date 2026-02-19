@@ -493,17 +493,7 @@ function renderDashboard() {
                 </div>
             </div>
 
-            <!-- Risk Area Map -->
-            <div class="chart-card col-span-6" style="padding: 1.5rem;">
-                <div style="margin-bottom: 1.25rem;">
-                    <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="material-symbols-outlined" style="color: var(--primary);">map</span>
-                        แผนที่จุดเกิดเหตุอัจฉริยะ (Garden Maps)
-                    </h2>
-                    <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">แสดงตำแหน่งพันธุ์ไม้ที่มีปัญหาตามช่วงเวลาที่เลือก</p>
-                </div>
-                <div id="dashboard-map" style="height: 380px; width: 100%; border-radius: 1.25rem; border: 1px solid #e2e8f0; z-index: 1;"></div>
-            </div>
+
 
             <!-- Risk Area Statistics -->
             <div class="chart-card col-span-6">
@@ -545,70 +535,7 @@ function renderDashboard() {
         }
     }, 0);
 
-    // Initialize Dashboard Map
-    setTimeout(() => {
-        const mapContainer = document.getElementById('dashboard-map');
-        if (mapContainer && typeof L !== 'undefined') {
-            const centerLat = 14.0722; // TU Rangsit Center
-            const centerLng = 100.6128;
 
-            const map = L.map('dashboard-map', {
-                zoomControl: false,
-                attributionControl: false
-            }).setView([centerLat, centerLng], 14);
-
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                maxZoom: 20
-            }).addTo(map);
-
-            L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-            // Filter tickets like the other stats
-            let ticketsForMap = [];
-            const startStr = AppState.customStartDate;
-            const endStr = AppState.customEndDate;
-
-            if (startStr && endStr) {
-                const start = new Date(startStr);
-                start.setHours(0, 0, 0, 0);
-                const end = new Date(endStr);
-                end.setHours(23, 59, 59, 999);
-                ticketsForMap = MOCK_DATA.tickets.filter(t => {
-                    const d = new Date(t.date);
-                    return d >= start && d <= end && t.lat && t.lng;
-                });
-            } else {
-                ticketsForMap = MOCK_DATA.tickets.filter(t => t.lat && t.lng);
-            }
-
-            ticketsForMap.forEach(t => {
-                const color = t.status === 'new' ? '#fbbf24' : (t.status === 'completed' ? '#94a3b8' : '#f43f5e');
-
-                const customIcon = L.divIcon({
-                    className: 'custom-map-marker',
-                    html: `<div style="background: ${color}; width: 12px; height: 12px; border: 2px solid white; border-radius: 50%; box-shadow: 0 0 10px ${color}"></div>`,
-                    iconSize: [12, 12],
-                    iconAnchor: [6, 6]
-                });
-
-                const popupContent = `
-                    <div style="font-family: 'Kanit', sans-serif; padding: 0.5rem; min-width: 150px;">
-                        <span style="font-size: 0.65rem; color: #94a3b8; font-weight: 700;">#${t.id}</span>
-                        <div style="font-weight: 700; font-size: 0.9rem; color: #1e293b; margin-bottom: 0.25rem;">${t.treeType || 'ไม่ระบุพันธุ์ไม้'}</div>
-                        <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">${t.zoneName}</div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
-                             <span style="font-size: 0.7rem; color: ${color}; font-weight: 700;">${getStatusLabel(t.status)}</span>
-                             <button onclick="router.navigate('/ticket/${t.id}')" style="background: var(--primary); color: white; border: none; padding: 0.25rem 0.6rem; border-radius: 0.4rem; font-size: 0.7rem; cursor: pointer;">ดูรายละเอียด</button>
-                        </div>
-                    </div>
-                `;
-
-                L.marker([t.lat, t.lng], { icon: customIcon })
-                    .addTo(map)
-                    .bindPopup(popupContent, { closeButton: false });
-            });
-        }
-    }, 100);
 
     // Add calendar functionality (Old logic - keeping if needed by other components)
     const calendarDays = content.querySelectorAll('.calendar-day');
@@ -2824,6 +2751,17 @@ function renderReportList() {
                 <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
             </div>
 
+            <div class="report-card" onclick="openReportDetail('map_overview')">
+                <div class="report-card-icon" style="background: #f0f9ff; color: #0284c7;">
+                    <span class="material-symbols-outlined">map</span>
+                </div>
+                <div class="report-card-info">
+                    <h3>แผนที่ตำแหน่งทิคเก็ต (Ticket Map)</h3>
+                    <p>ดูตำแหน่งพิกัดของทิคเก็ตทั้งหมดบนแผนที่</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
+            </div>
+
             <div class="report-card" onclick="openReportDetail('performance')">
                 <div class="report-card-icon" style="background: #e0f2fe; color: #0284c7;">
                     <span class="material-symbols-outlined">schedule</span>
@@ -3078,6 +3016,11 @@ function renderReportDetail() {
         return;
     }
 
+    if (AppState.selectedReport === 'map_overview') {
+        renderMapReport();
+        return;
+    }
+
     if (AppState.selectedReport === 'summary') {
         renderDailySummaryReport(AppState.selectedDate);
         return;
@@ -3085,6 +3028,83 @@ function renderReportDetail() {
 
     // Default to summary if no report selected
     renderDailySummaryReport(AppState.selectedDate);
+}
+
+function renderMapReport() {
+    document.getElementById('page-title').textContent = 'แผนที่ทิคเก็ต';
+    const content = document.getElementById('main-content');
+
+    // Use full height for map (adjust for header)
+    content.innerHTML = `
+        <div style="position: relative; height: calc(100vh - 64px); width: 100%; margin: -1rem -1rem 0 -1rem;">
+            <div id="full-screen-map" style="height: 100%; width: 100%; z-index: 1;"></div>
+            
+            <!-- Map Legend Overlay -->
+            <div style="position: absolute; bottom: 2rem; left: 1rem; right: 1rem; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); padding: 0.75rem placeholder; border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 400; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; pointer-events: auto;">
+                 <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #fbbf24; border: 2px solid white; box-shadow: 0 0 4px #fbbf24;"></div>
+                    <span style="font-size: 0.8rem; font-weight: 600;">ใหม่</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #f43f5e; border: 2px solid white; box-shadow: 0 0 4px #f43f5e;"></div>
+                    <span style="font-size: 0.8rem; font-weight: 600;">กำลัง/ค้าง</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #94a3b8; border: 2px solid white; box-shadow: 0 0 4px #94a3b8;"></div>
+                    <span style="font-size: 0.8rem; font-weight: 600;">เสร็จสิ้น</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Initialize Map
+    setTimeout(() => {
+        if (typeof L !== 'undefined') {
+            const centerLat = 14.0722;
+            const centerLng = 100.6128;
+
+            const map = L.map('full-screen-map', {
+                zoomControl: false,
+                attributionControl: false
+            }).setView([centerLat, centerLng], 15);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 20
+            }).addTo(map);
+
+            L.control.zoom({ position: 'topright' }).addTo(map);
+
+            // Add all tickets
+            const tickets = MOCK_DATA.tickets.filter(t => t.lat && t.lng);
+
+            tickets.forEach(t => {
+                const color = t.status === 'new' ? '#fbbf24' : (t.status === 'completed' ? '#94a3b8' : '#f43f5e');
+
+                const customIcon = L.divIcon({
+                    className: 'custom-map-marker',
+                    html: `<div style="background: ${color}; width: 14px; height: 14px; border: 2px solid white; border-radius: 50%; box-shadow: 0 0 10px ${color}"></div>`,
+                    iconSize: [14, 14],
+                    iconAnchor: [7, 7]
+                });
+
+                const popupContent = `
+                    <div style="font-family: 'Kanit', sans-serif; padding: 0.5rem; min-width: 160px;">
+                        <span style="font-size: 0.65rem; color: #94a3b8; font-weight: 700;">#${t.id}</span>
+                        <div style="font-weight: 700; font-size: 0.9rem; color: #1e293b; margin-bottom: 0.25rem;">${t.treeType || 'ไม่ระบุพันธุ์ไม้'}</div>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">${t.zoneName}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+                             <span style="font-size: 0.7rem; color: ${color}; font-weight: 700;">${getStatusLabel(t.status)}</span>
+                             <button onclick="router.navigate('/ticket/${t.id}')" style="background: var(--primary); color: white; border: none; padding: 0.25rem 0.6rem; border-radius: 0.4rem; font-size: 0.7rem; cursor: pointer;">ดูรายละเอียด</button>
+                        </div>
+                    </div>
+                `;
+
+                L.marker([t.lat, t.lng], { icon: customIcon })
+                    .addTo(map)
+                    .bindPopup(popupContent, { closeButton: false });
+            });
+        }
+    }, 100);
 }
 
 function renderDailySummaryReport(dateStr) {
