@@ -435,16 +435,34 @@ function updateHeaderNav(isSubPage = false) {
 
     if (!menuBtn || !backBtn) return;
 
-    if (isSubPage) {
-        // Show Back button, Hide Menu button
+    const isDesktop = window.innerWidth >= 1024;
+
+    if (isDesktop) {
+        // Desktop: Hide both buttons (sidebar handles navigation)
         menuBtn.style.display = 'none';
-        backBtn.style.display = 'flex';
+        backBtn.style.display = isSubPage ? 'flex' : 'none';
     } else {
-        // Show Menu button, Hide Back button
-        menuBtn.style.display = 'flex';
-        backBtn.style.display = 'none';
+        // Mobile: Show menu/back as appropriate
+        if (isSubPage) {
+            menuBtn.style.display = 'none';
+            backBtn.style.display = 'flex';
+        } else {
+            menuBtn.style.display = 'flex';
+            backBtn.style.display = 'none';
+        }
     }
 }
+
+// Re-evaluate header when window resizes between mobile/desktop breakpoints
+let _resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(() => {
+        const mainPages = ['dashboard', 'monitor', 'tickets', 'add', 'reports'];
+        const isSubPage = !mainPages.includes(AppState.currentPage);
+        updateHeaderNav(isSubPage);
+    }, 150);
+});
 
 // Global Popup Functions
 // Global Popup Functions
@@ -934,7 +952,7 @@ function getStatsForDate(dateStr) {
 }
 
 function renderMonitor() {
-    updateHeaderNav(true);
+    updateHeaderNav(false); // Monitor is a main page
     console.log('------------------------------------------');
     console.log('👀 กำลังแสดงผล Garden Monitor (ติดตามงาน)...');
     AppState.currentPage = 'monitor';
@@ -1198,7 +1216,7 @@ function renderMonitor() {
 }
 
 function renderTicketList() {
-    updateHeaderNav(true);
+    updateHeaderNav(false); // Ticket List is a main page (accessible from sidebar nav)
     console.log('------------------------------------------');
     console.log('📋 กำลังแสดงผล Ticket List (รายการทั้งหมด)...');
     AppState.currentPage = 'tickets';
@@ -1774,7 +1792,7 @@ function renderTicketDetail(params) {
 }
 
 function renderAddTicket() {
-    updateHeaderNav(true);
+    updateHeaderNav(false); // Add Ticket is a main page
     AppState.currentPage = 'add';
     updateActiveNavItem('add');
 
@@ -2959,7 +2977,7 @@ window.removeUploadedImage = removeUploadedImage;
  */
 
 function renderReportList() {
-    updateHeaderNav(true);
+    updateHeaderNav(false); // Reports is a main page
     AppState.currentPage = 'reports';
     updateActiveNavItem('reports');
     document.getElementById('page-title').textContent = 'รายงาน';
