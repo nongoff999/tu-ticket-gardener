@@ -1,0 +1,150 @@
+/* Edit Ticket Layout - Enterprise UI */
+.form-section-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title::before {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 1.2rem;
+    background: var(--primary);
+    border-radius: 2px;
+}
+
+/* Grid layout for fields */
+.grid-2-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Status Toggle Group */
+.status-toggle-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.status-toggle-group .status-btn {
+    flex: 1;
+    white-space: nowrap;
+    min-width: 80px;
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #64748b;
+}
+
+.status-toggle-group .status-btn:hover {
+    background: #f8fafc;
+}
+
+/* GPS Input Group */
+.gps-input-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.gps-update-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.gps-display {
+    flex: 1;
+    min-width: 0;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #64748b;
+    font-family: monospace;
+    font-size: 0.8rem;
+}
+
+.gps-map-link {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: #eff6ff;
+    color: #2563eb;
+    text-decoration: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid #bfdbfe;
+}
+
+/* Assignee List Styling */
+.assignee-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.assignee-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon-text {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .form-section-card {
+        padding: 1rem;
+    }
+
+    .status-toggle-group {
+        flex-direction: column;
+    }
+
+    .status-toggle-group .status-btn {
+        width: 100%;
+    }
+}

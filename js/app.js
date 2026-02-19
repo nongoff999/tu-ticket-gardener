@@ -2141,191 +2141,204 @@ function renderEditTicket(params) {
     const currentStatus = ticket.status === 'new' ? 'inProgress' : ticket.status;
 
     const content = document.getElementById('main-content');
+
+    // Construct Ticket Name: [Ticket No.] [Tree Type] [Damage] [Zone]
+    const ticketNameStr = `[#${ticket.id}] ${ticket.treeType || 'ไม่ระบุพันธุ์'} ${ticket.description || 'ไม่ระบุอาการ'} ${ticket.zoneName || 'ไม่ระบุโซน'}`;
+
     content.innerHTML = `
-        <div style="padding: 0 1rem;">
+        <div class="edit-ticket-container" style="padding: 1rem; max-width: 800px; margin: 0 auto;">
             <form id="ticket-form">
-                <!-- 1. Ticket Name (Read-only) -->
-                <div class="form-group">
-                    <label class="form-label">Ticket Name</label>
-                    <input type="text" id="edit-ticket-title" class="form-input" value="${ticket.title}" readonly style="background: #f8fafc; cursor: not-allowed; color: #64748b;">
-                </div>
-
-                <!-- 2. Ticket Status -->
-                <div class="form-group">
-                    <label class="form-label">Ticket Status <span class="required">*</span></label>
-                    <div class="priority-toggle">
-                        <button type="button" class="priority-btn status-btn ${currentStatus === 'inProgress' ? 'active' : ''}" data-value="inProgress" style="background: ${currentStatus === 'inProgress' ? '#8b5cf6' : ''}; color: ${currentStatus === 'inProgress' ? 'white' : ''};">ระหว่างดำเนินการ</button>
-                        <button type="button" class="priority-btn status-btn ${currentStatus === 'completed' ? 'active' : ''}" data-value="completed" style="background: ${currentStatus === 'completed' ? '#10b981' : ''}; color: ${currentStatus === 'completed' ? 'white' : ''};">ปิดทิคเก็ต</button>
+                
+                <!-- SECTION 1: ข้อมูลหลัก (Main Info) -->
+                <div class="form-section-card">
+                    <h3 class="section-title">ข้อมูลหลัก</h3>
+                    
+                    <!-- 1. Ticket Name (Read-only) -->
+                    <div class="form-group">
+                        <label class="form-label">Ticket Name</label>
+                        <input type="text" id="edit-ticket-title" class="form-input" value="${ticketNameStr}" readonly style="background: #f1f5f9; cursor: not-allowed; color: #475569; font-weight: 500;">
                     </div>
-                    <input type="hidden" id="edit-ticket-status" value="${currentStatus}">
-                </div>
 
-                <!-- 3. Priority -->
-                <div class="form-group">
-                    <label class="form-label">ลำดับความสำคัญ <span class="required">*</span></label>
-                    <div class="priority-toggle">
-                        <button type="button" class="priority-btn normal ${ticket.priority !== 'urgent' ? 'active' : ''}">ไม่เร่งด่วน</button>
-                        <button type="button" class="priority-btn urgent ${ticket.priority === 'urgent' ? 'active' : ''}">เร่งด่วน</button>
-                    </div>
-                </div>
-
-                <!-- 4. ลักษณะความเสียหาย -->
-                <div class="form-group">
-                    <label class="form-label">ลักษณะความเสียหาย <span class="required">*</span></label>
-                    <div class="description-toggle" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
-                        <button type="button" class="desc-btn ${currentDamageDesc === 'โค่นล้ม' ? 'active' : ''}" data-value="โค่นล้ม">โค่นล้ม</button>
-                        <button type="button" class="desc-btn ${currentDamageDesc === 'กิ่งหัก/ฉีก' ? 'active' : ''}" data-value="กิ่งหัก/ฉีก">กิ่งหัก/ฉีก</button>
-                        <button type="button" class="desc-btn ${currentDamageDesc === 'ลำต้นเอียง' ? 'active' : ''}" data-value="ลำต้นเอียง">ลำต้นเอียง</button>
-                        <button type="button" class="desc-btn ${isOtherDesc ? 'active' : ''}" data-value="other">อื่นๆ</button>
-                    </div>
-                    <!-- 5. รายละเอียดเพิ่มเติม -->
-                    <textarea id="ticket-description-custom" class="form-textarea" rows="3" placeholder="ระบุรายละเอียดเพิ่มเติม..." style="display: ${isOtherDesc ? 'block' : 'none'};">${isOtherDesc ? currentDamageDesc : ''}</textarea>
-                </div>
-
-                <!-- 6. โซนพื้นที่ -->
-                <div class="form-group">
-                    <label class="form-label">โซนพื้นที่ <span class="required">*</span></label>
-                    <select id="edit-ticket-zone" class="form-select">
-                        <option value="" disabled>เลือกโซน</option>
-                        ${MOCK_DATA.zones.map(z => `<option value="${z.id}" ${ticket.zone === z.id ? 'selected' : ''}>${z.name.split(' (')[0]}</option>`).join('')}
-                    </select>
-                </div>
-
-                <!-- 7. สถานที่เกิดเหตุ -->
-                <div class="form-group">
-                    <label class="form-label">สถานที่เกิดเหตุ (พิมพ์ระบุ)</label>
-                    <input type="text" id="edit-ticket-locationDetail" class="form-input" value="${ticket.locationDetail || ''}" placeholder="เช่น หน้าตึกคณะ, ใกล้เสาไฟ, ข้างโรงอาหาร...">
-                </div>
-
-                <!-- 8. รูปภาพก่อนดำเนินการ (from ADD TICKET) -->
-                <div class="form-group">
-                    <label class="form-label">รูปภาพก่อนดำเนินการ <span class="required">*</span> <span class="image-count" id="before-image-count">(${ticket.images ? ticket.images.length : 0}/6)</span></label>
-                    <input type="file" id="image-input" accept="image/*" multiple style="display: none;">
-                    <div class="image-grid" id="image-grid">
-                        <div class="image-add" id="image-add-btn">
-                            <span class="material-symbols-outlined" style="font-size: 1.5rem;">add</span>
-                            <span class="label">เพิ่มรูป</span>
+                    <!-- 2. Priority -->
+                    <div class="form-group">
+                        <label class="form-label">ลำดับความสำคัญ <span class="required">*</span></label>
+                        <div class="priority-toggle">
+                            <button type="button" class="priority-btn normal ${ticket.priority !== 'urgent' ? 'active' : ''}">ธรรมดา</button>
+                            <button type="button" class="priority-btn urgent ${ticket.priority === 'urgent' ? 'active' : ''}">เร่งด่วน</button>
                         </div>
                     </div>
-                </div>
 
-                <!-- 9. ชนิดพันธุ์ต้นไม้ -->
-                <div class="form-group">
-                    <label class="form-label">ชนิดพันธุ์ต้นไม้</label>
-                    <select class="form-select" id="edit-ticket-treeType">
-                        <option value="-" ${!ticket.treeType || ticket.treeType === '-' ? 'selected' : ''}>-- ไม่ระบุ --</option>
-                        ${MOCK_DATA.treeTypes.map(tt => `
-                            <option ${ticket.treeType === tt ? 'selected' : ''}>${tt}</option>
-                        `).join('')}
-                    </select>
-                </div>
-
-                <!-- 10. ขนาดลำต้น (นิ้ว) -->
-                <div class="form-group">
-                    <label class="form-label text-center">ขนาดลำต้น (นิ้ว)</label>
-                    <div class="number-input" style="width: 100%;">
-                        <button type="button" class="number-btn minus"><span class="material-symbols-outlined">remove</span></button>
-                        <input type="number" value="${ticket.circumference || 0}" id="circumference">
-                        <button type="button" class="number-btn plus"><span class="material-symbols-outlined">add</span></button>
+                    <!-- 3. ลักษณะความเสียหาย -->
+                    <div class="form-group">
+                        <label class="form-label">ลักษณะความเสียหาย <span class="required">*</span></label>
+                        <div class="description-toggle" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                            <button type="button" class="desc-btn ${currentDamageDesc === 'โค่นล้ม' ? 'active' : ''}" data-value="โค่นล้ม">โค่นล้ม</button>
+                            <button type="button" class="desc-btn ${currentDamageDesc === 'กิ่งหัก/ฉีก' ? 'active' : ''}" data-value="กิ่งหัก/ฉีก">กิ่งหัก/ฉีก</button>
+                            <button type="button" class="desc-btn ${currentDamageDesc === 'ลำต้นเอียง' ? 'active' : ''}" data-value="ลำต้นเอียง">ลำต้นเอียง</button>
+                            <button type="button" class="desc-btn ${isOtherDesc ? 'active' : ''}" data-value="other">อื่นๆ</button>
+                        </div>
+                        <textarea id="ticket-description-custom" class="form-textarea" rows="2" placeholder="ระบุลักษณะความเสียหายอื่นๆ..." style="display: ${isOtherDesc ? 'block' : 'none'}; margin-top: 0.5rem;">${isOtherDesc ? currentDamageDesc : ''}</textarea>
                     </div>
-                </div>
 
-                <!-- 11. จำนวน(ต้น) -->
-                <div class="form-group">
-                    <label class="form-label text-center">จำนวน (ต้น)</label>
-                    <div class="number-input" style="width: 100%;">
-                        <button type="button" class="number-btn minus"><span class="material-symbols-outlined">remove</span></button>
-                        <input type="number" value="${ticket.quantity || 1}" id="quantity">
-                        <button type="button" class="number-btn plus"><span class="material-symbols-outlined">add</span></button>
+                    <!-- 4. โซนพื้นที่ -->
+                    <div class="form-group">
+                        <label class="form-label">โซนพื้นที่ <span class="required">*</span></label>
+                        <select id="edit-ticket-zone" class="form-select">
+                            <option value="" disabled>เลือกโซน</option>
+                            ${MOCK_DATA.zones.map(z => `<option value="${z.id}" ${ticket.zone === z.id ? 'selected' : ''}>${z.name.split(' (')[0]}</option>`).join('')}
+                        </select>
                     </div>
-                </div>
 
-                <!-- 12. ผลกระทบที่ได้รับ -->
-                <div class="form-group">
-                    <label class="form-label">ผลกระทบที่ได้รับ</label>
-                    <input type="text" id="edit-ticket-impact" class="form-input" value="${ticket.impact || ''}" placeholder="ระบุผลกระทบ เช่น ขวางถนน, เสียหายต่อรถยนต์...">
-                </div>
+                    <!-- 5. สถานที่เกิดเหตุ -->
+                    <div class="form-group">
+                        <label class="form-label">สถานที่เกิดเหตุ</label>
+                        <input type="text" id="edit-ticket-locationDetail" class="form-input" value="${ticket.locationDetail || ''}" placeholder="ระบุจุดสังเกตเพิ่มเติม...">
+                    </div>
 
-                <!-- 12.5 ผู้รับผิดชอบ -->
-                <div class="form-group">
-                    <label class="form-label">ผู้รับผิดชอบ</label>
-                    <div id="assignee-chips" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
-                        ${(ticket.assignees || []).map((name, i) => `
-                            <div class="assignee-chip" style="display: flex; align-items: center; gap: 0.35rem; background: #eff6ff; border: 1px solid #bfdbfe; padding: 0.35rem 0.5rem 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; color: #1e40af;">
-                                <span>${name}</span>
-                                <button type="button" class="remove-assignee-btn" data-index="${i}" style="background: none; border: none; cursor: pointer; color: #ef4444; display: flex; align-items: center; padding: 0; margin: 0;">
-                                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">close</span>
-                                </button>
+                    <!-- 6. รูปภาพก่อนดำเนินการ -->
+                    <div class="form-group">
+                        <label class="form-label">รูปภาพก่อนดำเนินการ <span class="image-count" id="before-image-count">(${ticket.images ? ticket.images.length : 0}/6)</span></label>
+                        <input type="file" id="image-input" accept="image/*" multiple style="display: none;">
+                        <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;">
+                        <div class="image-grid" id="image-grid">
+                            <!-- Existing images handled by initImageUpload -->
+                             <div class="image-add" id="image-add-btn">
+                                <span class="material-symbols-outlined">add_a_photo</span>
+                                <span class="label">เพิ่มรูป</span>
                             </div>
-                        `).join('')}
-                    </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <input type="text" id="assignee-input" class="form-input" placeholder="ระบุชื่อผู้รับผิดชอบ" style="flex: 1;">
-                        <button type="button" id="add-assignee-btn" style="flex-shrink: 0; background: var(--primary); color: white; border: none; border-radius: 0.75rem; padding: 0 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; font-size: 0.9rem;">
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">add</span> เพิ่ม
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 13. การดำเนินงาน -->
-                <div class="form-group">
-                    <label class="form-label">การดำเนินงาน</label>
-                    <select class="form-select" id="operation-select">
-                        <option value="-" ${!ticket.operation || ticket.operation === '-' ? 'selected' : ''}>-- ไม่ระบุ --</option>
-                        ${MOCK_DATA.operations.map(op => `
-                            <option ${ticket.operation === op ? 'selected' : ''}>${op}</option>
-                        `).join('')}
-                        <option value="other" ${ticket.operation && ticket.operation !== '-' && !MOCK_DATA.operations.includes(ticket.operation) ? 'selected' : ''}>อื่นๆ โปรดระบุ</option>
-                    </select>
-                </div>
-
-                <div class="form-group" id="operation-other-container" style="display: ${ticket.operation && ticket.operation !== '-' && !MOCK_DATA.operations.includes(ticket.operation) ? 'block' : 'none'};">
-                    <label class="form-label">ระบุการดำเนินงาน</label>
-                    <input type="text" class="form-input" id="operation-other-input" value="${ticket.operation && !MOCK_DATA.operations.includes(ticket.operation) && ticket.operation !== '-' ? ticket.operation : ''}" placeholder="โปรดระบุขั้นตอนการดำเนินงาน">
-                </div>
-
-                <!-- 14. รูปภาพระหว่างดำเนินการ -->
-                <div class="form-group">
-                    <label class="form-label">รูปภาพระหว่างดำเนินการ <span class="image-count" id="progress-image-count">(${ticket.progressImages ? ticket.progressImages.length : 0}/6)</span></label>
-                    <input type="file" id="progress-image-input" accept="image/*" multiple style="display: none;">
-                    <div class="image-grid" id="progress-image-grid">
-                        <div class="image-add" id="progress-image-add-btn">
-                            <span class="material-symbols-outlined" style="font-size: 1.5rem;">add</span>
-                            <span class="label">เพิ่มรูป</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- 15. หมายเหตุ -->
-                <div class="form-group">
-                    <label class="form-label">หมายเหตุ</label>
-                    <input type="text" id="edit-ticket-notes" class="form-input" value="${ticket.notes || ''}" placeholder="ระบุหมายเหตุเพิ่มเติม...">
+                <!-- SECTION 2: รายละเอียด & ผลกระทบ (Tree & Impact) -->
+                <div class="form-section-card">
+                    <h3 class="section-title">รายละเอียด & ผลกระทบ</h3>
+
+                    <!-- 7. ผลกระทบที่ได้รับ -->
+                    <div class="form-group">
+                        <label class="form-label">ผลกระทบที่ได้รับ</label>
+                        <textarea id="edit-ticket-impact" class="form-textarea" rows="2" placeholder="ระบุผลกระทบ เช่น ขวางถนน, เสียหายต่อทรัพย์สิน...">${ticket.impact || ''}</textarea>
+                    </div>
+
+                    <!-- 8. ชนิดพันธุ์ต้นไม้ -->
+                    <div class="form-group">
+                        <label class="form-label">ชนิดพันธุ์ต้นไม้</label>
+                        <select class="form-select" id="edit-ticket-treeType">
+                            <option value="-" ${!ticket.treeType || ticket.treeType === '-' ? 'selected' : ''}>-- ไม่ระบุ --</option>
+                            ${MOCK_DATA.treeTypes.map(tt => `
+                                <option ${ticket.treeType === tt ? 'selected' : ''}>${tt}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+
+                    <div class="grid-2-col">
+                        <!-- 9. ขนาดลำต้น -->
+                        <div class="form-group">
+                            <label class="form-label text-center">ขนาดลำต้น (นิ้ว)</label>
+                            <div class="number-input">
+                                <button type="button" class="number-btn minus"><span class="material-symbols-outlined">remove</span></button>
+                                <input type="number" value="${ticket.circumference || 0}" id="circumference">
+                                <button type="button" class="number-btn plus"><span class="material-symbols-outlined">add</span></button>
+                            </div>
+                        </div>
+
+                        <!-- 10. จำนวน -->
+                        <div class="form-group">
+                            <label class="form-label text-center">จำนวน (ต้น)</label>
+                            <div class="number-input">
+                                <button type="button" class="number-btn minus"><span class="material-symbols-outlined">remove</span></button>
+                                <input type="number" value="${ticket.quantity || 1}" id="quantity">
+                                <button type="button" class="number-btn plus"><span class="material-symbols-outlined">add</span></button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- 16. พิกัดสถานที่ (GPS) -->
-                <div class="form-group">
-                    <label class="form-label">พิกัดสถานที่ (GPS)</label>
-                    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-                        <button type="button" id="get-location-btn" class="btn" style="width: auto; background: white; border: 1px solid var(--primary); color: var(--primary); display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.9rem;">
-                            <span class="material-symbols-outlined" style="font-size: 1.25rem;">my_location</span>
-                            อัปเดตพิกัด GPS
-                        </button>
-                        <input type="text" id="location-coords-display" class="form-input" style="flex: 1; min-width: 180px; font-family: monospace; background: #f1f5f9; cursor: not-allowed; font-size: 0.8rem; height: 2.5rem; padding: 0 0.75rem; color: ${ticket.lat ? '#10B981' : 'inherit'}; border-color: ${ticket.lat ? '#10B981' : 'var(--border)'}; font-weight: ${ticket.lat ? '700' : 'normal'};" readonly value="${ticket.lat && ticket.lng ? `Lat: ${ticket.lat}, Long: ${ticket.lng}` : ''}" placeholder="(ยังไม่ได้บันทึก)">
-                        <div id="map-link-container">
+                <!-- SECTION 3: การจัดการ (Operation & Management) -->
+                <div class="form-section-card">
+                    <h3 class="section-title">การจัดการ</h3>
+
+                    <!-- 11. ผู้รับผิดชอบ -->
+                    <div class="form-group">
+                        <label class="form-label">ผู้รับผิดชอบ</label>
+                        <div id="assignee-chips" class="assignee-list">
+                            <!-- Chips rendered by JS -->
+                        </div>
+                        <div class="assignee-input-group">
+                            <input type="text" id="assignee-input" class="form-input" placeholder="ระบุชื่อผู้รับผิดชอบ">
+                            <button type="button" id="add-assignee-btn" class="btn-icon-text">
+                                <span class="material-symbols-outlined">add</span> เพิ่ม
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 12. การดำเนินงาน -->
+                    <div class="form-group">
+                        <label class="form-label">การดำเนินงาน</label>
+                        <select class="form-select" id="operation-select">
+                            <option value="-" ${!ticket.operation || ticket.operation === '-' ? 'selected' : ''}>-- ไม่ระบุ --</option>
+                            ${MOCK_DATA.operations.map(op => `
+                                <option ${ticket.operation === op ? 'selected' : ''}>${op}</option>
+                            `).join('')}
+                            <option value="other" ${ticket.operation && ticket.operation !== '-' && !MOCK_DATA.operations.includes(ticket.operation) ? 'selected' : ''}>อื่นๆ โปรดระบุ</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="operation-other-container" style="display: ${ticket.operation && ticket.operation !== '-' && !MOCK_DATA.operations.includes(ticket.operation) ? 'block' : 'none'};">
+                        <input type="text" class="form-input" id="operation-other-input" value="${ticket.operation && !MOCK_DATA.operations.includes(ticket.operation) && ticket.operation !== '-' ? ticket.operation : ''}" placeholder="ระบุขั้นตอนการดำเนินงาน...">
+                    </div>
+
+                    <!-- 13. รูปภาพระหว่างดำเนินการ -->
+                    <div class="form-group">
+                        <label class="form-label">รูปภาพระหว่างดำเนินการ <span class="image-count" id="progress-image-count">(${ticket.progressImages ? ticket.progressImages.length : 0}/6)</span></label>
+                        <input type="file" id="progress-image-input" accept="image/*" multiple style="display: none;">
+                        <input type="file" id="progress-camera-input" accept="image/*" capture="environment" style="display: none;">
+                        <div class="image-grid" id="progress-image-grid">
+                            <div class="image-add" id="progress-image-add-btn">
+                                <span class="material-symbols-outlined">add_a_photo</span>
+                                <span class="label">เพิ่มรูป</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 14. หมายเหตุ -->
+                    <div class="form-group">
+                        <label class="form-label">หมายเหตุ</label>
+                        <textarea id="edit-ticket-notes" class="form-textarea" rows="2" placeholder="หมายเหตุเพิ่มเติม...">${ticket.notes || ''}</textarea>
+                    </div>
+
+                    <!-- 15. พิกัดสถานที่ (GPS) -->
+                    <div class="form-group">
+                        <label class="form-label">พิกัดสถานที่ (GPS)</label>
+                        <div class="gps-input-group">
+                            <button type="button" id="get-location-btn" class="gps-update-btn">
+                                <span class="material-symbols-outlined">my_location</span> พิกัด
+                            </button>
+                            <input type="text" id="location-coords-display" class="form-input gps-display" readonly value="${ticket.lat && ticket.lng ? `${ticket.lat}, ${ticket.lng}` : ''}" placeholder="ยังไม่ได้ระบุ">
                             ${ticket.lat && ticket.lng ? `
-                                <a href="https://www.google.com/maps?q=${ticket.lat},${ticket.lng}" target="_blank" style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: #2563eb; text-decoration: none; background: #eff6ff; padding: 0.4rem 0.75rem; border-radius: 0.5rem; border: 1px solid #bfdbfe;">
-                                    <span class="material-symbols-outlined" style="font-size: 1rem;">map</span>
-                                    เปิด Google Maps
+                                <a href="https://www.google.com/maps?q=${ticket.lat},${ticket.lng}" target="_blank" class="gps-map-link">
+                                    <span class="material-symbols-outlined">map</span> Map
                                 </a>
                             ` : ''}
                         </div>
+                        <input type="hidden" id="edit-ticket-lat" value="${ticket.lat || ''}">
+                        <input type="hidden" id="edit-ticket-lng" value="${ticket.lng || ''}">
                     </div>
-                    <input type="hidden" id="edit-ticket-lat" value="${ticket.lat || ''}">
-                    <input type="hidden" id="edit-ticket-lng" value="${ticket.lng || ''}">
+
+                    <!-- 16. Ticket Status (Last) -->
+                    <div class="form-group" style="padding-top: 0.5rem; border-top: 1px dashed #e2e8f0; margin-top: 1rem;">
+                        <label class="form-label">สถานะทิคเก็ต <span class="required">*</span></label>
+                        <div class="status-toggle-group">
+                             <button type="button" class="priority-btn status-btn ${ticket.status === 'new' ? 'active' : ''}" data-value="new" style="background: ${ticket.status === 'new' ? '#eab308' : ''}; color: ${ticket.status === 'new' ? 'black' : ''}; border-color: #eab308;">ใหม่</button>
+                            <button type="button" class="priority-btn status-btn ${currentStatus === 'inProgress' ? 'active' : ''}" data-value="inProgress" style="background: ${currentStatus === 'inProgress' ? '#3b82f6' : ''}; color: ${currentStatus === 'inProgress' ? 'white' : ''};">ระหว่างดำเนินการ</button>
+                            <button type="button" class="priority-btn status-btn ${currentStatus === 'completed' ? 'active' : ''}" data-value="completed" style="background: ${currentStatus === 'completed' ? '#10b981' : ''}; color: ${currentStatus === 'completed' ? 'white' : ''};">ปิดทิคเก็ต</button>
+                        </div>
+                        <input type="hidden" id="edit-ticket-status" value="${currentStatus}">
+                    </div>
                 </div>
 
                 <div class="sticky-footer">
-                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
                         <span class="material-symbols-outlined">save</span>
                         บันทึกการแก้ไข
                     </button>
@@ -2333,7 +2346,6 @@ function renderEditTicket(params) {
             </form>
             <div style="height: 1rem;"></div>
             
-            <!-- 17. Timeline (latest on top, oldest in gray) -->
             ${renderTimeline(ticket)}
             <div style="height: 6rem;"></div>
         </div>
@@ -2341,7 +2353,7 @@ function renderEditTicket(params) {
         <div class="safe-area-bottom"></div>
     `;
 
-    // Status toggle
+    // Status toggle logic (updated for 3 statuses)
     const statusBtns = content.querySelectorAll('.status-btn');
     const statusInput = content.querySelector('#edit-ticket-status');
     statusBtns.forEach(btn => {
@@ -2350,16 +2362,22 @@ function renderEditTicket(params) {
                 b.classList.remove('active');
                 b.style.background = '';
                 b.style.color = '';
+                b.style.borderColor = '';
             });
             this.classList.add('active');
             const val = this.dataset.value;
             statusInput.value = val;
+
             if (val === 'inProgress') {
-                this.style.background = '#8b5cf6';
+                this.style.background = '#3b82f6'; // Blue
                 this.style.color = 'white';
-            } else {
-                this.style.background = '#10b981';
+            } else if (val === 'completed') {
+                this.style.background = '#10b981'; // Green
                 this.style.color = 'white';
+            } else if (val === 'new') {
+                this.style.background = '#eab308'; // Yellow
+                this.style.color = 'black';
+                this.style.borderColor = '#eab308';
             }
         });
     });
