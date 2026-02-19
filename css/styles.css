@@ -2630,8 +2630,9 @@ body.login-mode #main-content {
     grid-row: unset;
 }
 
-/* Hide the row-2 meta (status+date), use grid-badges instead */
+/* Hide the list-mode columns, use grid-badges instead */
 .ticket-list.grid-view .tli-meta,
+.ticket-list.grid-view .tli-date,
 .ticket-list.grid-view .tli-action {
     display: none !important;
 }
@@ -2851,13 +2852,14 @@ body.login-mode #main-content {
     text-overflow: ellipsis;
 }
 
-/* Meta (status) + Date -> row 2 on mobile, side by side */
+/* Meta (status) — row 2 left on mobile */
 .tli-meta {
     grid-column: 2;
     grid-row: 2;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    justify-self: start;
     margin-top: 0.25rem;
 }
 
@@ -2896,11 +2898,15 @@ body.login-mode #main-content {
     border-color: #c7d2fe;
 }
 
-/* Date sits inside tli-meta on mobile */
+/* Date — row 2 right on mobile */
 .tli-date {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
     font-size: 0.7rem;
     color: #94a3b8;
     white-space: nowrap;
+    margin-top: 0.25rem;
 }
 
 .tli-date .time {
@@ -2932,7 +2938,7 @@ body.login-mode #main-content {
         border-radius: 0.75rem 0.75rem 0 0;
     }
 
-    /* Grid row on desktop — override mobile card layout */
+    /* Grid row on desktop — 5 columns matching header */
     .ticket-list-item {
         display: grid !important;
         grid-template-columns: 60px 3fr 1.2fr 130px 40px;
@@ -2942,7 +2948,7 @@ body.login-mode #main-content {
         padding: 0.75rem 1.5rem;
     }
 
-    /* Reset grid assignments from mobile */
+    /* Reset all mobile grid positions to auto — let natural order fill 5 columns */
     .tli-thumb {
         grid-row: auto;
         grid-column: auto;
@@ -2954,8 +2960,29 @@ body.login-mode #main-content {
     }
 
     .tli-meta {
-        display: contents;
-        /* Children flow into parent grid columns */
+        grid-column: auto;
+        grid-row: auto;
+        justify-self: auto;
+        margin-top: 0;
+    }
+
+    .tli-date {
+        grid-column: auto;
+        grid-row: auto;
+        justify-self: auto;
+        margin-top: 0;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+        font-size: 0.85rem;
+        text-align: left;
+        width: auto;
+    }
+
+    .tli-date .time {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-left: 0;
     }
 
     /* Show action button on desktop */
@@ -2971,22 +2998,6 @@ body.login-mode #main-content {
     }
 
     /* Grid-view header hiding handled via JS (setView function) */
-
-    /* Date column 2 lines */
-    .tli-date {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.2;
-        font-size: 0.85rem;
-        text-align: left;
-        width: auto;
-    }
-
-    .tli-date .time {
-        font-size: 0.75rem;
-        color: #94a3b8;
-        margin-left: 0;
-    }
 }
 
 /* Pagination Styling */
