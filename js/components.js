@@ -6,47 +6,41 @@
 const Components = {
     // Ticket Card Component (List Style)
     ticketCard(ticket) {
-        const displayImages = ticket.images ? ticket.images.slice(0, 4) : [];
+        const displayImages = ticket.images ? ticket.images.slice(0, 1) : [];
         const hasImages = displayImages.length > 0;
 
         return `
             <div class="ticket-list-item" onclick="showTicketDetail(${ticket.id})">
-                <!-- Left: Thumbnail -->
+                <!-- Col 1: Avatar -->
                 <div class="tli-thumb">
                     ${hasImages ? `
-                        <img src="${displayImages[0]}" alt="Thumbnail">
-                        ${ticket.images.length > 1 ? `<span class="tli-thumb-count">+${ticket.images.length - 1} รูป</span>` : ''}
+                        <img src="${displayImages[0]}" alt="Ticket">
                     ` : `
-                        <span class="material-symbols-outlined" style="font-size: 2.5rem; color: var(--text-muted); opacity: 0.4;">image</span>
+                        <span class="material-symbols-outlined" style="font-size: 1.5rem; color: #94a3b8;">park</span>
                     `}
                 </div>
 
-                <!-- Center: Info -->
+                <!-- Col 2: Basic Info -->
                 <div class="tli-info">
-                    <div class="tli-id">#${ticket.id}</div>
+                    <span class="tli-id">#${ticket.id}</span>
                     <h3 class="tli-title">${ticket.title}</h3>
-                    <p class="tli-desc">${ticket.damageType !== 'other' ? getDamageTypeName(ticket.damageType) : (ticket.description || '')}</p>
+                    <p class="tli-desc">${ticket.zoneName} - ${ticket.locationDetail || 'ทั่วไป'}</p>
                 </div>
 
-                <!-- Right: Meta -->
+                <!-- Col 3: Tags/Status -->
                 <div class="tli-meta">
-                    <div class="tli-badges">
-                        ${ticket.priority === 'urgent' ? '<span class="badge urgent">เร่งด่วน</span>' : ''}
-                        <span class="badge ${getStatusClass(ticket.status)}">${getStatusLabel(ticket.status)}</span>
-                    </div>
-                    <div class="tli-location">
-                        <span class="material-symbols-outlined">location_on</span>
-                        <span>${ticket.zoneName}${ticket.locationDetail ? ' - ' + ticket.locationDetail : ''}</span>
-                    </div>
-                    <div class="tli-date">
-                        <span class="material-symbols-outlined">calendar_today</span>
-                        <span>${formatShortDate(ticket.date)}</span>
-                    </div>
+                    <span class="badge-tag ${getStatusClass(ticket.status)}">${getStatusLabel(ticket.status)}</span>
+                    ${ticket.priority === 'urgent' ? '<span class="badge-tag urgent">เร่งด่วน</span>' : ''}
                 </div>
 
-                <!-- Far Right: Detail Link -->
+                <!-- Col 4: Date -->
+                <div class="tli-date">
+                    ${formatShortDate(ticket.date)}
+                </div>
+
+                <!-- Col 5: Action Menu -->
                 <div class="tli-action">
-                    <span>รายละเอียด</span>
+                    <span class="material-symbols-outlined">more_horiz</span>
                 </div>
             </div>
         `;

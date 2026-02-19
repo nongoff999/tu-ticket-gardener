@@ -2546,41 +2546,145 @@ body.login-mode #main-content {
 
     .ticket-toolbar {
         max-width: 1100px;
-        margin: 0 auto 1.5rem auto;
+        margin: 0 auto 2rem auto;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0 0.5rem;
+    }
+
+    .search-box {
+        flex: 1;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        transition: all 0.2s;
+    }
+
+    .search-box:focus-within {
+        background: white;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .search-box input {
+        border: none;
+        background: transparent;
+        padding-left: 0.75rem;
+        width: 100%;
+        font-size: 0.9rem;
+        outline: none;
+    }
+
+    .filter-chip-btn {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        height: 38px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .filter-chip-btn:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+
+    .chip-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .chip-label {
+        font-size: 0.75rem;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .chip-value {
+        font-size: 0.85rem;
+        color: #1e293b;
+        font-weight: 700;
+    }
+
+    .view-switcher {
+        display: flex;
+        background: #f1f5f9;
+        padding: 2px;
+        border-radius: 0.5rem;
+        gap: 2px;
+    }
+
+    .view-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 4px;
+        border: none;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #64748b;
+    }
+
+    .view-btn.active {
+        background: white;
+        color: var(--primary);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 }
 
-/* Ticket List Item Styles */
+/* Ticket List Item Styles (Agile CRM Style) */
 .ticket-list-item {
-    background: var(--card);
-    border-radius: 1rem;
-    padding: 1rem;
+    background: white;
+    padding: 0.75rem 1.25rem;
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
     align-items: center;
-    border: 1px solid var(--border);
+    border-bottom: 1px solid #f1f5f9;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-bottom: 0.75rem;
+    transition: background 0.2s;
+    margin-bottom: 0;
+    border-radius: 0;
 }
 
 .ticket-list-item:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
-    border-color: var(--primary-light);
+    background: #f8fafc;
+    box-shadow: none;
+    transform: none;
+}
+
+/* First and last item rounding for grouping effect */
+.ticket-list .ticket-list-item:first-child {
+    border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.ticket-list .ticket-list-item:last-child {
+    border-radius: 0 0 0.75rem 0.75rem;
+    border-bottom: none;
 }
 
 .tli-thumb {
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 0.75rem;
-    background: var(--background);
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    /* Circular like CRM */
+    background: #e2e8f0;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     flex-shrink: 0;
-    position: relative;
+    border: 1px solid #cbd5e1;
 }
 
 .tli-thumb img {
@@ -2589,33 +2693,22 @@ body.login-mode #main-content {
     object-fit: cover;
 }
 
-.tli-thumb-count {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    font-size: 0.6rem;
-    text-align: center;
-    padding: 2px 0;
-}
-
 .tli-info {
-    flex: 1;
+    flex: 2;
     min-width: 0;
 }
 
 .tli-id {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    font-weight: 700;
+    display: block;
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 500;
 }
 
 .tli-title {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: #1e293b;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2623,90 +2716,106 @@ body.login-mode #main-content {
 
 .tli-desc {
     font-size: 0.8rem;
-    color: var(--text-secondary);
+    color: #64748b;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .tli-meta {
+    flex: 1;
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.25rem;
+    align-items: center;
+    gap: 0.75rem;
+    justify-content: flex-start;
+}
+
+/* Redesign badges to look like CRM tags */
+.badge-tag {
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+.badge-tag.urgent {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+
+.badge-tag.new {
+    background: #fef9c3;
+    color: #a16207;
+    border-color: #fef08a;
+}
+
+.badge-tag.progress {
+    background: #e0e7ff;
+    color: #4338ca;
+    border-color: #c7d2fe;
+}
+
+.tli-date {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    width: 100px;
+    text-align: right;
 }
 
 .tli-action {
-    display: none;
-    /* Hide on mobile */
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    color: #cbd5e1;
 }
 
-/* Desktop Ticket List as Table */
+.tli-action:hover {
+    color: var(--primary);
+}
+
+/* Desktop Header Adjustments */
 @media (min-width: 1024px) {
     .ticket-list-header {
-        display: grid;
-        grid-template-columns: 60px 2fr 1.5fr 120px 100px;
-        /* Thumb | Title+Desc | Meta | Date | Action */
+        display: flex;
         gap: 1.5rem;
-        padding: 0.75rem 1.5rem;
-        background: var(--background);
-        border-bottom: 1px solid var(--border);
-        font-weight: 600;
-        color: var(--text-muted);
-        font-size: 0.85rem;
+        padding: 0.75rem 1.25rem;
+        background: transparent;
+        border-bottom: 2px solid #e2e8f0;
+        font-weight: 700;
+        color: #94a3b8;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
         align-items: center;
         margin-bottom: 0.5rem;
     }
 
-    .ticket-list-item {
-        display: grid;
-        grid-template-columns: 60px 2fr 1.5fr 120px 100px;
-        gap: 1.5rem;
-        padding: 0.75rem 1.5rem;
-        align-items: center;
-        border-radius: 0.5rem;
-        /* Less rounded for table rows */
-        margin-bottom: 0;
-        border: none;
-        border-bottom: 1px solid var(--border);
+    .tlh-thumb {
+        width: 2.75rem;
     }
 
-    .ticket-list-item:hover {
-        background: var(--primary-light);
-        box-shadow: none;
-        transform: none;
+    .tlh-info {
+        flex: 2;
     }
 
-    .tli-info {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
+    .tlh-meta {
+        flex: 1;
     }
 
-    .tli-meta {
-        align-items: flex-start;
-        flex-direction: row;
-        gap: 1rem;
+    .tlh-date {
+        width: 100px;
+        text-align: right;
     }
 
-    .tli-date {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-    }
-
-    .tli-action {
-        display: flex;
-        justify-content: flex-end;
-        color: var(--primary);
-        font-weight: 600;
-        font-size: 0.9rem;
+    .tlh-action {
+        width: 40px;
     }
 }
 
-/* Default state for table header */
-.ticket-list-header {
-    display: none;
-}
 
 .stats-compact-row .stat-card-label {
     font-size: 0.6rem !important;

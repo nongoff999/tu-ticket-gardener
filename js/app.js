@@ -1153,11 +1153,11 @@ function renderTicketList() {
 
         <!-- Desktop Table Header -->
         <div class="ticket-list-header">
-            <div>รูปภาพ</div>
-            <div>รายละเอียด</div>
-            <div>สถานะ / พื้นที่</div>
-            <div>วันที่</div>
-            <div style="text-align: right;"></div>
+            <div class="tlh-thumb"></div>
+            <div class="tlh-info">รายละเอียดงาน</div>
+            <div class="tlh-meta">สถานะ</div>
+            <div class="tlh-date">วันที่</div>
+            <div class="tlh-action"></div>
         </div>
 
         <!-- Ticket List -->
