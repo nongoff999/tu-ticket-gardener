@@ -2789,6 +2789,11 @@ body.login-mode #main-content {
     justify-content: flex-start;
 }
 
+/* Table header - hidden by default on mobile */
+.ticket-list-header {
+    display: none;
+}
+
 /* Redesign badges to look like CRM tags */
 .badge-tag {
     padding: 0.2rem 0.6rem;
@@ -2839,20 +2844,33 @@ body.login-mode #main-content {
 /* Standard Table Grid Layout */
 @media (min-width: 1024px) {
 
-    .ticket-list-header,
+    /* Show table header on desktop */
+    .ticket-list-header {
+        display: grid !important;
+        grid-template-columns: 60px 3fr 1.2fr 130px 40px;
+        gap: 1rem;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+        font-weight: 700;
+        color: #94a3b8;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-radius: 0.75rem 0.75rem 0 0;
+    }
+
+    /* Grid row on desktop */
     .ticket-list-item {
         display: grid !important;
         grid-template-columns: 60px 3fr 1.2fr 130px 40px;
-        /* Thumb | Details (with Priority) | Status | DateTime | Action */
         gap: 1rem;
         align-items: center;
         padding: 0.75rem 1.5rem;
     }
 
-    .tli-meta {
-        display: contents;
-        /* Allow children to participate in parent grid */
-    }
+    /* Grid-view header hiding handled via JS (setView function) */
 
     /* Date column 2 lines */
     .tli-date {
@@ -2880,7 +2898,30 @@ body.login-mode #main-content {
     border-top: 1px solid #f1f5f9;
     border-radius: 0 0 0.75rem 0.75rem;
     margin-top: -1px;
-    /* Align with table border */
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+/* Mobile Pagination */
+@media (max-width: 640px) {
+    .table-pagination {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .pagination-controls {
+        justify-content: center;
+    }
+
+    .rows-per-page {
+        justify-content: center;
+    }
+
+    .pagination-info {
+        text-align: center;
+        margin-right: 0 !important;
+    }
 }
 
 .pagination-info {
