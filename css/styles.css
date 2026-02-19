@@ -188,9 +188,18 @@ body,
         justify-self: end;
     }
 
-    /* Hide Menu Button on Desktop */
+    /* Desktop: Show menu button as sidebar toggle */
     .app-header #menu-btn {
-        display: none !important;
+        display: flex;
+        width: 2rem;
+        height: 2rem;
+        color: var(--text-muted);
+        opacity: 0.6;
+        transition: opacity 0.2s;
+    }
+
+    .app-header #menu-btn:hover {
+        opacity: 1;
     }
 }
 
