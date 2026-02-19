@@ -3366,6 +3366,8 @@ body.login-mode #main-content {
     /* Refined padding */
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    /* Ensure space between text and count */
     gap: 0.75rem;
     cursor: pointer;
     border-radius: 0.75rem;
@@ -3426,8 +3428,8 @@ body.login-mode #main-content {
     font-size: 0.75rem;
     color: var(--text-muted);
     font-weight: 600;
-    margin-left: 1rem;
-    /* Clear separation */
+    margin-left: auto;
+    /* Force stick to right */
 }
 
 .filter-dropdown-item:hover .filter-dropdown-count {
