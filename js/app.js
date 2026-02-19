@@ -1123,19 +1123,23 @@ function renderTicketList() {
                     </div>
                 </div>
 
-                <!-- Priority Group -->
+                <!-- Priority Group (Multi-Select) -->
                 <div>
                     <span class="filter-group-header">ความเร่งด่วน</span>
-                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;" id="priority-filters">
-                        <button class="modern-filter-chip active" data-group="priority" data-value="all">ทั้งหมด</button>
-                        <button class="modern-filter-chip" data-group="priority" data-value="urgent">
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #ef4444;">error</span>
-                            เร่งด่วน
+                    <div class="filter-dropdown-container" style="position: relative; display: inline-block;">
+                        <button id="priority-filter-trigger" class="modern-filter-chip active" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 1rem; border-radius: 1rem; height: auto; border: 1px solid var(--primary); background: #eff6ff;">
+                             <span class="material-symbols-outlined" style="font-size: 1.25rem; color: var(--primary);">flag</span>
+                             <div style="text-align: left; display: flex; flex-direction: column;">
+                                 <span style="font-size: 0.65rem; color: var(--primary); font-weight: 500;">ความเร่งด่วน</span>
+                                 <span id="priority-filter-label" style="font-size: 0.9rem; font-weight: 700; color: var(--primary);">ทั้งหมด</span>
+                             </div>
+                             <span class="material-symbols-outlined" style="font-size: 1.5rem; color: var(--primary); margin-left: 0.5rem;">expand_more</span>
                         </button>
-                        <button class="modern-filter-chip" data-group="priority" data-value="not-urgent">
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #22c55e;">check_circle</span>
-                            ไม่เร่งด่วน
-                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="priority-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 0.5rem); left: 0; background: white; border: 1px solid var(--border); border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 0.5rem; min-width: 240px; z-index: 100;">
+                            <!-- Items injected by JS -->
+                        </div>
                     </div>
                 </div>
 
@@ -1229,8 +1233,8 @@ function renderTicketList() {
     setView(AppState.ticketViewMode);
 
     // Default Filters
-    let selectedStatuses = ['new', 'inProgress', 'completed']; // Multi-select default
-    let currentPriority = 'all';
+    let selectedStatuses = ['new', 'inProgress', 'completed'];
+    let selectedPriorities = ['urgent', 'not-urgent']; // Multi-select default
     let currentSort = 'latest';
 
     sortSelect.addEventListener('change', (e) => {
@@ -1238,27 +1242,55 @@ function renderTicketList() {
         applyFilters();
     });
 
-    // --- Status Dropdown Logic (Multi-Select) ---
+    // --- Status Dropdown Logic ---
     const statusDropdownTrigger = document.getElementById('status-filter-trigger');
     const statusDropdownMenu = document.getElementById('status-dropdown-menu');
     let isStatusDropdownOpen = false;
 
+    // --- Priority Dropdown Logic ---
+    const priorityDropdownTrigger = document.getElementById('priority-filter-trigger');
+    const priorityDropdownMenu = document.getElementById('priority-dropdown-menu');
+    let isPriorityDropdownOpen = false;
+
+    // Toggle Functions
     function toggleStatusDropdown() {
         isStatusDropdownOpen = !isStatusDropdownOpen;
-        statusDropdownMenu.style.display = isStatusDropdownOpen ? 'block' : 'none';
+        if (isStatusDropdownOpen) isPriorityDropdownOpen = false; // Close others
+        updateDropdownVisibility();
         if (isStatusDropdownOpen) renderStatusDropdownItems();
     }
 
-    // Close dropdown when clicking outside
+    function togglePriorityDropdown() {
+        isPriorityDropdownOpen = !isPriorityDropdownOpen;
+        if (isPriorityDropdownOpen) isStatusDropdownOpen = false; // Close others
+        updateDropdownVisibility();
+        if (isPriorityDropdownOpen) renderPriorityDropdownItems();
+    }
+
+    function updateDropdownVisibility() {
+        statusDropdownMenu.style.display = isStatusDropdownOpen ? 'block' : 'none';
+        priorityDropdownMenu.style.display = isPriorityDropdownOpen ? 'block' : 'none';
+    }
+
+    // Close dropdowns when clicking outside
     document.addEventListener('click', (e) => {
-        if (isStatusDropdownOpen && !statusDropdownTrigger.contains(e.target) && !statusDropdownMenu.contains(e.target)) {
+        let clickedOutsideStatus = !statusDropdownTrigger.contains(e.target) && !statusDropdownMenu.contains(e.target);
+        let clickedOutsidePriority = !priorityDropdownTrigger.contains(e.target) && !priorityDropdownMenu.contains(e.target);
+
+        if (clickedOutsideStatus && isStatusDropdownOpen) {
             isStatusDropdownOpen = false;
-            statusDropdownMenu.style.display = 'none';
+            updateDropdownVisibility();
+        }
+        if (clickedOutsidePriority && isPriorityDropdownOpen) {
+            isPriorityDropdownOpen = false;
+            updateDropdownVisibility();
         }
     });
 
     statusDropdownTrigger.addEventListener('click', toggleStatusDropdown);
+    priorityDropdownTrigger.addEventListener('click', togglePriorityDropdown);
 
+    // Render Status Items
     function renderStatusDropdownItems() {
         const statuses = [
             { id: 'new', label: 'ทิคเก็ตใหม่', color: '#fbbf24' },
@@ -1268,9 +1300,7 @@ function renderTicketList() {
 
         // Calculate counts
         const accounts = { new: 0, inProgress: 0, completed: 0 };
-        MOCK_DATA.tickets.forEach(t => {
-            if (accounts[t.status] !== undefined) accounts[t.status]++;
-        });
+        MOCK_DATA.tickets.forEach(t => { if (accounts[t.status] !== undefined) accounts[t.status]++; });
 
         statusDropdownMenu.innerHTML = statuses.map(s => {
             const isChecked = selectedStatuses.includes(s.id);
@@ -1285,18 +1315,60 @@ function renderTicketList() {
             `;
         }).join('');
 
-        // Re-attach listeners
         statusDropdownMenu.querySelectorAll('.status-option').forEach(opt => {
             opt.addEventListener('click', (e) => {
-                e.stopPropagation(); // Keep open
+                e.stopPropagation();
                 const val = opt.dataset.value;
                 if (selectedStatuses.includes(val)) {
                     selectedStatuses = selectedStatuses.filter(s => s !== val);
                 } else {
                     selectedStatuses.push(val);
                 }
-                renderStatusDropdownItems(); // Re-render checkbox state
+                renderStatusDropdownItems();
                 updateStatusTriggerLabel();
+                applyFilters();
+            });
+        });
+    }
+
+    // Render Priority Items
+    function renderPriorityDropdownItems() {
+        const priorities = [
+            { id: 'urgent', label: 'เร่งด่วน', color: '#ef4444' },
+            { id: 'not-urgent', label: 'ไม่เร่งด่วน', color: '#22c55e' }
+        ];
+
+        // Calculate counts
+        const accounts = { urgent: 0, 'not-urgent': 0 };
+        MOCK_DATA.tickets.forEach(t => {
+            const key = t.priority === 'urgent' ? 'urgent' : 'not-urgent';
+            accounts[key]++;
+        });
+
+        priorityDropdownMenu.innerHTML = priorities.map(p => {
+            const isChecked = selectedPriorities.includes(p.id);
+            return `
+                <div class="priority-option" data-value="${p.id}" style="padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; border-radius: 0.5rem; transition: background 0.1s; user-select: none;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+                     <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid ${isChecked ? 'var(--primary)' : '#e2e8f0'}; display: flex; align-items: center; justify-content: center; background: ${isChecked ? 'var(--primary)' : 'white'}; transition: all 0.2s;">
+                        <span class="material-symbols-outlined" style="font-size: 14px; color: white; display: ${isChecked ? 'block' : 'none'};">check</span>
+                    </div>
+                    <span style="flex: 1; font-weight: 500; color: var(--text-primary);">${p.label}</span>
+                    <span style="background: #f1f5f9; padding: 0.15rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; color: #64748b; font-weight: 600;">${accounts[p.id]}</span>
+                </div>
+            `;
+        }).join('');
+
+        priorityDropdownMenu.querySelectorAll('.priority-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const val = opt.dataset.value;
+                if (selectedPriorities.includes(val)) {
+                    selectedPriorities = selectedPriorities.filter(s => s !== val);
+                } else {
+                    selectedPriorities.push(val);
+                }
+                renderPriorityDropdownItems();
+                updatePriorityTriggerLabel();
                 applyFilters();
             });
         });
@@ -1313,6 +1385,18 @@ function renderTicketList() {
         }
     }
 
+    function updatePriorityTriggerLabel() {
+        const label = document.getElementById('priority-filter-label');
+        if (selectedPriorities.length === 2) {
+            label.textContent = 'ทั้งหมด';
+        } else if (selectedPriorities.length === 0) {
+            label.textContent = 'ไม่ได้เลือก';
+        } else {
+            const selected = selectedPriorities[0];
+            label.textContent = selected === 'urgent' ? 'เร่งด่วน' : 'ไม่เร่งด่วน';
+        }
+    }
+
     function applyFilters() {
         const query = searchInput.value.toLowerCase().trim();
         let filtered = [...MOCK_DATA.tickets]; // Copy
@@ -1321,14 +1405,17 @@ function renderTicketList() {
         if (selectedStatuses.length > 0) {
             filtered = filtered.filter(t => selectedStatuses.includes(t.status));
         } else {
-            filtered = []; // None selected
+            filtered = [];
         }
 
-        // 2. Priority Filter (Single Select)
-        if (currentPriority === 'urgent') {
-            filtered = filtered.filter(t => t.priority === 'urgent');
-        } else if (currentPriority === 'not-urgent') {
-            filtered = filtered.filter(t => t.priority !== 'urgent');
+        // 2. Priority Filter (Multi-Select)
+        if (selectedPriorities.length > 0) {
+            filtered = filtered.filter(t => {
+                const p = t.priority === 'urgent' ? 'urgent' : 'not-urgent';
+                return selectedPriorities.includes(p);
+            });
+        } else {
+            filtered = [];
         }
 
         // 3. Search Filter
@@ -1378,28 +1465,6 @@ function renderTicketList() {
         // Update Count
         countLabel.textContent = `ทั้งหมด ${filtered.length} รายการ`;
     }
-
-    // Event Listeners for Chips (Priority Only)
-    function setupChipGroup(groupElement, groupName) {
-        groupElement.addEventListener('click', (e) => {
-            const btn = e.target.closest('.modern-filter-chip');
-            if (!btn) return;
-
-            // Update UI
-            groupElement.querySelectorAll('.modern-filter-chip').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            // Update State
-            const val = btn.dataset.value;
-            // if (groupName === 'status') currentStatus = val; // Removed
-            if (groupName === 'priority') currentPriority = val;
-
-            applyFilters();
-        });
-    }
-
-    // setupChipGroup(statusFilters, 'status'); // Removed
-    setupChipGroup(priorityFilters, 'priority');
     searchInput.addEventListener('input', applyFilters);
 
     // Initial Render
