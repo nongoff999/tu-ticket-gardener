@@ -1778,12 +1778,6 @@ function renderTicketDetail(params) {
                                 </div>
                             ` : '- ไม่ระบุ -'}
                         </div>
-                        <div class="detail-group">
-                             <button class="btn btn-primary" onclick="router.navigate('/edit/${ticket.id}')" style="width: 100%; margin-top: 1rem; height: 3rem; border-radius: 0.75rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                                <span class="material-symbols-outlined">edit_note</span>
-                                แก้ไขข้อมูล / อัปเดตงาน
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -1792,10 +1786,18 @@ function renderTicketDetail(params) {
             <!-- Timeline (Outside Card or Inside? User asked for 'single box'. Let's keep timeline separate as it is a history log, or should we put it inside?) -->
             <!-- Usually Timeline is separate. I'll keep it separate for clarity but close. -->
             
-            <div style="height: 1.5rem;"></div>
+            <div style="height: 2rem;"></div>
             ${renderTimeline(ticket)}
-            <div style="height: 6rem;"></div>
+            <div style="height: 8rem;"></div>
         </div>
+
+        <div class="floating-action-bar">
+             <button class="btn-float" onclick="router.navigate('/edit/${ticket.id}')">
+                <span class="material-symbols-outlined">edit_note</span>
+                แก้ไขข้อมูล / อัปเดตงาน
+            </button>
+        </div>
+        
         <div class="safe-area-bottom"></div>
     `;
 }
