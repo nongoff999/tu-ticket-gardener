@@ -2771,9 +2771,9 @@ body.login-mode #main-content {
     background: white;
     padding: 0.75rem 1rem;
     display: grid;
-    grid-template-columns: 2.75rem 1fr;
+    grid-template-columns: 2.75rem auto auto 1fr;
     grid-template-rows: auto auto;
-    gap: 0.25rem 0.75rem;
+    gap: 0.15rem 0.5rem;
     align-items: start;
     border-bottom: 1px solid #f1f5f9;
     cursor: pointer;
@@ -2821,9 +2821,9 @@ body.login-mode #main-content {
     object-fit: cover;
 }
 
-/* Info takes right column, row 1 */
+/* Info spans cols 2-4 on row 1 */
 .tli-info {
-    grid-column: 2;
+    grid-column: 2 / 5;
     grid-row: 1;
     min-width: 0;
 }
@@ -2852,15 +2852,14 @@ body.login-mode #main-content {
     text-overflow: ellipsis;
 }
 
-/* Meta (status) — row 2 left on mobile */
+/* Meta (status badge) — row 2, col 2 (auto width = tight) */
 .tli-meta {
     grid-column: 2;
     grid-row: 2;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    justify-self: start;
-    margin-top: 0.25rem;
+    margin-top: 0.2rem;
 }
 
 /* Table header - hidden by default on mobile */
@@ -2898,15 +2897,15 @@ body.login-mode #main-content {
     border-color: #c7d2fe;
 }
 
-/* Date — row 2 right on mobile */
+/* Date — row 2, col 3 (auto width = right next to badge) */
 .tli-date {
-    grid-column: 2;
+    grid-column: 3;
     grid-row: 2;
-    justify-self: end;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #94a3b8;
     white-space: nowrap;
-    margin-top: 0.25rem;
+    margin-top: 0.2rem;
+    align-self: center;
 }
 
 .tli-date .time {
