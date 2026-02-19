@@ -439,7 +439,8 @@
 }
 
 /* Hide large operation box in desktop list view to keep it clean */
-.ticket-list:not(.grid-view) .monitor-operation {
+.ticket-list:not(.grid-view) .monitor-operation,
+.ticket-list:not(.grid-view) .monitor-card>div:nth-child(4) {
     display: none !important;
 }
 
