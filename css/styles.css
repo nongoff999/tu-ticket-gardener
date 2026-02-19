@@ -2537,6 +2537,65 @@ body.login-mode #main-content {
         margin: 0 auto;
     }
 
+    /* Premium Grid View (Enterprise Gallery Style) */
+    .ticket-list.grid-view {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        padding: 0.5rem;
+    }
+
+    .ticket-list.grid-view .ticket-list-item {
+        display: flex !important;
+        flex-direction: column !important;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 0;
+        overflow: hidden;
+        height: auto;
+        transition: all 0.3s ease;
+    }
+
+    .ticket-list.grid-view .ticket-list-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary-light);
+    }
+
+    .ticket-list.grid-view .tli-thumb {
+        width: 100%;
+        height: 180px;
+        border-radius: 0;
+        border: none;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .ticket-list.grid-view .tli-info {
+        padding: 1.25rem;
+        width: 100%;
+    }
+
+    .ticket-list.grid-view .tli-meta,
+    .ticket-list.grid-view .tli-date,
+    .ticket-list.grid-view .tli-action {
+        display: none !important;
+        /* Hide table columns in grid view */
+    }
+
+    /* Small Overlay Tag for Priority in Grid */
+    .ticket-list.grid-view .tli-info::before {
+        content: attr(data-priority);
+        /* Logic would need JS or extra HTML, let's stick to showing badge in info */
+    }
+
+    /* Show Priority and Status inline for Grid */
+    .ticket-list.grid-view .grid-badges {
+        display: flex !important;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
     /* Ticket List as Table styling (Mocking table with grid) */
     .ticket-list.desktop-table-view {
         display: grid;

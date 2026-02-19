@@ -28,20 +28,26 @@ const Components = {
                     </div>
                     <h3 class="tli-title">${ticket.title}</h3>
                     <p class="tli-desc">${ticket.zoneName} - ${ticket.locationDetail || 'ทั่วไป'}</p>
+                    
+                    <!-- Only visible in Grid View via CSS -->
+                    <div class="grid-badges" style="display: none; margin-top: 0.75rem; gap: 0.5rem;">
+                        <span class="badge-tag ${getStatusClass(ticket.status)}" style="font-size: 0.65rem;">${getStatusLabel(ticket.status)}</span>
+                        ${ticket.priority === 'urgent' ? '<span class="badge-tag urgent" style="font-size: 0.65rem;">เร่งด่วน</span>' : ''}
+                    </div>
                 </div>
 
-                <!-- Col 3: Status -->
+                <!-- Col 3: Status (Visible in List) -->
                 <div class="tli-meta">
                     <span class="badge-tag ${getStatusClass(ticket.status)}">${getStatusLabel(ticket.status)}</span>
                 </div>
 
-                <!-- Col 4: DateTime (2 lines) -->
+                <!-- Col 4: DateTime (Visible in List) -->
                 <div class="tli-date">
                     <span class="date">${formatShortDate(ticket.date)}</span>
                     <span class="time">${ticket.date.split('T')[1]?.substring(0, 5) || '00:00'} น.</span>
                 </div>
 
-                <!-- Col 5: Action Menu -->
+                <!-- Col 5: Action Menu (Visible in List) -->
                 <div class="tli-action">
                     <span class="material-symbols-outlined">more_horiz</span>
                 </div>
