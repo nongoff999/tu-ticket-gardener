@@ -36,11 +36,12 @@
     gap: 1rem;
 }
 
-/* Status Toggle Group */
+/* Status Toggle Group - CLEAN & MODERN */
 .status-toggle-group {
     display: flex;
     gap: 0.5rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    /* Keep on one line if possible */
 }
 
 .status-toggle-group .status-btn {
@@ -48,17 +49,45 @@
     white-space: nowrap;
     min-width: 80px;
     border-radius: 0.5rem;
-    padding: 0.6rem 0.5rem;
-    font-size: 0.85rem;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     border: 1px solid #e2e8f0;
     background: white;
     color: #64748b;
+    /* Gray text for inactive */
+    cursor: pointer;
+    text-align: center;
 }
 
 .status-toggle-group .status-btn:hover {
     background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+/* Specific Active States by data-value or order */
+/* New: Yellow */
+.status-toggle-group .status-btn[data-value="new"].active {
+    background: #eab308;
+    color: white;
+    /* Black text on yellow might be better, or white depending on shade */
+    border-color: #eab308;
+    color: black;
+}
+
+/* InProgress: Blue */
+.status-toggle-group .status-btn[data-value="inProgress"].active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+/* Completed: Green */
+.status-toggle-group .status-btn[data-value="completed"].active {
+    background: #10b981;
+    color: white;
+    border-color: #10b981;
 }
 
 /* GPS Input Group */
@@ -66,6 +95,7 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .gps-update-btn {
@@ -85,7 +115,7 @@
 
 .gps-display {
     flex: 1;
-    min-width: 0;
+    min-width: 150px;
     background: #f8fafc;
     border-color: #e2e8f0;
     color: #64748b;
@@ -115,6 +145,29 @@
     margin-bottom: 0.75rem;
 }
 
+.assignee-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    padding: 0.35rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    color: #1e40af;
+}
+
+.assignee-chip button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+}
+
 .assignee-input-group {
     display: flex;
     gap: 0.5rem;
@@ -134,6 +187,15 @@
     cursor: pointer;
 }
 
+/* Ticket Name Display */
+.ticket-name-display {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.5;
+    padding: 0.5rem 0;
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
     .form-section-card {
@@ -142,9 +204,11 @@
 
     .status-toggle-group {
         flex-direction: column;
+        /* Stack on small screens if needed, or row with wrap */
     }
 
     .status-toggle-group .status-btn {
         width: 100%;
+        margin-bottom: 0.25rem;
     }
 }

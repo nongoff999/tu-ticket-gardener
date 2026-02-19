@@ -2137,13 +2137,19 @@ function renderEditTicket(params) {
     const standardDescriptions = ['โค่นล้ม', 'กิ่งหัก/ฉีก', 'ลำต้นเอียง'];
     const isOtherDesc = !standardDescriptions.includes(currentDamageDesc);
 
-    // Status: only inProgress or completed
-    const currentStatus = ticket.status === 'new' ? 'inProgress' : ticket.status;
+    // Status: allow 'new' to be its own status now
+    const currentStatus = ticket.status;
 
     const content = document.getElementById('main-content');
 
     // Construct Ticket Name: [Ticket No.] [Tree Type] [Damage] [Zone]
-    const ticketNameStr = `[#${ticket.id}] ${ticket.treeType || 'ไม่ระบุพันธุ์'} ${ticket.description || 'ไม่ระบุอาการ'} ${ticket.zoneName || 'ไม่ระบุโซน'}`;
+    const ticketParts = [
+        `[#${ticket.id}]`,
+        ticket.treeType && ticket.treeType !== '-' ? ticket.treeType : '',
+        ticket.description || '',
+        ticket.zoneName || ''
+    ];
+    const ticketNameStr = ticketParts.filter(Boolean).join(' · ');
 
     content.innerHTML = `
         <div class="edit-ticket-container" style="padding: 1rem; max-width: 800px; margin: 0 auto;">
@@ -2153,10 +2159,12 @@ function renderEditTicket(params) {
                 <div class="form-section-card">
                     <h3 class="section-title">ข้อมูลหลัก</h3>
                     
-                    <!-- 1. Ticket Name (Read-only) -->
-                    <div class="form-group">
-                        <label class="form-label">Ticket Name</label>
-                        <input type="text" id="edit-ticket-title" class="form-input" value="${ticketNameStr}" readonly style="background: #f1f5f9; cursor: not-allowed; color: #475569; font-weight: 500;">
+                    <!-- 1. Ticket Name (Text Display) -->
+                    <div style="margin-bottom: 1.25rem;">
+                        <label class="form-label" style="margin-bottom: 0.25rem;">Ticket Name</label>
+                        <div style="font-size: 1.1rem; font-weight: 600; color: #1e293b; line-height: 1.5; padding: 0.5rem 0;">
+                            ${ticketNameStr}
+                        </div>
                     </div>
 
                     <!-- 2. Priority -->
@@ -2329,9 +2337,9 @@ function renderEditTicket(params) {
                     <div class="form-group" style="padding-top: 0.5rem; border-top: 1px dashed #e2e8f0; margin-top: 1rem;">
                         <label class="form-label">สถานะทิคเก็ต <span class="required">*</span></label>
                         <div class="status-toggle-group">
-                             <button type="button" class="priority-btn status-btn ${ticket.status === 'new' ? 'active' : ''}" data-value="new" style="background: ${ticket.status === 'new' ? '#eab308' : ''}; color: ${ticket.status === 'new' ? 'black' : ''}; border-color: #eab308;">ใหม่</button>
-                            <button type="button" class="priority-btn status-btn ${currentStatus === 'inProgress' ? 'active' : ''}" data-value="inProgress" style="background: ${currentStatus === 'inProgress' ? '#3b82f6' : ''}; color: ${currentStatus === 'inProgress' ? 'white' : ''};">ระหว่างดำเนินการ</button>
-                            <button type="button" class="priority-btn status-btn ${currentStatus === 'completed' ? 'active' : ''}" data-value="completed" style="background: ${currentStatus === 'completed' ? '#10b981' : ''}; color: ${currentStatus === 'completed' ? 'white' : ''};">ปิดทิคเก็ต</button>
+                             <button type="button" class="status-btn ${currentStatus === 'new' ? 'active' : ''}" data-value="new">ใหม่</button>
+                            <button type="button" class="status-btn ${currentStatus === 'inProgress' ? 'active' : ''}" data-value="inProgress">ระหว่างดำเนินการ</button>
+                            <button type="button" class="status-btn ${currentStatus === 'completed' ? 'active' : ''}" data-value="completed">ปิดทิคเก็ต</button>
                         </div>
                         <input type="hidden" id="edit-ticket-status" value="${currentStatus}">
                     </div>
@@ -2368,17 +2376,7 @@ function renderEditTicket(params) {
             const val = this.dataset.value;
             statusInput.value = val;
 
-            if (val === 'inProgress') {
-                this.style.background = '#3b82f6'; // Blue
-                this.style.color = 'white';
-            } else if (val === 'completed') {
-                this.style.background = '#10b981'; // Green
-                this.style.color = 'white';
-            } else if (val === 'new') {
-                this.style.background = '#eab308'; // Yellow
-                this.style.color = 'black';
-                this.style.borderColor = '#eab308';
-            }
+            // Styles handled by CSS class 'active'
         });
     });
 
