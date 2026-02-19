@@ -1157,7 +1157,6 @@ function renderTicketList() {
         <div class="ticket-list-header">
             <div class="tlh-thumb"></div>
             <div class="tlh-info">รายละเอียดงาน</div>
-            <div class="tlh-meta">ความเร่งด่วน</div>
             <div class="tlh-meta">สถานะ</div>
             <div class="tlh-date">วันที่ / เวลา</div>
             <div class="tlh-action"></div>

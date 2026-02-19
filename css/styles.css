@@ -2783,8 +2783,8 @@ body.login-mode #main-content {
     .ticket-list-header,
     .ticket-list-item {
         display: grid !important;
-        grid-template-columns: 60px 2.5fr 1fr 1fr 120px 40px;
-        /* Thumb | Details | Priority | Status | DateTime | Action */
+        grid-template-columns: 60px 3fr 1.2fr 130px 40px;
+        /* Thumb | Details (with Priority) | Status | DateTime | Action */
         gap: 1rem;
         align-items: center;
         padding: 0.75rem 1.5rem;
