@@ -22,10 +22,7 @@ const Components = {
 
                 <!-- Col 2: Basic Info -->
                 <div class="tli-info">
-                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2px;">
-                        <span class="tli-id">#${ticket.id}</span>
-                        ${ticket.priority === 'urgent' ? '<span class="badge-tag urgent" style="padding: 1px 4px; font-size: 0.65rem;">เร่งด่วน</span>' : ''}
-                    </div>
+                    <span class="tli-id">#${ticket.id}</span>
                     <h3 class="tli-title">${ticket.title}</h3>
                     <p class="tli-desc">${ticket.zoneName} - ${ticket.locationDetail || 'ทั่วไป'}</p>
                     
@@ -36,8 +33,9 @@ const Components = {
                     </div>
                 </div>
 
-                <!-- Col 3: Status -->
+                <!-- Col 3: Status (top-right on mobile) -->
                 <div class="tli-meta">
+                    ${ticket.priority === 'urgent' ? '<span class="badge-tag urgent">เร่งด่วน</span>' : ''}
                     <span class="badge-tag ${getStatusClass(ticket.status)}">${getStatusLabel(ticket.status)}</span>
                 </div>
 
