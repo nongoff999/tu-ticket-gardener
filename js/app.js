@@ -1040,7 +1040,10 @@ function renderMonitor() {
     viewGridBtn.addEventListener('click', () => setView('grid'));
 
     // Default View
-    if (!AppState.monitorViewMode) AppState.monitorViewMode = 'grid';
+    // Default View: List for Desktop, Grid for Mobile
+    if (!AppState.monitorViewMode) {
+        AppState.monitorViewMode = window.innerWidth >= 768 ? 'list' : 'grid';
+    }
     setView(AppState.monitorViewMode);
 
     // Filters State

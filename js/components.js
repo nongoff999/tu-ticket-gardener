@@ -80,7 +80,7 @@ const Components = {
         const hasOperation = ticket.operation && ticket.operation !== '-';
 
         return `
-            <div class="ticket-card" onclick="showTicketDetail(${ticket.id})" style="flex-direction: column; height: auto; padding: 1.5rem;">
+            <div class="ticket-card monitor-card" onclick="showTicketDetail(${ticket.id})" style="height: auto; padding: 1.5rem;">
                 <!-- Header: ID + Title -->
                 <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; gap: 1rem;">
                     <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0;">

@@ -351,14 +351,16 @@
         font-size: 1.2rem;
     }
 }
+
 /* Floating Action Bar */
 .floating-action-bar {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 1rem 1.5rem 2rem 1.5rem; /* Extra padding bottom for safe area */
-    background: linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0) 100%);
+    padding: 1rem 1.5rem 2rem 1.5rem;
+    /* Extra padding bottom for safe area */
+    background: linear-gradient(to top, rgba(255, 255, 255, 1) 70%, rgba(255, 255, 255, 0) 100%);
     z-index: 100;
     display: flex;
     justify-content: center;
@@ -391,9 +393,93 @@
 
 @media (min-width: 768px) {
     .floating-action-bar {
-        left: 280px; /* Offset for sidebar if needed, assuming sidebar is 280px */
+        left: 280px;
+        /* Offset for sidebar if needed, assuming sidebar is 280px */
         width: calc(100% - 280px);
         padding-bottom: 2rem;
     }
 }
 
+
+/* --- Monitor Desktop List View (Enterprise UI) --- */
+.ticket-list:not(.grid-view) .monitor-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem 1.5rem !important;
+    gap: 1.5rem;
+    height: auto !important;
+    min-height: 80px;
+}
+
+.ticket-list:not(.grid-view) .monitor-card>div:nth-child(1) {
+    /* ID + Title */
+    flex: 2;
+    margin-bottom: 0 !important;
+}
+
+.ticket-list:not(.grid-view) .monitor-card>div:nth-child(2) {
+    /* Badges */
+    flex: 0 0 auto;
+    margin-bottom: 0 !important;
+    justify-content: flex-start;
+}
+
+.ticket-list:not(.grid-view) .monitor-card>div:nth-child(3) {
+    /* Zone, Date, Damage */
+    flex: 2;
+    margin-bottom: 0 !important;
+    justify-content: flex-end;
+    font-size: 0.9rem !important;
+    gap: 1rem !important;
+}
+
+.ticket-list:not(.grid-view) .monitor-card>div:nth-child(3) .material-symbols-outlined {
+    font-size: 1.1rem !important;
+}
+
+/* Hide large operation box in desktop list view to keep it clean */
+.ticket-list:not(.grid-view) .monitor-card>div:nth-child(4) {
+    display: none;
+}
+
+/* Font adjustments for list density */
+.ticket-list:not(.grid-view) .monitor-card h3 {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+}
+
+/* Grid View */
+.grid-view .monitor-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+}
+
+/* Mobile View Fallback */
+@media (max-width: 767px) {
+    .ticket-list:not(.grid-view) .monitor-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+    }
+
+    .ticket-list:not(.grid-view) .monitor-card>div:nth-child(1),
+    .ticket-list:not(.grid-view) .monitor-card>div:nth-child(2),
+    .ticket-list:not(.grid-view) .monitor-card>div:nth-child(3) {
+        flex: 1;
+        width: 100%;
+        margin-bottom: 1rem !important;
+        justify-content: flex-start;
+    }
+
+    .ticket-list:not(.grid-view) .monitor-card>div:nth-child(4) {
+        display: flex;
+        /* Restore Operation box */
+        margin-top: 0.5rem;
+    }
+
+    .ticket-list:not(.grid-view) .monitor-card h3 {
+        font-size: 1.25rem !important;
+    }
+}
