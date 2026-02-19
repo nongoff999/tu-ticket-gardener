@@ -188,18 +188,9 @@ body,
         justify-self: end;
     }
 
-    /* Desktop: Show menu button as sidebar toggle */
+    /* Hide Header Menu Button on Desktop (sidebar has its own toggle) */
     .app-header #menu-btn {
-        display: flex;
-        width: 2rem;
-        height: 2rem;
-        color: var(--text-muted);
-        opacity: 0.6;
-        transition: opacity 0.2s;
-    }
-
-    .app-header #menu-btn:hover {
-        opacity: 1;
+        display: none !important;
     }
 }
 
@@ -3168,6 +3159,19 @@ body.login-mode #main-content {
     }
 }
 
+/* Sidebar toggle: hidden on mobile (header has its own menu button) */
+.sidebar-toggle-btn {
+    display: none;
+}
+
+/* Drawer Header base */
+.drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+}
+
 /* ==========================================
    DESKTOP OPTIMIZATIONS (1024px+)
    Always at the bottom for proper overrides
@@ -3275,6 +3279,36 @@ body.login-mode #main-content {
 
     body.sidebar-collapsed .drawer {
         width: 80px !important;
+    }
+
+    /* ========== Sidebar Toggle Button (AgileCRM Style) ========== */
+    .sidebar-toggle-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border: none;
+        background: transparent;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        color: #94a3b8;
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
+
+    .sidebar-toggle-btn:hover {
+        background: var(--primary-light);
+        color: var(--primary);
+    }
+
+    .sidebar-toggle-btn .material-symbols-outlined {
+        font-size: 1.3rem;
+    }
+
+    /* When collapsed, center the toggle button */
+    body.sidebar-collapsed .sidebar-toggle-btn {
+        margin: 0 auto;
     }
 
     /* Modern Scrollbar */
