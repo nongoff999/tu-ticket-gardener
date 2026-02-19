@@ -1629,18 +1629,30 @@ function renderTicketDetail(params) {
     AppState.selectedTicket = ticket;
     document.getElementById('page-title').textContent = 'TICKET DETAILS';
 
-    // Construct Ticket Name: [#ID] [Tree Type] [Description] [Zone]
+    // Construct Ticket Name
     const ticketParts = [
-        `#${ticket.id}`,
         ticket.treeType && ticket.treeType !== '-' ? ticket.treeType : '',
         ticket.description || '',
         ticket.zoneName || ''
     ];
     const ticketNameStr = ticketParts.filter(Boolean).join(' · ');
 
+    // Helpers for Tags
+    const getStatusTagClass = (s) => {
+        if (s === 'new') return 'warning';
+        if (s === 'inProgress') return 'primary';
+        if (s === 'completed') return 'success';
+        return 'neutral';
+    };
+    const getStatusLabel = (s) => {
+        if (s === 'new') return 'รอการดำเนินการ';
+        if (s === 'inProgress') return 'กำลังดำเนินการ';
+        if (s === 'completed') return 'เสร็จสิ้น';
+        return s;
+    };
+
     const content = document.getElementById('main-content');
 
-    // Helper to render image grid
     const renderImages = (imgs) => {
         if (!imgs || imgs.length === 0) return '<div class="detail-value" style="color: #cbd5e1; font-style: italic;">- ไม่มีรูปภาพ -</div>';
         return `<div class="image-grid-view">
@@ -1649,131 +1661,138 @@ function renderTicketDetail(params) {
     };
 
     content.innerHTML = `
-        <div class="edit-ticket-container" style="padding: 1rem; max-width: 800px; margin: 0 auto;">
+        <div class="edit-ticket-container" style="padding: 1rem; max-width: 900px; margin: 0 auto;">
             
-            <!-- SECTION 1: ข้อมูลหลัก (Main Info) -->
-            <div class="form-section-card">
-                <h3 class="section-title">ข้อมูลหลัก</h3>
+            <!-- Single Consolidated Card -->
+            <div class="detail-card">
                 
-                <div class="detail-group">
-                    <label class="detail-label">Ticket Name</label>
-                    <div class="detail-value large" style="color: #1e293b;">${ticketNameStr}</div>
+                <!-- HEADER: Title & Tags -->
+                <div class="detail-header-title">
+                    ${ticketNameStr}
                 </div>
-
-                <div class="detail-group">
-                    <label class="detail-label">ลำดับความสำคัญ</label>
-                    <div class="detail-value">
-                        ${ticket.priority === 'urgent'
-            ? '<span style="color: #ef4444; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem;"><span class="material-symbols-outlined" style="font-size: 1.1rem;">warning</span> เร่งด่วน</span>'
-            : '<span style="color: #64748b; font-weight: 500;">ธรรมดา</span>'}
-                    </div>
-                </div>
-
-                <div class="detail-group">
-                    <label class="detail-label">ลักษณะความเสียหาย</label>
-                    <div class="detail-value">${ticket.description || '-'}</div>
-                </div>
-
-                 <div class="detail-group">
-                    <label class="detail-label">โซนพื้นที่</label>
-                    <div class="detail-value">${ticket.zoneName || '-'}</div>
-                </div>
-
-                <div class="detail-group">
-                    <label class="detail-label">สถานที่เกิดเหตุ (จุดสังเกต)</label>
-                    <div class="detail-value">${ticket.locationDetail || '-'}</div>
-                </div>
-
-                <div class="detail-group">
-                    <label class="detail-label">รูปภาพก่อนดำเนินการ</label>
-                    ${renderImages(ticket.images)}
-                </div>
-            </div>
-
-            <!-- SECTION 2: รายละเอียด & ผลกระทบ (Tree & Impact) -->
-            <div class="form-section-card">
-                <h3 class="section-title">รายละเอียด & ผลกระทบ</h3>
                 
-                <div class="detail-group">
-                    <label class="detail-label">ผลกระทบที่ได้รับ</label>
-                    <div class="detail-value">${ticket.impact || '-'}</div>
+                <div class="tag-row">
+                    <span class="detail-tag neutral">Ticket #${ticket.id}</span>
+                    <span class="detail-tag ${getStatusTagClass(ticket.status)}">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">info</span>
+                        ${getStatusLabel(ticket.status)}
+                    </span>
+                    ${ticket.priority === 'urgent'
+            ? `<span class="detail-tag urgent"><span class="material-symbols-outlined" style="font-size: 1rem;">warning</span> เร่งด่วน</span>`
+            : `<span class="detail-tag neutral">ปกติ</span>`
+        }
+                    <span class="detail-tag outline">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">forest</span>
+                        ${ticket.description || 'ไม่ระบุ'}
+                    </span>
+                    <span class="detail-tag outline">
+                         <span class="material-symbols-outlined" style="font-size: 1rem;">location_on</span>
+                         ${ticket.zoneName || 'ไม่ระบุโซน'}
+                    </span>
                 </div>
 
-                 <div class="detail-group">
-                    <label class="detail-label">ชนิดพันธุ์ต้นไม้</label>
-                    <div class="detail-value">${ticket.treeType || '-'}</div>
-                </div>
-
-                <div class="grid-2-col">
-                    <div class="detail-group">
-                        <label class="detail-label">ขนาดลำต้น (นิ้ว)</label>
-                        <div class="detail-value">${ticket.circumference || '-'}</div>
+                <!-- MAIN INFO GRID -->
+                <div class="detail-grid-compact">
+                    <!-- Left Column -->
+                    <div>
+                        <div class="detail-group">
+                            <label class="detail-label">สถานที่เกิดเหตุ (จุดสังเกต)</label>
+                            <div class="detail-value">${ticket.locationDetail || '-'}</div>
+                        </div>
+                        <div class="detail-group">
+                            <label class="detail-label">ลักษณะความเสียหาย</label>
+                            <div class="detail-value">${ticket.description || '-'}</div>
+                        </div>
+                        <div class="detail-group">
+                            <label class="detail-label">ผลกระทบที่ได้รับ</label>
+                            <div class="detail-value">${ticket.impact || '-'}</div>
+                        </div>
                     </div>
-                     <div class="detail-group">
-                        <label class="detail-label">จำนวน (ต้น)</label>
-                        <div class="detail-value">${ticket.quantity || '-'}</div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- SECTION 3: การจัดการ (Operation & Management) -->
-            <div class="form-section-card">
-                <h3 class="section-title">การจัดการ</h3>
-
-                <div class="detail-group">
-                    <label class="detail-label">ผู้รับผิดชอบ</label>
-                    <div class="detail-value">
-                        ${ticket.assignees && ticket.assignees.length > 0
+                    <!-- Right Column -->
+                    <div>
+                        <div class="detail-group">
+                            <label class="detail-label">ชนิดพันธุ์ต้นไม้</label>
+                            <div class="detail-value">${ticket.treeType || '-'}</div>
+                        </div>
+                        <div class="grid-2-col" style="gap: 1rem; margin-bottom: 1.25rem;">
+                             <div class="detail-group" style="margin-bottom: 0;">
+                                <label class="detail-label">ขนาดลำต้น (นิ้ว)</label>
+                                <div class="detail-value">${ticket.circumference || '-'}</div>
+                            </div>
+                             <div class="detail-group" style="margin-bottom: 0;">
+                                <label class="detail-label">จำนวน (ต้น)</label>
+                                <div class="detail-value">${ticket.quantity || '-'}</div>
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <label class="detail-label">ผู้รับผิดชอบ</label>
+                            <div class="detail-value">
+                                ${ticket.assignees && ticket.assignees.length > 0
             ? `<div class="assignee-list">${ticket.assignees.map(a => `<span class="assignee-chip" style="padding-right: 0.6rem; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;">${a}</span>`).join('')}</div>`
             : '- ยังไม่ระบุ -'}
+                            </div>
+                        </div> 
                     </div>
                 </div>
 
-                <div class="detail-group">
-                    <label class="detail-label">การดำเนินงาน</label>
-                    <div class="detail-value">${ticket.operation || '-'}</div>
+                <div class="detail-divider"></div>
+
+                <!-- IMAGES SECTION -->
+                <div class="detail-section-label">หลักฐานและรูปภาพ</div>
+                <div class="detail-grid-compact">
+                    <div class="detail-group">
+                        <label class="detail-label">รูปภาพก่อนดำเนินการ</label>
+                        ${renderImages(ticket.images)}
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">รูปภาพระหว่างดำเนินการ</label>
+                        ${renderImages(ticket.progressImages || [])}
+                    </div>
                 </div>
 
-                 <div class="detail-group">
-                    <label class="detail-label">รูปภาพระหว่างดำเนินการ</label>
-                    ${renderImages(ticket.progressImages || [])}
-                </div>
+                <div class="detail-divider"></div>
 
-                <div class="detail-group">
-                    <label class="detail-label">หมายเหตุ</label>
-                    <div class="detail-value">${ticket.notes || '-'}</div>
-                </div>
-                
-                <div class="detail-group">
-                    <label class="detail-label">พิกัดสถานที่ (GPS)</label>
-                    ${ticket.lat && ticket.lng ? `
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <span style="font-family: monospace; background: #f8fafc; padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: 1px solid #e2e8f0;">${ticket.lat}, ${ticket.lng}</span>
-                            <a href="https://www.google.com/maps?q=${ticket.lat},${ticket.lng}" target="_blank" class="gps-map-link">
-                                <span class="material-symbols-outlined">map</span> Map
-                            </a>
+                <!-- OPERATION & MANAGEMENT -->
+                <div class="detail-section-label">การดำเนินงาน & สถานะ</div>
+                <div class="detail-grid-compact">
+                    <div>
+                         <div class="detail-group">
+                            <label class="detail-label">ขั้นตอนการดำเนินงาน</label>
+                            <div class="detail-value">${ticket.operation || '-'}</div>
                         </div>
-                    ` : '- ไม่ระบุ -'}
-                </div>
-
-                <div class="detail-group" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0;">
-                    <label class="detail-label">สถานะทิคเก็ต</label>
-                    <div class="status-toggle-group">
-                         <button type="button" class="status-btn ${ticket.status === 'new' ? 'active' : ''}" style="pointer-events: none;" data-value="new">ใหม่</button>
-                        <button type="button" class="status-btn ${ticket.status === 'inProgress' ? 'active' : ''}" style="pointer-events: none;" data-value="inProgress">ระหว่างดำเนินการ</button>
-                        <button type="button" class="status-btn ${ticket.status === 'completed' ? 'active' : ''}" style="pointer-events: none;" data-value="completed">ปิดทิคเก็ต</button>
+                        <div class="detail-group">
+                            <label class="detail-label">หมายเหตุ</label>
+                            <div class="detail-value">${ticket.notes || '-'}</div>
+                        </div>
+                    </div>
+                    <div>
+                         <div class="detail-group">
+                            <label class="detail-label">พิกัดสถานที่ (GPS)</label>
+                            ${ticket.lat && ticket.lng ? `
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <span style="font-family: monospace; background: #f8fafc; padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: 1px solid #e2e8f0;">${ticket.lat}, ${ticket.lng}</span>
+                                    <a href="https://www.google.com/maps?q=${ticket.lat},${ticket.lng}" target="_blank" class="gps-map-link">
+                                        <span class="material-symbols-outlined">map</span> Map
+                                    </a>
+                                </div>
+                            ` : '- ไม่ระบุ -'}
+                        </div>
+                        <div class="detail-group">
+                             <button class="btn btn-primary" onclick="router.navigate('/edit/${ticket.id}')" style="width: 100%; margin-top: 1rem; height: 3rem; border-radius: 0.75rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                                <span class="material-symbols-outlined">edit_note</span>
+                                แก้ไขข้อมูล / อัปเดตงาน
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-             <div class="sticky-footer" style="display: flex; gap: 0.75rem;">
-                <button class="btn btn-primary" onclick="router.navigate('/edit/${ticket.id}')" style="flex: 1; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                    <span class="material-symbols-outlined">edit_note</span>
-                    แก้ไขข้อมูล / อัปเดตงาน
-                </button>
             </div>
             
-            <div style="height: 2rem;"></div>
+            <!-- Timeline (Outside Card or Inside? User asked for 'single box'. Let's keep timeline separate as it is a history log, or should we put it inside?) -->
+            <!-- Usually Timeline is separate. I'll keep it separate for clarity but close. -->
+            
+            <div style="height: 1.5rem;"></div>
             ${renderTimeline(ticket)}
             <div style="height: 6rem;"></div>
         </div>

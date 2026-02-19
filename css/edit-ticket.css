@@ -241,19 +241,113 @@
     transform: scale(1.05);
 }
 
-/* Responsive adjustments */
+/* --- Consolidated Single Card Detail Styles --- */
+.detail-card {
+    background: white;
+    border-radius: 1.25rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+}
+
+.detail-header-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+}
+
+.tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.detail-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.detail-tag.primary {
+    background: #eff6ff;
+    color: #3b82f6;
+    border: 1px solid #bfdbfe;
+}
+
+.detail-tag.urgent {
+    background: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+}
+
+.detail-tag.neutral {
+    background: #f8fafc;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+.detail-tag.success {
+    background: #f0fdf4;
+    color: #22c55e;
+    border: 1px solid #bbf7d0;
+}
+
+.detail-tag.warning {
+    background: #fefce8;
+    color: #eab308;
+    border: 1px solid #fde047;
+}
+
+.detail-tag.outline {
+    background: white;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+}
+
+.detail-grid-compact {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem 2rem;
+    margin-bottom: 2rem;
+}
+
+.detail-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 2rem 0;
+}
+
+.detail-section-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 @media (max-width: 640px) {
-    .form-section-card {
-        padding: 1rem;
+    .detail-card {
+        padding: 1.25rem;
     }
 
-    .status-toggle-group {
-        flex-direction: column;
-        /* Stack on small screens if needed, or row with wrap */
+    .detail-grid-compact {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
     }
 
-    .status-toggle-group .status-btn {
-        width: 100%;
-        margin-bottom: 0.25rem;
+    .detail-header-title {
+        font-size: 1.2rem;
     }
 }
