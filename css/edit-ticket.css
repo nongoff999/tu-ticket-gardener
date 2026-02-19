@@ -439,8 +439,8 @@
 }
 
 /* Hide large operation box in desktop list view to keep it clean */
-.ticket-list:not(.grid-view) .monitor-card>div:nth-child(4) {
-    display: none;
+.ticket-list:not(.grid-view) .monitor-operation {
+    display: none !important;
 }
 
 /* Font adjustments for list density */
@@ -473,9 +473,9 @@
         justify-content: flex-start;
     }
 
-    .ticket-list:not(.grid-view) .monitor-card>div:nth-child(4) {
-        display: flex;
-        /* Restore Operation box */
+    .ticket-list:not(.grid-view) .monitor-operation {
+        display: flex !important;
+        /* Restore Operation box on mobile */
         margin-top: 0.5rem;
     }
 

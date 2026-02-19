@@ -113,7 +113,7 @@ const Components = {
 
                 <!-- Operation (Highlighted, Very Big) -->
                 ${hasOperation ? `
-                <div style="display: flex; align-items: flex-start; gap: 1rem; margin-top: auto; padding: 1rem 1.25rem; background: #ecfdf5; border-radius: 1rem; border: 2px solid #a7f3d0;">
+                <div class="monitor-operation" style="display: flex; align-items: flex-start; gap: 1rem; margin-top: auto; padding: 1rem 1.25rem; background: #ecfdf5; border-radius: 1rem; border: 2px solid #a7f3d0;">
                     <span class="material-symbols-outlined" style="font-size: 2rem; color: #16a34a; flex-shrink: 0;">construction</span>
                     <span style="font-size: 1.25rem; color: #15803d; line-height: 1.4; font-weight: 600;">${ticket.operation}</span>
                 </div>
