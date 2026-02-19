@@ -3409,7 +3409,13 @@ body.login-mode #main-content {
     body.sidebar-collapsed .drawer .drawer-logo-text,
     body.sidebar-collapsed .drawer .drawer-profile-info,
     body.sidebar-collapsed .drawer .drawer-version,
-    body.sidebar-collapsed .drawer .logout-btn span:not(.material-symbols-outlined) {
+    body.sidebar-collapsed .drawer .logout-btn span:not(.material-symbols-outlined),
+    body.sidebar-collapsed .drawer .update-check-btn {
+        display: none !important;
+    }
+
+    /* Also hide the update wrapper div */
+    body.sidebar-collapsed .drawer .drawer-footer>div:last-child {
         display: none !important;
     }
 

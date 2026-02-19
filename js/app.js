@@ -1315,14 +1315,15 @@ function renderTicketList() {
             viewGridBtn.classList.add('active');
             viewListBtn.classList.remove('active');
             AppState.ticketViewMode = 'grid';
-            if (tableHeader) tableHeader.style.display = 'none';
+            // Must use !important to override CSS media query's display: grid !important
+            if (tableHeader) tableHeader.style.setProperty('display', 'none', 'important');
         } else {
             listContainer.classList.remove('grid-view');
             viewListBtn.classList.add('active');
             viewGridBtn.classList.remove('active');
             AppState.ticketViewMode = 'list';
-            // On desktop, header will show via media query (display: grid !important)
-            if (tableHeader) tableHeader.style.display = '';
+            // Remove inline display so CSS media query takes over
+            if (tableHeader) tableHeader.style.removeProperty('display');
         }
     }
 
