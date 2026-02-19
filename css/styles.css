@@ -3493,19 +3493,17 @@ body.login-mode #main-content {
     position: relative;
 }
 
-/* Tooltip for Add Ticket Menu */
-.drawer-nav-item[href='#/add']:hover::after {
-    content: "Add Ticket";
+/* Tooltip for All Sidebar Menus */
+.drawer-nav-item[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
     position: absolute;
     left: calc(100% + 12px);
-    /* Space from icon */
     top: 50%;
     transform: translateY(-50%);
     background: white;
     color: var(--text-primary);
     padding: 0.5rem 1rem;
     border-radius: 9999px;
-    /* Pill shape */
     font-size: 0.85rem;
     font-weight: 600;
     box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
