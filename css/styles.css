@@ -107,15 +107,22 @@ h4,
 
 .app-container {
     width: 100%;
-    max-width: 500px;
-    /* Slightly wider for modern large phones */
     margin: 0 auto;
     min-height: 100vh;
-    background-color: var(--card);
+    background-color: var(--background);
+    /* Changed from card to background for better contrast with sidebar */
     position: relative;
-    box-shadow: var(--shadow-xl);
     display: flex;
     flex-direction: column;
+}
+
+/* Mobile: Keep the phone app look */
+@media (max-width: 1023px) {
+    .app-container {
+        max-width: 500px;
+        background-color: var(--card);
+        box-shadow: var(--shadow-xl);
+    }
 }
 
 /* Transition for theme switching */
@@ -130,8 +137,6 @@ body,
 .ticket-card {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
-
-
 
 /* For true mobile view, remove the shadow and full height background */
 @media (max-width: 480px) {
@@ -154,7 +159,23 @@ body,
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid var(--border);
+    transition: padding-left 0.3s ease;
+    /* For sidebar transition */
 }
+
+/* Desktop Sidebar Adjustment */
+@media (min-width: 1024px) {
+    .app-header {
+        padding-left: 320px;
+        /* 300px sidebar + 20px gap */
+    }
+
+    /* Hide Menu Button on Desktop */
+    .app-header #menu-btn {
+        display: none !important;
+    }
+}
+
 
 .app-header h1 {
     font-size: 1.25rem;
@@ -265,12 +286,32 @@ body,
     transform: translateX(0);
 }
 
-.drawer-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.5rem;
-    padding-top: 3rem;
+/* Desktop Permanent Sidebar */
+@media (min-width: 1024px) {
+    .drawer {
+        transform: translateX(0);
+        /* Always show */
+        width: 300px;
+        border-right: 1px solid var(--border);
+        box-shadow: none;
+        /* Clean look */
+    }
+
+    .drawer-overlay {
+        display: none !important;
+        /* No overlay on desktop */
+    }
+
+    /* Adjust Main Content to sit right of Sidebar */
+    #main-content {
+        margin-left: 300px;
+        padding: 2rem;
+        max-width: 1200px;
+        /* Limit content width for readability */
+        width: calc(100% - 300px);
+    }
+
+    /* Hide "Close" interactions on Desktop if any exist (usually overlay handles it) */
 }
 
 .drawer-logo {
@@ -2384,23 +2425,241 @@ body.login-mode #main-content {
     }
 }
 
-/* Compact Stats Row (Mobile optimized + PC Balance) */
-.stats-compact-row {
+/* ==========================================
+   Responsive Grid System
+   ========================================== */
+
+.dashboard-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
-    margin: 0.5rem 1.5rem 1.5rem 1.5rem;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1rem;
+    padding: 0 1.5rem 6rem;
+    /* Bottom padding for FAB */
 }
 
-.stats-compact-row .stat-card {
-    padding: 0.5rem !important;
-    height: auto !important;
-    min-height: 0 !important;
+.col-span-12 {
+    grid-column: span 12;
 }
 
-.stats-compact-row .stat-card-value {
-    font-size: 1.25rem !important;
-    margin-bottom: 0;
+.col-span-6 {
+    grid-column: span 12;
+}
+
+/* Mobile: Full width */
+.col-span-4 {
+    grid-column: span 12;
+}
+
+@media (min-width: 768px) {
+    .col-span-6 {
+        grid-column: span 6;
+    }
+
+    .col-span-4 {
+        grid-column: span 4;
+    }
+
+    .dashboard-container {
+        gap: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+
+    /* Desktop Optimizations */
+    .dashboard-container {
+        padding-bottom: 2rem;
+        /* Less bottom padding needed */
+    }
+
+    .stats-compact-row {
+        gap: 1.5rem;
+        margin: 0rem 1.5rem 2rem 1.5rem;
+        /* Adjust margins */
+    }
+
+    .stats-compact-row .stat-card {
+        padding: 1.5rem !important;
+        height: 9rem !important;
+    }
+
+    .stat-card-label {
+        font-size: 1rem;
+    }
+
+    .stat-card-value {
+        font-size: 2.25rem;
+    }
+
+    /* Chart Card refinements */
+    .chart-card {
+        padding: 2rem;
+    }
+
+    /* Ticket List as Table styling (Mocking table with grid) */
+    .ticket-list.desktop-table-view {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+/* Ticket List Item Styles */
+.ticket-list-item {
+    background: var(--card);
+    border-radius: 1rem;
+    padding: 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 0.75rem;
+}
+
+.ticket-list-item:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+    border-color: var(--primary-light);
+}
+
+.tli-thumb {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 0.75rem;
+    background: var(--background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.tli-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tli-thumb-count {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-size: 0.6rem;
+    text-align: center;
+    padding: 2px 0;
+}
+
+.tli-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.tli-id {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.tli-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tli-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tli-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+}
+
+.tli-action {
+    display: none;
+    /* Hide on mobile */
+}
+
+/* Desktop Ticket List as Table */
+@media (min-width: 1024px) {
+    .ticket-list-header {
+        display: grid;
+        grid-template-columns: 60px 2fr 1.5fr 120px 100px;
+        /* Thumb | Title+Desc | Meta | Date | Action */
+        gap: 1.5rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--background);
+        border-bottom: 1px solid var(--border);
+        font-weight: 600;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .ticket-list-item {
+        display: grid;
+        grid-template-columns: 60px 2fr 1.5fr 120px 100px;
+        gap: 1.5rem;
+        padding: 0.75rem 1.5rem;
+        align-items: center;
+        border-radius: 0.5rem;
+        /* Less rounded for table rows */
+        margin-bottom: 0;
+        border: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .ticket-list-item:hover {
+        background: var(--primary-light);
+        box-shadow: none;
+        transform: none;
+    }
+
+    .tli-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .tli-meta {
+        align-items: flex-start;
+        flex-direction: row;
+        gap: 1rem;
+    }
+
+    .tli-date {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .tli-action {
+        display: flex;
+        justify-content: flex-end;
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+}
+
+/* Default state for table header */
+.ticket-list-header {
+    display: none;
 }
 
 .stats-compact-row .stat-card-label {

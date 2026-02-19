@@ -1151,6 +1151,15 @@ function renderTicketList() {
             <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="list-count"></p>
         </div>
 
+        <!-- Desktop Table Header -->
+        <div class="ticket-list-header">
+            <div>รูปภาพ</div>
+            <div>รายละเอียด</div>
+            <div>สถานะ / พื้นที่</div>
+            <div>วันที่</div>
+            <div style="text-align: right;"></div>
+        </div>
+
         <!-- Ticket List -->
         <div class="ticket-list pb-safe" id="ticket-list">
             <!-- Content rendered by JS -->
