@@ -2577,67 +2577,89 @@ body.login-mode #main-content {
         /* Constrain entire dashboard area */
         margin: 0 auto;
     }
+}
 
-    /* Premium Grid View (Enterprise Gallery Style) */
+/* ==========================================
+   GRID VIEW — works on all screen sizes
+   ========================================== */
+
+/* Grid View Container */
+.ticket-list.grid-view {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0.5rem;
+}
+
+/* Grid View Card */
+.ticket-list.grid-view .ticket-list-item {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: unset;
+    grid-template-rows: unset;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 0;
+    overflow: hidden;
+    height: auto;
+    transition: all 0.3s ease;
+}
+
+.ticket-list.grid-view .ticket-list-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-light);
+}
+
+/* Image fills top of card */
+.ticket-list.grid-view .tli-thumb {
+    width: 100%;
+    height: 160px;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    grid-row: unset;
+    grid-column: unset;
+}
+
+.ticket-list.grid-view .tli-info {
+    padding: 1rem;
+    width: 100%;
+    grid-column: unset;
+    grid-row: unset;
+}
+
+/* Hide the row-2 meta (status+date), use grid-badges instead */
+.ticket-list.grid-view .tli-meta,
+.ticket-list.grid-view .tli-action {
+    display: none !important;
+}
+
+/* Show inline badges in grid cards */
+.ticket-list.grid-view .grid-badges {
+    display: flex !important;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+/* Desktop: multi-column grid */
+@media (min-width: 768px) {
     .ticket-list.grid-view {
-        display: grid !important;
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 1.5rem;
-        padding: 0.5rem;
     }
 
-    .ticket-list.grid-view .ticket-list-item {
-        display: flex !important;
-        flex-direction: column !important;
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 1rem;
-        padding: 0;
-        overflow: hidden;
-        height: auto;
-        transition: all 0.3s ease;
+    .ticket-list.grid-view .tli-thumb {
+        height: 180px;
     }
 
     .ticket-list.grid-view .ticket-list-item:hover {
         transform: translateY(-5px);
-        box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
-        border-color: var(--primary-light);
     }
+}
 
-    .ticket-list.grid-view .tli-thumb {
-        width: 100%;
-        height: 180px;
-        border-radius: 0;
-        border: none;
-        border-bottom: 1px solid #f1f5f9;
-    }
-
-    .ticket-list.grid-view .tli-info {
-        padding: 1.25rem;
-        width: 100%;
-    }
-
-    .ticket-list.grid-view .tli-meta,
-    .ticket-list.grid-view .tli-date,
-    .ticket-list.grid-view .tli-action {
-        display: none !important;
-        /* Hide table columns in grid view */
-    }
-
-    /* Small Overlay Tag for Priority in Grid */
-    .ticket-list.grid-view .tli-info::before {
-        content: attr(data-priority);
-        /* Logic would need JS or extra HTML, let's stick to showing badge in info */
-    }
-
-    /* Show Priority and Status inline for Grid */
-    .ticket-list.grid-view .grid-badges {
-        display: flex !important;
-        gap: 0.5rem;
-        margin-top: 0.75rem;
-    }
-
-    /* Ticket List as Table styling (Mocking table with grid) */
+@media (min-width: 1024px) {
     .ticket-list.desktop-table-view {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -2743,13 +2765,15 @@ body.login-mode #main-content {
     }
 }
 
-/* Ticket List Item Styles (Agile CRM Style) */
+/* Ticket List Item Styles — Mobile-First Card Layout */
 .ticket-list-item {
     background: white;
-    padding: 0.75rem 1.25rem;
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
+    padding: 0.75rem 1rem;
+    display: grid;
+    grid-template-columns: 2.75rem 1fr;
+    grid-template-rows: auto auto;
+    gap: 0.25rem 0.75rem;
+    align-items: start;
     border-bottom: 1px solid #f1f5f9;
     cursor: pointer;
     transition: background 0.2s;
@@ -2773,11 +2797,11 @@ body.login-mode #main-content {
     border-bottom: none;
 }
 
+/* Thumb spans both rows on mobile */
 .tli-thumb {
     width: 2.75rem;
     height: 2.75rem;
     border-radius: 50%;
-    /* Circular like CRM */
     background: #e2e8f0;
     display: flex;
     align-items: center;
@@ -2785,6 +2809,9 @@ body.login-mode #main-content {
     overflow: hidden;
     flex-shrink: 0;
     border: 1px solid #cbd5e1;
+    grid-row: 1 / 3;
+    grid-column: 1;
+    align-self: center;
 }
 
 .tli-thumb img {
@@ -2793,20 +2820,22 @@ body.login-mode #main-content {
     object-fit: cover;
 }
 
+/* Info takes right column, row 1 */
 .tli-info {
-    flex: 2;
+    grid-column: 2;
+    grid-row: 1;
     min-width: 0;
 }
 
 .tli-id {
-    display: block;
+    display: inline;
     font-size: 0.7rem;
     color: #64748b;
     font-weight: 500;
 }
 
 .tli-title {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #1e293b;
     white-space: nowrap;
@@ -2815,19 +2844,21 @@ body.login-mode #main-content {
 }
 
 .tli-desc {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #64748b;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+/* Meta (status) + Date -> row 2 on mobile, side by side */
 .tli-meta {
-    flex: 1;
+    grid-column: 2;
+    grid-row: 2;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
 }
 
 /* Table header - hidden by default on mobile */
@@ -2844,6 +2875,7 @@ body.login-mode #main-content {
     background: #f1f5f9;
     color: #64748b;
     border: 1px solid #e2e8f0;
+    white-space: nowrap;
 }
 
 .badge-tag.urgent {
@@ -2864,22 +2896,20 @@ body.login-mode #main-content {
     border-color: #c7d2fe;
 }
 
+/* Date sits inside tli-meta on mobile */
 .tli-date {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: #94a3b8;
-    width: 100px;
-    text-align: right;
+    white-space: nowrap;
 }
 
+.tli-date .time {
+    margin-left: 0.25rem;
+}
+
+/* Action menu hidden on mobile (tap card instead) */
 .tli-action {
-    width: 40px;
-    display: flex;
-    justify-content: center;
-    color: #cbd5e1;
-}
-
-.tli-action:hover {
-    color: var(--primary);
+    display: none;
 }
 
 /* Standard Table Grid Layout */
@@ -2902,13 +2932,42 @@ body.login-mode #main-content {
         border-radius: 0.75rem 0.75rem 0 0;
     }
 
-    /* Grid row on desktop */
+    /* Grid row on desktop — override mobile card layout */
     .ticket-list-item {
         display: grid !important;
         grid-template-columns: 60px 3fr 1.2fr 130px 40px;
+        grid-template-rows: auto;
         gap: 1rem;
         align-items: center;
         padding: 0.75rem 1.5rem;
+    }
+
+    /* Reset grid assignments from mobile */
+    .tli-thumb {
+        grid-row: auto;
+        grid-column: auto;
+    }
+
+    .tli-info {
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .tli-meta {
+        display: contents;
+        /* Children flow into parent grid columns */
+    }
+
+    /* Show action button on desktop */
+    .tli-action {
+        display: flex;
+        width: 40px;
+        justify-content: center;
+        color: #cbd5e1;
+    }
+
+    .tli-action:hover {
+        color: var(--primary);
     }
 
     /* Grid-view header hiding handled via JS (setView function) */
@@ -2926,6 +2985,7 @@ body.login-mode #main-content {
     .tli-date .time {
         font-size: 0.75rem;
         color: #94a3b8;
+        margin-left: 0;
     }
 }
 
@@ -3865,44 +3925,7 @@ body.login-mode #main-content {
     text-decoration: underline;
 }
 
-/* ========================================
-       Grid Layout Override (Beautiful Cards)
-       ======================================== */
-.ticket-list.grid-view {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.25rem;
-    padding: 0 1rem;
-}
-
-.ticket-list.grid-view .ticket-list-item {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 1.25rem;
-    border-radius: 1.5rem;
-    border: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    background: white;
-}
-
-.ticket-list.grid-view .ticket-list-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-    background: white;
-}
-
-.ticket-list.grid-view .tli-thumb {
-    width: 100%;
-    height: 180px;
-    border-radius: 1rem;
-    margin-bottom: 0.75rem;
-}
-
-.ticket-list.grid-view .tli-info {
-    margin-bottom: 0.75rem;
-}
-
+/* Grid View text wrapping for cards (titles can be multi-line) */
 .ticket-list.grid-view .tli-title {
     white-space: normal;
     display: -webkit-box;
@@ -3910,7 +3933,6 @@ body.login-mode #main-content {
     line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    font-size: 1.1rem;
 }
 
 .ticket-list.grid-view .tli-desc {
@@ -3922,63 +3944,7 @@ body.login-mode #main-content {
     overflow: hidden;
 }
 
-.ticket-list.grid-view .tli-meta {
-    align-items: flex-start;
-    min-width: unset;
-    border-top: 1px solid var(--border);
-    padding-top: 0.75rem;
-}
-
-.ticket-list.grid-view .tli-action {
-    display: none;
-}
-
-/* Mobile: Compact 2-line card */
-@media (max-width: 768px) {
-    .ticket-list-item {
-        flex-wrap: wrap;
-        gap: 0.5rem 0.75rem;
-        padding: 0.75rem 1rem;
-    }
-
-    .tli-thumb {
-        width: 2.75rem;
-        height: 2.75rem;
-    }
-
-    .tli-info {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .tli-id {
-        font-size: 0.75rem;
-        margin-bottom: 0.1rem;
-    }
-
-    .tli-title {
-        font-size: 0.9rem;
-        margin-bottom: 0.1rem;
-    }
-
-    .tli-desc {
-        font-size: 0.75rem;
-    }
-
-    .tli-meta {
-        width: 100%;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        min-width: unset;
-        gap: 0.5rem;
-        padding-left: 3.5rem;
-    }
-
-    .tli-action {
-        display: none;
-    }
-}
+/* Mobile ticket list is now handled by base styles (grid card layout) */
 
 /* --- Multi-Select Dropdown Styles --- */
 .filter-dropdown-container {

@@ -36,18 +36,16 @@ const Components = {
                     </div>
                 </div>
 
-                <!-- Col 3: Status (Visible in List) -->
+                <!-- Col 3: Status + Date (share row 2 on mobile) -->
                 <div class="tli-meta">
                     <span class="badge-tag ${getStatusClass(ticket.status)}">${getStatusLabel(ticket.status)}</span>
+                    <div class="tli-date">
+                        <span class="date">${formatShortDate(ticket.date)}</span>
+                        <span class="time">${ticket.date.split('T')[1]?.substring(0, 5) || '00:00'} น.</span>
+                    </div>
                 </div>
 
-                <!-- Col 4: DateTime (Visible in List) -->
-                <div class="tli-date">
-                    <span class="date">${formatShortDate(ticket.date)}</span>
-                    <span class="time">${ticket.date.split('T')[1]?.substring(0, 5) || '00:00'} น.</span>
-                </div>
-
-                <!-- Col 5: Action Menu (Visible in List) -->
+                <!-- Col 5: Action Menu -->
                 <div class="tli-action">
                     <span class="material-symbols-outlined">more_horiz</span>
                 </div>
