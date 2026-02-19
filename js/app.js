@@ -841,119 +841,64 @@ function renderMonitor() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <!-- Search & Filter Toggle Row -->
-        <div style="display: flex; gap: 0.75rem; padding: 0 1rem; margin-bottom: 0.75rem; align-items: center;">
-            <div class="search-box" style="flex: 1; margin: 0; height: 3rem;">
+        <!-- Monitor Toolbar (Unified) -->
+        <div class="ticket-toolbar">
+            <!-- Search Box -->
+            <div class="search-box">
                 <span class="material-symbols-outlined icon">search</span>
-                <input type="text" placeholder="ค้นหาทิคเก็ต..." id="search-input">
+                <input type="text" id="search-input" placeholder="ค้นหาทิคเก็ต..." value="">
             </div>
-            <button id="filter-toggle-btn">
-                <span class="material-symbols-outlined" style="font-size: 1.5rem;">tune</span>
-            </button>
-        </div>
 
-        <!-- Collapsible Filter Panel -->
-        <div id="monitor-filter-panel" class="monitor-filter-panel">
-            <div style="padding: 1rem 1.25rem; background: var(--card); margin: 0 1rem; border-radius: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
-                
-                <!-- Status Group -->
-                <div style="margin-bottom: 1.25rem;">
-                    <span class="filter-group-header">สถานะทิคเก็ต</span>
-                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;" id="status-filters">
-                        <button class="modern-filter-chip" data-group="status" data-value="all">ทั้งหมด</button>
-                        <button class="modern-filter-chip active" data-group="status" data-value="new">
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">new_releases</span>
-                            ทิคเก็ตใหม่
-                        </button>
-                        <button class="modern-filter-chip" data-group="status" data-value="inProgress">
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">hourglass_top</span>
-                            ดำเนินการ
-                        </button>
-                        <button class="modern-filter-chip" data-group="status" data-value="completed">
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">check_circle</span>
-                            เสร็จสิ้น
-                        </button>
-                    </div>
-                </div>
+            <!-- Status Filter -->
+            <div class="filter-dropdown-container">
+                <button id="status-filter-trigger" class="filter-chip-btn">
+                     <span class="material-symbols-outlined chip-icon" style="color: var(--primary);">filter_list</span>
+                     <div class="chip-info">
+                         <span class="chip-label">สถานะ</span>
+                         <span id="status-filter-label" class="chip-value">ทั้งหมด</span>
+                     </div>
+                     <span class="material-symbols-outlined chip-arrow">expand_more</span>
+                </button>
+                <div id="status-dropdown-menu" class="filter-dropdown-menu"></div>
+            </div>
 
-                <!-- Priority Group -->
-                <div>
-                    <span class="filter-group-header">ความเร่งด่วน</span>
-                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;" id="priority-filters">
-                        <button class="modern-filter-chip active" data-group="priority" data-value="all">ทั้งหมด</button>
-                        <button class="modern-filter-chip" data-group="priority" data-value="urgent">
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #ef4444;">error</span>
-                            เร่งด่วน
-                        </button>
-                        <button class="modern-filter-chip" data-group="priority" data-value="not-urgent">
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #22c55e;">check_circle</span>
-                            ไม่เร่งด่วน
-                        </button>
-                    </div>
-                </div>
+            <!-- Priority Filter -->
+            <div class="filter-dropdown-container">
+                <button id="priority-filter-trigger" class="filter-chip-btn">
+                     <span class="material-symbols-outlined chip-icon" style="color: #ef4444;">flag</span>
+                     <div class="chip-info">
+                         <span class="chip-label">ความเร่งด่วน</span>
+                         <span id="priority-filter-label" class="chip-value">ทั้งหมด</span>
+                     </div>
+                     <span class="material-symbols-outlined chip-arrow">expand_more</span>
+                </button>
+                <div id="priority-dropdown-menu" class="filter-dropdown-menu"></div>
+            </div>
 
-                <!-- View & Sort Group -->
-                <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border);">
-                    <span class="filter-group-header">มุมมอง & การเรียงลำดับ</span>
-                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                    </div>
-                        
-                        <select class="sort-dropdown" id="sort-select" style="border: none; outline: none; font-family: inherit;">
-                            <option value="latest">เรียงตาม: ล่าสุด</option>
-                            <option value="oldest">เรียงตาม: เก่าสุด</option>
-                            <option value="priority">เรียงตาม: ความเร่งด่วน</option>
-                        </select>
-                    </div>
-                </div>
-
+            <!-- View Switcher (Right Aligned) -->
+            <div class="view-switcher" style="margin-left: auto;">
+                <button id="view-list-btn" class="view-btn"> <span class="material-symbols-outlined">view_list</span> </button>
+                <button id="view-grid-btn" class="view-btn"> <span class="material-symbols-outlined">grid_view</span> </button>
             </div>
         </div>
-        
+
         <!-- Ticket Count -->
         <div style="padding: 0 1.5rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="monitor-count"></span>
-            
-            <div class="view-switcher">
-                <button class="view-btn" data-view="list" id="view-list-btn">
-                    <span class="material-symbols-outlined">view_list</span>
-                </button>
-                <button class="view-btn active" data-view="grid" id="view-grid-btn">
-                    <span class="material-symbols-outlined">grid_view</span>
-                </button>
-            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="monitor-count"></p>
         </div>
 
         <!-- Ticket List -->
         <div class="ticket-list pb-safe" id="ticket-list">
-            <!-- Content will be rendered by applyFilters() -->
+            <!-- Content rendered by JS -->
         </div>
     `;
 
     // --- Logic ---
-    const filterToggleBtn = document.getElementById('filter-toggle-btn');
-    const filterPanel = document.getElementById('monitor-filter-panel');
-    const statusFilters = document.getElementById('status-filters');
-    const priorityFilters = document.getElementById('priority-filters');
     const searchInput = document.getElementById('search-input');
     const countLabel = document.getElementById('monitor-count');
-
-    // New Controls
     const viewListBtn = document.getElementById('view-list-btn');
     const viewGridBtn = document.getElementById('view-grid-btn');
-    const sortSelect = document.getElementById('sort-select');
     const listContainer = document.getElementById('ticket-list');
-
-    // Toggle Panel Visibility
-    filterToggleBtn.addEventListener('click', () => {
-        const isOpen = filterPanel.classList.contains('open');
-        if (isOpen) {
-            filterPanel.classList.remove('open');
-            filterToggleBtn.classList.remove('active');
-        } else {
-            filterPanel.classList.add('open');
-            filterToggleBtn.classList.add('active');
-        }
-    });
 
     // View Switching
     function setView(view) {
@@ -973,34 +918,140 @@ function renderMonitor() {
     viewListBtn.addEventListener('click', () => setView('list'));
     viewGridBtn.addEventListener('click', () => setView('grid'));
 
-    // Default to Grid View for Monitor
+    // Default View
     if (!AppState.monitorViewMode) AppState.monitorViewMode = 'grid';
     setView(AppState.monitorViewMode);
 
-    // Default Filters
-    let currentStatus = 'new';
-    let currentPriority = 'all';
-    let currentSort = 'latest';
+    // Filters State
+    let selectedStatuses = ['new', 'inProgress', 'completed']; // Default all
+    let selectedPriorities = ['urgent', 'not-urgent']; // Default all
 
-    sortSelect.addEventListener('change', (e) => {
-        currentSort = e.target.value;
-        applyFilters();
+    // --- Generic Multi-Select Helper (Duplicated for Safety) ---
+    function setupMultiSelect(triggerId, menuId, labelId, getItems, selectedValues, onUpdate) {
+        const trigger = document.getElementById(triggerId);
+        const menu = document.getElementById(menuId);
+        const labelEl = document.getElementById(labelId);
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const wasShown = menu.classList.contains('show');
+            document.querySelectorAll('.filter-dropdown-menu.show').forEach(el => el.classList.remove('show'));
+            if (!wasShown) {
+                menu.classList.add('show');
+                renderItems();
+            }
+        });
+
+        function renderItems() {
+            const items = getItems();
+            menu.innerHTML = items.map(item => {
+                const isSelected = selectedValues.includes(item.id);
+                return `
+                    <div class="filter-dropdown-item ${isSelected ? 'selected' : ''}" data-value="${item.id}">
+                        <div class="checkbox-circle">
+                            <span class="material-symbols-outlined">check</span>
+                        </div>
+                        <span>${item.label}</span>
+                        <span class="filter-dropdown-count">${item.count}</span>
+                    </div>
+                `;
+            }).join('');
+
+            menu.querySelectorAll('.filter-dropdown-item').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const val = el.dataset.value;
+                    const idx = selectedValues.indexOf(val);
+                    if (idx > -1) selectedValues.splice(idx, 1);
+                    else selectedValues.push(val);
+
+                    renderItems();
+                    updateLabel(items.length);
+                    onUpdate();
+                });
+            });
+        }
+
+        function updateLabel(totalItems) {
+            const total = totalItems || getItems().length;
+            if (selectedValues.length === total && total > 0) {
+                labelEl.textContent = 'ทั้งหมด';
+            } else if (selectedValues.length === 0) {
+                labelEl.textContent = 'ไม่ได้เลือก';
+            } else {
+                labelEl.textContent = `เลือกแล้ว ${selectedValues.length} รายการ`;
+            }
+        }
+
+        return () => {
+            const items = getItems();
+            updateLabel(items.length);
+            if (menu.classList.contains('show')) renderItems();
+        };
+    }
+
+    // Global Closer
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.filter-dropdown-container')) {
+            document.querySelectorAll('.filter-dropdown-menu.show').forEach(el => el.classList.remove('show'));
+        }
     });
+
+    // Initialize Status
+    const updateStatusUI = setupMultiSelect(
+        'status-filter-trigger', 'status-dropdown-menu', 'status-filter-label',
+        () => {
+            const counts = { new: 0, inProgress: 0, completed: 0 };
+            MOCK_DATA.tickets.forEach(t => { if (counts[t.status] !== undefined) counts[t.status]++ });
+            return [
+                { id: 'new', label: 'ทิคเก็ตใหม่', count: counts.new },
+                { id: 'inProgress', label: 'กำลังดำเนินการ', count: counts.inProgress },
+                { id: 'completed', label: 'เสร็จสิ้น', count: counts.completed }
+            ];
+        },
+        selectedStatuses,
+        applyFilters
+    );
+    updateStatusUI();
+
+    // Initialize Priority
+    const updatePriorityUI = setupMultiSelect(
+        'priority-filter-trigger', 'priority-dropdown-menu', 'priority-filter-label',
+        () => {
+            const counts = { urgent: 0, 'not-urgent': 0 };
+            MOCK_DATA.tickets.forEach(t => {
+                const key = t.priority === 'urgent' ? 'urgent' : 'not-urgent';
+                counts[key]++;
+            });
+            return [
+                { id: 'urgent', label: 'เร่งด่วน', count: counts.urgent },
+                { id: 'not-urgent', label: 'ไม่เร่งด่วน', count: counts.not_urgent || counts['not-urgent'] }
+            ];
+        },
+        selectedPriorities,
+        applyFilters
+    );
+    updatePriorityUI();
 
     function applyFilters() {
         const query = searchInput.value.toLowerCase().trim();
         let filtered = [...MOCK_DATA.tickets];
 
         // 1. Status Filter
-        if (currentStatus !== 'all') {
-            filtered = filtered.filter(t => t.status === currentStatus);
+        if (selectedStatuses.length > 0) {
+            filtered = filtered.filter(t => selectedStatuses.includes(t.status));
+        } else {
+            filtered = [];
         }
 
         // 2. Priority Filter
-        if (currentPriority === 'urgent') {
-            filtered = filtered.filter(t => t.priority === 'urgent');
-        } else if (currentPriority === 'not-urgent') {
-            filtered = filtered.filter(t => t.priority !== 'urgent');
+        if (selectedPriorities.length > 0) {
+            filtered = filtered.filter(t => {
+                const p = t.priority === 'urgent' ? 'urgent' : 'not-urgent';
+                return selectedPriorities.includes(p);
+            });
+        } else {
+            filtered = [];
         }
 
         // 3. Search Filter
@@ -1017,24 +1068,13 @@ function renderMonitor() {
             );
         }
 
-        // 4. Sorting
-        filtered.sort((a, b) => {
-            if (currentSort === 'latest') { // Newest ID/Date first
-                return b.id - a.id;
-            } else if (currentSort === 'oldest') {
-                return a.id - b.id;
-            } else if (currentSort === 'priority') {
-                // Urgent first, then latest
-                if (a.priority === 'urgent' && b.priority !== 'urgent') return -1;
-                if (a.priority !== 'urgent' && b.priority === 'urgent') return 1;
-                return b.id - a.id;
-            }
-            return 0;
-        });
+        // 4. Sorting (Fixed to Latest)
+        filtered.sort((a, b) => b.id - a.id);
 
         // Render
         const listEl = document.getElementById('ticket-list');
         if (filtered.length > 0) {
+            // Using monitorCard for Monitor view
             listEl.innerHTML = filtered.map(ticket => Components.monitorCard(ticket)).join('');
         } else {
             listEl.innerHTML = `
@@ -1050,30 +1090,7 @@ function renderMonitor() {
         countLabel.textContent = `แสดง ${filtered.length} รายการ`;
     }
 
-    // Event Listeners for Chips
-    function setupChipGroup(groupElement, groupName) {
-        groupElement.addEventListener('click', (e) => {
-            const btn = e.target.closest('.modern-filter-chip'); // Updated class name
-            if (!btn) return;
-
-            // Update UI
-            groupElement.querySelectorAll('.modern-filter-chip').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            // Update State
-            const val = btn.dataset.value;
-            if (groupName === 'status') currentStatus = val;
-            if (groupName === 'priority') currentPriority = val;
-
-            applyFilters();
-        });
-    }
-
-    setupChipGroup(statusFilters, 'status');
-    setupChipGroup(priorityFilters, 'priority');
     searchInput.addEventListener('input', applyFilters);
-
-    // Initial Render
     applyFilters();
 }
 
@@ -1122,17 +1139,8 @@ function renderTicketList() {
                 <div id="priority-dropdown-menu" class="filter-dropdown-menu"></div>
             </div>
 
-            <!-- Sort Select -->
-            <div class="sort-container" style="margin-left: auto;">
-                 <select id="sort-select" class="sort-dropdown">
-                    <option value="latest">เรียงตาม: ล่าสุด</option>
-                    <option value="oldest">เรียงตาม: เก่าสุด</option>
-                    <option value="priority">เรียงตาม: ความเร่งด่วน</option>
-                 </select>
-            </div>
-
             <!-- View Switcher -->
-            <div class="view-switcher">
+            <div class="view-switcher" style="margin-left: auto;">
                 <button id="view-list-btn" class="view-btn"> <span class="material-symbols-outlined">view_list</span> </button>
                 <button id="view-grid-btn" class="view-btn"> <span class="material-symbols-outlined">grid_view</span> </button>
             </div>
@@ -1161,7 +1169,6 @@ function renderTicketList() {
     const countLabel = document.getElementById('list-count');
     const viewListBtn = document.getElementById('view-list-btn');
     const viewGridBtn = document.getElementById('view-grid-btn');
-    const sortSelect = document.getElementById('sort-select');
     const listContainer = document.getElementById('ticket-list');
 
     // View Switching
@@ -1190,11 +1197,6 @@ function renderTicketList() {
     let selectedStatuses = ['new', 'inProgress', 'completed'];
     let selectedPriorities = ['urgent', 'not-urgent']; // Multi-select default
     let currentSort = 'latest';
-
-    sortSelect.addEventListener('change', (e) => {
-        currentSort = e.target.value;
-        applyFilters();
-    });
 
     // --- Generic Multi-Select Helper ---
     function setupMultiSelect(triggerId, menuId, labelId, getItems, selectedValues, onUpdate) {
