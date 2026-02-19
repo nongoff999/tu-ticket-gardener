@@ -4554,3 +4554,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// Update to Latest Version (Hard Refresh)
+window.checkForUpdate = function () {
+    console.log('🚀 บังคับอัปเดตเวอร์ชันล่าสุด...');
+
+    // แสดง UI ชั่วคราวว่ากำลังอัปเดต
+    const btn = document.querySelector('.update-check-btn');
+    if (btn) {
+        btn.innerHTML = '<span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span> กำลังอัปเดต...';
+        btn.style.opacity = '0.7';
+        btn.style.pointerEvents = 'none';
+    }
+
+    // เทคนิค Hard Refresh เพื่อล้าง Cache
+    // 1. ลองใช้ Cache API (ถ้ามี PWA)
+    if ('caches' in window) {
+        caches.keys().then(names => {
+            for (let name of names) caches.delete(name);
+        });
+    }
+
+    // 2. โหลดหน้าใหม่ด้วย URL ที่มี timestamp (Cache Busting)
+    setTimeout(() => {
+        const currentPath = window.location.href.split('#')[0];
+        const hash = window.location.hash || '';
+        const timestamp = new Date().getTime();
+
+        // บังคับเปลี่ยน URL เพื่อให้เบราว์เซอร์ไม่ใช้ Cache เดิม
+        window.location.href = `${currentPath}?v=${timestamp}${hash}`;
+    }, 800);
+};
+
+// CSS Spin Animation Helper
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);
