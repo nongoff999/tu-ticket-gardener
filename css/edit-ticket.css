@@ -70,10 +70,8 @@
 /* New: Yellow */
 .status-toggle-group .status-btn[data-value="new"].active {
     background: #eab308;
-    color: white;
-    /* Black text on yellow might be better, or white depending on shade */
-    border-color: #eab308;
     color: black;
+    border-color: #eab308;
 }
 
 /* InProgress: Blue */
@@ -194,6 +192,53 @@
     color: #1e293b;
     line-height: 1.5;
     padding: 0.5rem 0;
+}
+
+/* Validated Detail View Helpers */
+.detail-group {
+    margin-bottom: 1.25rem;
+}
+
+.detail-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 0.35rem;
+    font-weight: 500;
+    display: block;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: #334155;
+    font-weight: 600;
+    line-height: 1.6;
+    word-break: break-word;
+    /* Ensure long text wraps */
+}
+
+.detail-value.highlight {
+    color: var(--primary);
+}
+
+.image-grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.image-grid-view img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.image-grid-view img:hover {
+    transform: scale(1.05);
 }
 
 /* Responsive adjustments */
