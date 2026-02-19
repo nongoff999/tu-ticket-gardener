@@ -760,8 +760,8 @@ function getChartData(period, dateStr) {
 
 function generateChartSVG(period, dateStr, isLarge = false) {
     const data = getChartData(period, dateStr);
-    const height = isLarge ? 320 : 220;
-    const width = isLarge ? 600 : 340;
+    const height = isLarge ? 240 : 180;
+    const width = isLarge ? 500 : 300;
     const paddingTop = 20;
     const paddingBottom = 30;
     const paddingLeft = 10;

@@ -166,8 +166,8 @@ body,
 /* Desktop Sidebar Adjustment */
 @media (min-width: 1024px) {
     .app-header {
-        padding-left: 320px;
-        /* 300px sidebar + 20px gap */
+        padding-left: 280px;
+        /* 260px sidebar + 20px gap */
     }
 
     /* Hide Menu Button on Desktop */
@@ -291,7 +291,7 @@ body,
     .drawer {
         transform: translateX(0);
         /* Always show */
-        width: 300px;
+        width: 260px;
         border-right: 1px solid var(--border);
         box-shadow: none;
         /* Clean look */
@@ -304,15 +304,19 @@ body,
 
     /* Adjust Main Content to sit right of Sidebar */
     #main-content {
-        margin-left: 300px;
-        padding: 2rem;
-        max-width: 1200px;
+        margin-left: 260px;
+        padding: 1.5rem 2.5rem;
+        max-width: 1440px;
         /* Limit content width for readability */
-        width: calc(100% - 300px);
+        width: calc(100% - 260px);
+        margin-right: auto;
     }
 
-    /* Hide "Close" interactions on Desktop if any exist (usually overlay handles it) */
+    .app-container {
+        align-items: flex-start;
+    }
 }
+
 
 .drawer-logo {
     display: flex;
@@ -2473,27 +2477,38 @@ body.login-mode #main-content {
     }
 
     .stats-compact-row {
-        gap: 1.5rem;
-        margin: 0rem 1.5rem 2rem 1.5rem;
-        /* Adjust margins */
+        gap: 1rem;
+        margin: 0rem 1.5rem 1.5rem 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 900px;
+        /* Prevent cards from stretching too wide */
     }
 
     .stats-compact-row .stat-card {
-        padding: 1.5rem !important;
-        height: 9rem !important;
+        padding: 1rem 1.25rem !important;
+        height: 7rem !important;
     }
 
     .stat-card-label {
-        font-size: 1rem;
+        font-size: 0.875rem;
     }
 
     .stat-card-value {
-        font-size: 2.25rem;
+        font-size: 1.75rem;
     }
 
     /* Chart Card refinements */
     .chart-card {
-        padding: 2rem;
+        padding: 1.5rem 2rem;
+        max-width: 1000px;
+        /* Constrain chart width for density */
+    }
+
+    .dashboard-container {
+        padding-bottom: 2rem;
+        max-width: 1200px;
+        /* Constrain entire dashboard area */
     }
 
     /* Ticket List as Table styling (Mocking table with grid) */
