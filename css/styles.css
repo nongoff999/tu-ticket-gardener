@@ -3343,9 +3343,13 @@ body.login-mode #main-content {
     background: white;
     border: 1px solid var(--border);
     border-radius: 1rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
+    /* More elegant shadow */
     padding: 0.5rem;
-    min-width: 240px;
+    min-width: 200px;
+    width: max-content;
+    /* Allow width to fit content */
+    max-width: 320px;
     z-index: 100;
     max-height: 300px;
     overflow-y: auto;
@@ -3357,30 +3361,38 @@ body.login-mode #main-content {
 }
 
 .filter-dropdown-item {
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.8rem;
+    /* Refined padding */
     display: flex;
     align-items: center;
     gap: 0.75rem;
     cursor: pointer;
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
+    /* Rounded items */
     transition: background 0.1s;
     user-select: none;
+    white-space: nowrap;
+    /* Prevent text wrapping */
 }
 
 .filter-dropdown-item:hover {
-    background: #f8fafc;
+    background: #f1f5f9;
 }
 
 .checkbox-circle {
     width: 20px;
     height: 20px;
+    border-radius: 6px;
+    /* Slightly squarer for checkbox feel? Or keep round? User mockup had round. Keeping round. */
     border-radius: 50%;
-    border: 2px solid #e2e8f0;
+    border: 2px solid #cbd5e1;
+    /* Softer border */
     display: flex;
     align-items: center;
     justify-content: center;
     background: white;
     transition: all 0.2s;
+    flex-shrink: 0;
 }
 
 .filter-dropdown-item.selected .checkbox-circle {
@@ -3402,15 +3414,24 @@ body.login-mode #main-content {
     flex: 1;
     font-weight: 500;
     color: var(--text-primary);
+    font-size: 0.95rem;
+    /* Readable text */
 }
 
 .filter-dropdown-count {
     background: #f1f5f9;
-    padding: 0.15rem 0.6rem;
+    padding: 0.2rem 0.6rem;
     border-radius: 1rem;
     font-size: 0.75rem;
-    color: #64748b;
+    color: var(--text-muted);
     font-weight: 600;
+    margin-left: 1rem;
+    /* Clear separation */
+}
+
+.filter-dropdown-item:hover .filter-dropdown-count {
+    background: white;
+    /* Contrast on hover */
 }
 
 /* --- Ticket Toolbar & Filter Layout --- */
