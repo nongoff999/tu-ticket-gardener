@@ -580,9 +580,9 @@ function renderDashboard() {
         <div class="dashboard-container">
             <!-- Chart Card (Large) -->
             <div class="chart-card col-span-12">
-                <div class="chart-header" style="margin-bottom: 1.5rem;">
-                    <h2 style="font-size: 1.25rem; font-weight: 800; margin: 0 0 1rem 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="material-symbols-outlined" style="color: var(--primary); font-size: 1.5rem;">analytics</span>
+                <div class="chart-header" style="margin-bottom: 1rem;">
+                    <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0 0 0.75rem 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="color: var(--primary); font-size: 1.35rem;">analytics</span>
                         รายงานจำนวนทิคเก็ตสะสม
                     </h2>
                     
@@ -617,12 +617,12 @@ function renderDashboard() {
 
 
             <!-- Risk Area Statistics -->
-            <div class="chart-card col-span-6">
+            <div class="col-span-12 md:col-span-6">
                 ${renderRiskHotspotsSection(AppState.dashboardPeriod, AppState.selectedDate, true)}
             </div>
 
             <!-- Fallen Trees Section -->
-            <div class="chart-card col-span-12">
+            <div class="col-span-12">
                 ${renderFallenTreesSection(AppState.dashboardPeriod, AppState.selectedDate)}
             </div>
         </div>
@@ -4192,19 +4192,19 @@ function renderRiskHotspotsSection(period, dateStr) {
         const percent = (count / maxVal) * 100;
         const color = colors[index] || '#94a3b8';
         return `
-            <div style="margin-bottom: 1.25rem;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.5rem;">
-                    <div style="flex: 1; min-width: 0; padding-right: 1rem;">
-                        <div style="font-size: 0.85rem; font-weight: 600; color: #1e293b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <div style="margin-bottom: 0.875rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                    <div style="flex: 1; min-width: 0; padding-right: 0.75rem;">
+                        <div style="font-size: 0.75rem; font-weight: 700; color: #334155; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                             ${index + 1}. ${name}
                         </div>
                     </div>
-                    <div style="font-size: 0.95rem; font-weight: 800; color: ${color}; white-space: nowrap;">
-                        ${count} <span style="font-size: 0.7rem; font-weight: 500; color: #94a3b8;">รายการ</span>
+                    <div style="font-size: 0.875rem; font-weight: 800; color: ${color}; white-space: nowrap;">
+                        ${count} <span style="font-size: 0.65rem; font-weight: 600; color: #94a3b8;">ทิคเก็ต</span>
                     </div>
                 </div>
-                <div style="height: 10px; background: #f1f5f9; border-radius: 5px; overflow: hidden;">
-                    <div style="height: 100%; width: ${percent}%; background: ${color}; border-radius: 5px; transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
+                <div style="height: 6px; background: #f1f5f9; border-radius: 99px; overflow: hidden; border: 1px solid #f8fafc;">
+                    <div style="height: 100%; width: ${percent}%; background: ${color}; border-radius: 99px; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);"></div>
                 </div>
             </div>
         `;
@@ -4235,21 +4235,24 @@ function renderFallenTreesSection(period, dateStr) {
     if (stats.total === 0) {
         return `
         <div class="chart-card">
-            <h2>รายงานจำนวนต้นไม้ที่โค่นล้ม</h2>
-            <div style="padding: 2rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 14rem;">
-                <span class="material-symbols-outlined" style="font-size: 3rem; margin-bottom: 0.5rem; opacity: 0.5;">forest</span>
-                <p>ไม่มีข้อมูลต้นไม้โค่นล้มในช่วงเวลานี้</p>
+            <h2 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.75rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
+                <span class="material-symbols-outlined" style="color: var(--primary);">forest</span>
+                รายงานจำนวนต้นไม้ที่โค่นล้ม
+            </h2>
+            <div style="padding: 1.5rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px dashed var(--border); border-radius: 1rem; margin-top: 0.5rem;">
+                <span class="material-symbols-outlined" style="font-size: 2.5rem; margin-bottom: 0.5rem; opacity: 0.3;">eco</span>
+                <p style="font-size: 0.875rem;">ไม่มีข้อมูลในช่วงเวลานี้</p>
             </div>
         </div>
         `;
     }
 
-    const colors = ['#3bb143', '#facc15', '#f472b6', '#60a5fa', '#a78bfa', '#fb923c', '#94a3b8'];
+    const colors = ['#10b981', '#f59e0b', '#ec4899', '#3b82f6', '#8b5cf6', '#f97316', '#64748b'];
 
     // Assign Colors & Calculate Percentages
     let cumulativePercent = 0;
     const radius = 40;
-    const circumference = 2 * Math.PI * radius; // ~251.327
+    const circumference = 2 * Math.PI * radius;
 
     const circlesHtml = stats.items.map((item, index) => {
         const color = colors[index % colors.length];
@@ -4264,16 +4267,17 @@ function renderFallenTreesSection(period, dateStr) {
             <circle cx="50" cy="50" r="${radius}" fill="transparent" stroke="${color}" stroke-width="12"
                     stroke-dasharray="${dashArray} ${space}" 
                     stroke-dashoffset="-${offset}"
-                    style="transform: rotate(-90deg); transform-origin: 50% 50%; transition: all 0.5s ease;"></circle>
+                    style="transform: rotate(-90deg); transform-origin: 50% 50%; transition: all 1s ease;"></circle>
         `;
         cumulativePercent += percent;
         return circle;
     }).join('');
 
     const legendHtml = stats.items.map(item => `
-        <div style="display: flex; align-items: center; gap: 0.375rem;">
-            <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: ${item.color};"></div>
-            <span style="font-size: 0.75rem; color: var(--text-primary); font-weight: 500;">${item.name} (${item.count})</span>
+        <div style="display: flex; align-items: center; gap: 0.375rem; background: #f8fafc; padding: 0.35rem 0.6rem; border-radius: 0.5rem; border: 1px solid #f1f5f9;">
+            <div style="width: 0.65rem; height: 0.65rem; border-radius: 50%; background: ${item.color};"></div>
+            <span style="font-size: 0.75rem; color: #334155; font-weight: 700;">${item.name}</span>
+            <span style="font-size: 0.75rem; color: #64748b; margin-left: auto;">${item.count}</span>
         </div>
     `).join('');
 
@@ -4281,18 +4285,25 @@ function renderFallenTreesSection(period, dateStr) {
 
     return `
         <div class="chart-card">
-            <h2>รายงานจำนวนต้นไม้ที่โค่นล้ม (${periodLabel})</h2>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem 0.75rem; margin-bottom: 1.5rem;">
-                ${legendHtml}
-            </div>
-            <div style="position: relative; width: 14rem; height: 14rem; margin: 0 auto; display: flex; justify-content: center; align-items: center;">
-                <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
-                    <circle cx="50" cy="50" r="${radius}" fill="transparent" stroke="#F1F5F9" stroke-width="12"></circle>
-                    ${circlesHtml}
-                </svg>
-                <div style="position: absolute; display: flex; flex-direction: column; align-items: center; pointer-events: none;">
-                    <span style="font-size: 2.25rem; font-weight: 800; color: var(--text-primary); line-height: 1;">${stats.total}</span>
-                    <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">ต้น</span>
+            <h2 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
+                <span class="material-symbols-outlined" style="color: var(--primary);">forest</span>
+                รายงานจำนวนต้นไม้ที่โค่นล้ม (${periodLabel})
+            </h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: center;">
+                <div style="position: relative; width: 100%; aspect-ratio: 1/1; max-width: 200px; margin: 0 auto; display: flex; justify-content: center; align-items: center;">
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+                        <circle cx="50" cy="50" r="${radius}" fill="transparent" stroke="#f1f5f9" stroke-width="12"></circle>
+                        ${circlesHtml}
+                    </svg>
+                    <div style="position: absolute; display: flex; flex-direction: column; align-items: center; pointer-events: none;">
+                        <span style="font-size: 1.75rem; font-weight: 800; color: #1e293b; line-height: 1;">${stats.total}</span>
+                        <span style="font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-top: 2px;">ต้นรวม</span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    ${legendHtml}
                 </div>
             </div>
         </div>
