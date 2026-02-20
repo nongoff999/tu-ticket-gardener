@@ -3029,6 +3029,17 @@ function renderReportList() {
                 <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
             </div>
 
+            <div class="report-card" onclick="openReportDetail('summary_daily')">
+                <div class="report-card-icon" style="background: #fff7ed; color: #ea580c;">
+                    <span class="material-symbols-outlined">today</span>
+                </div>
+                <div class="report-card-info">
+                    <h3>รายงานสรุปความเสียหายรายวัน</h3>
+                    <p>ภาพรวมเหตุการณ์และงานซ่อมทั้งหมดในรอบวัน</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
+            </div>
+
             <div class="report-card" onclick="openReportDetail('yearly')">
                 <div class="report-card-icon" style="background: #eff6ff; color: #2563eb;">
                     <span class="material-symbols-outlined">analytics</span>
@@ -3036,6 +3047,50 @@ function renderReportList() {
                 <div class="report-card-info">
                     <h3>รายงานวิเคราะห์เชิงสถิติรายปี</h3>
                     <p>วิเคราะห์แนวโน้มรายเดือน และโซนที่เกิดเหตุสูงสุด</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
+            </div>
+
+            <div class="report-card" onclick="openReportDetail('tree_stats')">
+                <div class="report-card-icon" style="background: #ecfccb; color: #65a30d;">
+                    <span class="material-symbols-outlined">forest</span>
+                </div>
+                <div class="report-card-info">
+                    <h3>รายงานสถิติปัญหาตามชนิดพันธุ์ไม้</h3>
+                    <p>สถิติการเกิดเหตุแยกตามชนิดพันธุ์ 34 ชนิด</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
+            </div>
+
+            <div class="report-card" onclick="openReportDetail('zone_hotspots')">
+                <div class="report-card-icon" style="background: #fee2e2; color: #ef4444;">
+                    <span class="material-symbols-outlined">location_on</span>
+                </div>
+                <div class="report-card-info">
+                    <h3>รายงานพื้นที่เสี่ยง (Zone Hotspots)</h3>
+                    <p>สรุปพื้นที่เกิดเหตุสูงสุดเพื่อการเฝ้าระวัง</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
+            </div>
+
+            <div class="report-card" onclick="openReportDetail('map_overview')">
+                <div class="report-card-icon" style="background: #f0f9ff; color: #0284c7;">
+                    <span class="material-symbols-outlined">map</span>
+                </div>
+                <div class="report-card-info">
+                    <h3>แผนที่ตำแหน่งทิคเก็ต (Ticket Map)</h3>
+                    <p>ดูตำแหน่งพิกัดของทิคเก็ตทั้งหมดบนแผนที่</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
+            </div>
+
+            <div class="report-card" onclick="openReportDetail('performance')">
+                <div class="report-card-icon" style="background: #e0f2fe; color: #0284c7;">
+                    <span class="material-symbols-outlined">schedule</span>
+                </div>
+                <div class="report-card-info">
+                    <h3>รายงานประสิทธิภาพงาน (KPI)</h3>
+                    <p>ติดตามสถานะงานค้างและระยะเวลาดำเนินการ</p>
                 </div>
                 <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
             </div>
@@ -3274,7 +3329,105 @@ function generateHorizontalBarChartSVG(zones) {
 }
 
 
+function renderReportDetail() {
+    updateHeaderNav(true);
+    AppState.currentPage = 'report-detail';
 
+    if (AppState.selectedReport === 'yearly') {
+        renderYearlyAnalysis();
+        return;
+    }
+
+    if (AppState.selectedReport === 'map_overview') {
+        renderMapReport();
+        return;
+    }
+
+    if (AppState.selectedReport === 'summary') {
+        renderDailySummaryReport(AppState.selectedDate);
+        return;
+    }
+
+    // Default to summary if no report selected
+    renderDailySummaryReport(AppState.selectedDate);
+}
+
+function renderMapReport() {
+    document.getElementById('page-title').textContent = 'แผนที่ทิคเก็ต';
+    const content = document.getElementById('main-content');
+
+    // Use full height for map (adjust for header)
+    content.innerHTML = `
+        <div style="position: relative; height: calc(100vh - 64px); width: 100%; margin: -1rem -1rem 0 -1rem;">
+            <div id="full-screen-map" style="height: 100%; width: 100%; z-index: 1;"></div>
+            
+            <!-- Map Legend Overlay -->
+            <div style="position: absolute; bottom: 2rem; left: 1rem; right: 1rem; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); padding: 0.75rem placeholder; border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 400; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; pointer-events: auto;">
+                 <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #fbbf24; border: 2px solid white; box-shadow: 0 0 4px #fbbf24;"></div>
+                    <span style="font-size: 0.8rem; font-weight: 600;">ใหม่</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #f43f5e; border: 2px solid white; box-shadow: 0 0 4px #f43f5e;"></div>
+                    <span style="font-size: 0.8rem; font-weight: 600;">กำลัง/ค้าง</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #94a3b8; border: 2px solid white; box-shadow: 0 0 4px #94a3b8;"></div>
+                    <span style="font-size: 0.8rem; font-weight: 600;">เสร็จสิ้น</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Initialize Map
+    setTimeout(() => {
+        if (typeof L !== 'undefined') {
+            const centerLat = 14.0722;
+            const centerLng = 100.6128;
+
+            const map = L.map('full-screen-map', {
+                zoomControl: false,
+                attributionControl: false
+            }).setView([centerLat, centerLng], 15);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 20
+            }).addTo(map);
+
+            L.control.zoom({ position: 'topright' }).addTo(map);
+
+            // Add all tickets
+            const tickets = MOCK_DATA.tickets.filter(t => t.lat && t.lng);
+
+            tickets.forEach(t => {
+                const color = t.status === 'new' ? '#fbbf24' : (t.status === 'completed' ? '#94a3b8' : '#f43f5e');
+
+                const customIcon = L.divIcon({
+                    className: 'custom-map-marker',
+                    html: `<div style="background: ${color}; width: 14px; height: 14px; border: 2px solid white; border-radius: 50%; box-shadow: 0 0 10px ${color}"></div>`,
+                    iconSize: [14, 14],
+                    iconAnchor: [7, 7]
+                });
+
+                const popupContent = `
+                    <div style="font-family: 'Kanit', sans-serif; padding: 0.5rem; min-width: 160px;">
+                        <span style="font-size: 0.65rem; color: #94a3b8; font-weight: 700;">#${t.id}</span>
+                        <div style="font-weight: 700; font-size: 0.9rem; color: #1e293b; margin-bottom: 0.25rem;">${t.treeType || 'ไม่ระบุพันธุ์ไม้'}</div>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">${t.zoneName}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+                             <span style="font-size: 0.7rem; color: ${color}; font-weight: 700;">${getStatusLabel(t.status)}</span>
+                             <button onclick="router.navigate('/ticket/${t.id}')" style="background: var(--primary); color: white; border: none; padding: 0.25rem 0.6rem; border-radius: 0.4rem; font-size: 0.7rem; cursor: pointer;">ดูรายละเอียด</button>
+                        </div>
+                    </div>
+                `;
+
+                L.marker([t.lat, t.lng], { icon: customIcon })
+                    .addTo(map)
+                    .bindPopup(popupContent, { closeButton: false });
+            });
+        }
+    }, 100);
+}
 
 function renderDailySummaryReport(dateStr) {
     document.getElementById('page-title').textContent = 'สรุปความเสียหายรายวัน';
@@ -4154,8 +4307,6 @@ function renderFallenTreesSection(period, dateStr) {
 
 function renderReportDetail() {
     updateHeaderNav(true);
-    AppState.currentPage = 'report-detail';
-
     const type = AppState.selectedReport;
 
     // Default fallback
@@ -4163,11 +4314,14 @@ function renderReportDetail() {
     if (!type || type === 'summary') finalType = 'summary_fallen';
 
     if (finalType === 'yearly') {
-        renderYearlyAnalysis();
-        return;
-    }
-
-    if (finalType === 'summary_fallen') {
+        renderYearlyAnalysis(null);
+    } else if (finalType === 'tree_stats') {
+        renderTreeStatsReport();
+    } else if (finalType === 'zone_hotspots') {
+        renderZoneHotspotReport();
+    } else if (finalType === 'performance') {
+        renderPerformanceReport();
+    } else if (finalType === 'summary_fallen') {
         // The "Designed" Report Paper (Fallen/Broken Trees)
         if (!AppState.selectedDate) AppState.selectedDate = new Date().toISOString().slice(0, 10);
         if (typeof renderDailySummaryReport === 'function') {
@@ -4175,14 +4329,215 @@ function renderReportDetail() {
         } else {
             renderReportList();
         }
-        return;
+    } else if (finalType === 'summary_daily') {
+        // The "New" General Daily Overview
+        renderDailyOverviewReport();
+    } else {
+        renderReportList();
     }
-
-    // Fallback if trying to access removed reports
-    renderReportList();
 }
 
+function renderDailyOverviewReport() {
+    document.getElementById('page-title').textContent = 'สรุปภาพรวมรายวัน';
+    const content = document.getElementById('main-content');
 
+    // Get Today's Data
+    const today = new Date().toISOString().slice(0, 10);
+    const todayTickets = MOCK_DATA.tickets.filter(t => t.date && t.date.startsWith(today));
+
+    // Calculate Stats
+    const total = todayTickets.length;
+    const completed = todayTickets.filter(t => t.status === 'completed').length;
+    const inProgress = todayTickets.filter(t => t.status === 'inProgress').length;
+    const pending = todayTickets.filter(t => t.status === 'new').length;
+
+    content.innerHTML = `
+        <div style="padding: 1rem;">
+            <!-- Date Header -->
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <h3 style="color: var(--text-primary); margin-bottom: 0.25rem;">ประจำวันที่ ${new Date().toLocaleDateString('th-TH', { dateStyle: 'long' })}</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">ข้อมูลเหตุการณ์ทั้งหมดในวันนี้</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="stat-card" style="background: white; border: 1px solid var(--border); padding: 1rem; border-radius: 1rem; text-align: center; box-shadow: var(--shadow-sm);">
+                    <div class="stat-value" style="color: var(--primary); font-size: 2rem; font-weight: 800; line-height: 1;">${total}</div>
+                    <div class="stat-label" style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem;">แจ้งทั้งหมด (เรื่อง)</div>
+                </div>
+                <div class="stat-card" style="background: white; border: 1px solid var(--border); padding: 1rem; border-radius: 1rem; text-align: center; box-shadow: var(--shadow-sm);">
+                    <div class="stat-value" style="color: #10b981; font-size: 2rem; font-weight: 800; line-height: 1;">${completed}</div>
+                    <div class="stat-label" style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem;">แก้ไขเสร็จ (เรื่อง)</div>
+                </div>
+            </div>
+
+            <!-- Ticket List -->
+            <div class="kpi-card" style="background: white; border-radius: 1rem; padding: 1rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border);">
+                <h3 style="margin-bottom: 1rem;">รายการแจ้งซ่อมวันนี้</h3>
+                ${todayTickets.length > 0 ? `
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        ${todayTickets.map(t => `
+                            <div onclick="router.navigate('/ticket/${t.id}')" style="display: flex; gap: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f1f5f9; cursor: pointer;">
+                                <div style="width: 3rem; height: 3rem; background: #e2e8f0; border-radius: 0.5rem; flex-shrink: 0; overflow: hidden;">
+                                    ${t.images && t.images.length > 0 ? `<img src="${t.images[0]}" style="width: 100%; height: 100%; object-fit: cover;">` : '<span class="material-symbols-outlined" style="font-size: 1.5rem; color: #94a3b8; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">image</span>'}
+                                </div>
+                                <div style="flex: 1; min-width: 0;">
+                                    <div style="font-weight: 600; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${t.title}</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">${t.zoneName || 'ไม่ระบุโซน'} • ${t.time} น.</div>
+                                    <div style="margin-top: 0.25rem;">
+                                        <span class="status-badge ${t.status}" style="font-size: 0.7rem; padding: 0.1rem 0.5rem;">${t.status === 'new' ? 'ใหม่' : (t.status === 'inProgress' ? 'กำลังทำ' : 'เสร็จ')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : `
+                    <div style="text-align: center; padding: 2rem 0; color: var(--text-secondary);">
+                        <span class="material-symbols-outlined" style="font-size: 2rem; color: #cbd5e1; margin-bottom: 0.5rem; display: block;">check_circle</span>
+                        วันนี้ยังไม่มีการแจ้งเหตุ
+                    </div>
+                `}
+            </div>
+            <div style="height: 5rem;"></div>
+        </div>
+    `;
+}
+
+function renderTreeStatsReport() {
+    document.getElementById('page-title').textContent = 'สถิติชนิดพันธุ์ไม้';
+    const content = document.getElementById('main-content');
+
+    // Calculate Stats
+    const treeCounts = {};
+    MOCK_DATA.tickets.forEach(t => {
+        if (t.treeType) {
+            treeCounts[t.treeType] = (treeCounts[t.treeType] || 0) + 1;
+        }
+    });
+
+    // Sort
+    const sortedTrees = Object.entries(treeCounts)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 10); // Top 10
+
+    const total = Object.values(treeCounts).reduce((a, b) => a + b, 0);
+
+    content.innerHTML = `
+        <div style="padding: 1rem;">
+            <div class="kpi-card" style="background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border);">
+                <h3>ชนิดพันธุ์ที่มีปัญหามากที่สุด (Top 10)</h3>
+                <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+                    ${sortedTrees.length > 0 ? sortedTrees.map(([name, count], index) => `
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                <span style="font-weight: 600; color: var(--text-primary);">${index + 1}. ${name}</span>
+                                <span style="font-weight: 700; color: var(--primary);">${count} เคส</span>
+                            </div>
+                            <div style="width: 100%; background: #f1f5f9; height: 0.6rem; border-radius: 1rem; overflow: hidden;">
+                                <div style="height: 100%; background: var(--primary); width: ${(count / total) * 100}%;"></div>
+                            </div>
+                        </div>
+                    `).join('') : '<p style="text-align:center; color: var(--text-secondary);">ไม่มีข้อมูลชนิดพันธุ์ไม้</p>'}
+                </div>
+            </div>
+            <div style="height: 5rem;"></div>
+        </div>
+    `;
+}
+
+function renderZoneHotspotReport() {
+    document.getElementById('page-title').textContent = 'พื้นที่เสี่ยง (Hotspots)';
+    const content = document.getElementById('main-content');
+
+    const zoneCounts = {};
+    MOCK_DATA.tickets.forEach(t => {
+        const zone = t.zoneName || 'ไม่ระบุโซน';
+        zoneCounts[zone] = (zoneCounts[zone] || 0) + 1;
+    });
+
+    const sortedZones = Object.entries(zoneCounts)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 10);
+
+    const maxVal = sortedZones[0]?.[1] || 1;
+
+    content.innerHTML = `
+        <div style="padding: 1rem;">
+            <div class="kpi-card" style="background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid #fee2e2; border-left: 4px solid #ef4444;">
+                <h3 style="color: #ef4444; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="material-symbols-outlined">location_on</span>
+                    10 อันดับพื้นที่เกิดเหตุสูงสุด
+                </h3>
+                <div style="margin-top: 1rem;">
+                    ${sortedZones.map(([zone, count]) => `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px dashed #e2e8f0;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">${zone}</div>
+                                <div style="width: ${(count / maxVal) * 100}%; background: #fee2e2; height: 6px; margin-top: 6px; border-radius: 3px;"></div>
+                            </div>
+                            <div style="font-weight: 800; color: #ef4444; font-size: 1.25rem; margin-left: 1rem;">${count}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            <div style="height: 5rem;"></div>
+        </div>
+    `;
+}
+
+function renderPerformanceReport() {
+    document.getElementById('page-title').textContent = 'ประสิทธิภาพงาน (KPI)';
+    const content = document.getElementById('main-content');
+
+    const completed = MOCK_DATA.tickets.filter(t => t.status === 'completed');
+    const inProgress = MOCK_DATA.tickets.filter(t => t.status === 'inProgress');
+    const pending = MOCK_DATA.tickets.filter(t => t.status === 'new');
+
+    // Avg Time (Mock)
+    const overdue = inProgress.filter(t => {
+        if (!t.startedAt) return false;
+        try {
+            const start = new Date(t.startedAt);
+            const now = new Date();
+            const diff = (now - start) / (1000 * 60 * 60 * 24);
+            return diff > 7;
+        } catch (e) { return false; }
+    }).length;
+
+    content.innerHTML = `
+        <div style="padding: 1rem;">
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="stat-card" style="background: #ecfdf5; border: 1px solid #d1fae5; padding: 1.5rem; border-radius: 1rem; text-align: center;">
+                    <div class="stat-value" style="color: #10b981; font-size: 2.5rem; font-weight: 800; line-height: 1;">${completed.length}</div>
+                    <div class="stat-label" style="color: #059669; font-size: 0.9rem; margin-top: 0.5rem;">งานที่เสร็จสิ้น</div>
+                </div>
+                <div class="stat-card" style="background: #fff1f2; border: 1px solid #ffe4e6; padding: 1.5rem; border-radius: 1rem; text-align: center;">
+                    <div class="stat-value" style="color: #e11d48; font-size: 2.5rem; font-weight: 800; line-height: 1;">${overdue}</div>
+                    <div class="stat-label" style="color: #be123c; font-size: 0.9rem; margin-top: 0.5rem;">งานล่าช้า (>7วัน)</div>
+                </div>
+            </div>
+            
+            <div class="kpi-card" style="background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border);">
+                <h3>สถานะงานปัจจุบัน</h3>
+                <div style="margin-top: 1rem;">
+                    <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9;">
+                        <span style="color: var(--text-secondary);">รอดำเนินการ (New)</span>
+                        <span style="font-weight: 700; color: var(--text-primary);">${pending.length}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9;">
+                        <span style="color: var(--text-secondary);">กำลังดำเนินการ (In Progress)</span>
+                        <span style="font-weight: 700; color: var(--primary);">${inProgress.length}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 1rem 0 0.5rem 0; margin-top: 0.5rem;">
+                        <span style="font-weight: 600;">รวมทั้งหมด</span>
+                        <span style="font-weight: 800; font-size: 1.1rem;">${MOCK_DATA.tickets.length}</span>
+                    </div>
+                </div>
+            </div>
+            <div style="height: 5rem;"></div>
+        </div>
+    `;
+}
 
 // Export to Excel Function
 async function exportToExcel() {
