@@ -1687,10 +1687,11 @@ function renderTicketDetail(params) {
             ? `<span class="detail-tag urgent"><span class="material-symbols-outlined" style="font-size: 1rem;">warning</span> เร่งด่วน</span>`
             : `<span class="detail-tag neutral">ปกติ</span>`
         }
+                    ${ticket.description ? `
                     <span class="detail-tag outline">
                         <span class="material-symbols-outlined" style="font-size: 1rem;">forest</span>
-                        ${ticket.description || 'ไม่ระบุ'}
-                    </span>
+                        ${ticket.description}
+                    </span>` : ''}
                     <span class="detail-tag outline">
                          <span class="material-symbols-outlined" style="font-size: 1rem;">location_on</span>
                          ${ticket.zoneName || 'ไม่ระบุโซน'}
@@ -1705,10 +1706,11 @@ function renderTicketDetail(params) {
                             <label class="detail-label">สถานที่เกิดเหตุ (จุดสังเกต)</label>
                             <div class="detail-value">${ticket.locationDetail || '-'}</div>
                         </div>
+                        ${ticket.description ? `
                         <div class="detail-group">
                             <label class="detail-label">ลักษณะความเสียหาย</label>
-                            <div class="detail-value">${ticket.description || '-'}</div>
-                        </div>
+                            <div class="detail-value">${ticket.description}</div>
+                        </div>` : ''}
                         <div class="detail-group">
                             <label class="detail-label">ผลกระทบที่ได้รับ</label>
                             <div class="detail-value">${ticket.impact || '-'}</div>
@@ -1822,12 +1824,11 @@ function renderAddTicket() {
                 <div class="form-group">
                     <label class="form-label">ลักษณะความเสียหาย <span class="required">*</span></label>
                     <div class="description-toggle" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
-                        <button type="button" class="desc-btn" data-value="โค่นล้ม">โค่นล้ม</button>
-                        <button type="button" class="desc-btn" data-value="กิ่งหัก/ฉีก">กิ่งหัก/ฉีก</button>
-                        <button type="button" class="desc-btn" data-value="ลำต้นเอียง">ลำต้นเอียง</button>
+                        <button type="button" class="desc-btn" data-value="fallen">โค่นล้ม</button>
+                        <button type="button" class="desc-btn" data-value="broken">กิ่งหัก/ฉีก</button>
+                        <button type="button" class="desc-btn" data-value="tilted">ลำต้นเอียง</button>
                         <button type="button" class="desc-btn" data-value="other">อื่นๆ</button>
                     </div>
-                    <textarea id="ticket-description-custom" class="form-textarea" rows="3" placeholder="ระบุรายละเอียดเพิ่มเติม..." style="display: none;"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -1979,20 +1980,20 @@ function renderAddTicket() {
         const lng = content.querySelector('#ticket-lng').value;
 
 
-        // Get Description
+        // Get Damage Type
         const activeDescBtn = content.querySelector('.desc-btn.active');
-        let finalDescription = '';
+        let damageType = activeDescBtn ? activeDescBtn.dataset.value : 'other';
 
-        if (activeDescBtn) {
-            if (activeDescBtn.dataset.value === 'other') {
-                finalDescription = content.querySelector('#ticket-description-custom').value.trim();
-            } else {
-                finalDescription = activeDescBtn.dataset.value;
-            }
-        }
+        const damageMap = {
+            'fallen': 'โค่นล้ม',
+            'broken': 'กิ่งหัก/ฉีก',
+            'tilted': 'ลำต้นเอียง',
+            'other': 'อื่นๆ'
+        };
+        const damagePart = damageMap[damageType];
 
         const errors = [];
-        if (!finalDescription) errors.push('รายละเอียด (Ticket Description)');
+        if (!activeDescBtn) errors.push('ลักษณะความเสียหาย');
         if (!zoneId) errors.push('โซนพื้นที่');
         if (uploadedImages.length === 0) errors.push('รูปภาพ (อย่างน้อย 1 รูป)');
 
@@ -2009,21 +2010,14 @@ function renderAddTicket() {
         const zoneObj = MOCK_DATA.zones.find(z => z.id === zoneId);
         const combinedZoneName = `${zoneObj?.name.split(' (')[0] || ''} - ${locationName}`;
 
-        // Map description to damage type logic
-        let damageType = 'other';
-        if (finalDescription === 'โค่นล้ม') damageType = 'fallen';
-        else if (finalDescription === 'กิ่งหัก/ฉีก') damageType = 'broken';
-        else if (finalDescription === 'ลำต้นเอียง') damageType = 'tilted';
-
         const zoneShortName = zoneObj?.name.split(' (')[0]?.replace(/^โซน/, '') || '';
-        const damagePart = finalDescription || '';
         const zonePart = zoneShortName ? `โซน${zoneShortName}` : '';
         const autoTitle = [damagePart, zonePart].filter(Boolean).join(' ');
 
         const newTicket = {
             id: Math.floor(Math.random() * 100000), // Simple random ID
             title: autoTitle,
-            description: finalDescription,
+            description: '',
             category: damageType, // Use derived category
             status: 'new',
             priority: 'normal',
@@ -2071,7 +2065,7 @@ function renderTimeline(ticket) {
         gradient: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
         title: `เปิดทิคเก็ตใหม่โดย ${openerName}`,
         detail: `${new Date(ticket.date).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${new Date(ticket.date).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}`,
-        order: 1
+        time: new Date(ticket.date).getTime()
     });
 
     // 2. In Progress
@@ -2081,7 +2075,7 @@ function renderTimeline(ticket) {
             gradient: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)',
             title: 'เข้าดำเนินการโดย',
             detail: `${ticket.assignees && ticket.assignees.length > 0 ? ticket.assignees.join(', ') : 'รอการมอบหมาย'}${ticket.startedAt ? `<br>เริ่มเมื่อ: ${new Date(ticket.startedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}`,
-            order: 2
+            time: ticket.startedAt ? new Date(ticket.startedAt).getTime() : new Date(ticket.date).getTime() + 1000 // Ensure slightly above creation
         });
     }
 
@@ -2092,12 +2086,34 @@ function renderTimeline(ticket) {
             gradient: 'linear-gradient(135deg, #34d399 0%, #10b981 100%)',
             title: 'งานเสร็จสิ้น',
             detail: `เสร็จสิ้นโดยทีมผู้รับผิดชอบ<br>เมื่อ: ${new Date(ticket.completedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
-            order: 3
+            time: new Date(ticket.completedAt).getTime()
         });
     }
 
-    // Reverse to show latest first
-    timelineItems.reverse();
+    // 4. Update History
+    if (ticket.history && ticket.history.length > 0) {
+        ticket.history.forEach(h => {
+            timelineItems.push({
+                icon: 'edit_note',
+                gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                title: `${h.action}${h.updatedBy ? `โดย ${h.updatedBy}` : ''}`,
+                detail: `เมื่อ: ${new Date(h.updatedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
+                time: new Date(h.updatedAt).getTime()
+            });
+        });
+    } else if (ticket.impactUpdatedAt) {
+        // Fallback for old mock data
+        timelineItems.push({
+            icon: 'edit_note',
+            gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+            title: `อัปเดตผลกระทบที่ได้รับ${ticket.impactUpdatedBy ? `โดย ${ticket.impactUpdatedBy}` : ''}`,
+            detail: `เมื่อ: ${new Date(ticket.impactUpdatedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
+            time: new Date(ticket.impactUpdatedAt).getTime()
+        });
+    }
+
+    // Sort by time: latest first
+    timelineItems.sort((a, b) => b.time - a.time);
 
     // Render: first item is full color, rest are gray
     const html = timelineItems.map((item, index) => {
@@ -2149,10 +2165,8 @@ function renderEditTicket(params) {
 
     document.getElementById('page-title').textContent = 'EDIT TICKET';
 
-    // Determine current damage description for buttons
-    let currentDamageDesc = ticket.description || '';
-    const standardDescriptions = ['โค่นล้ม', 'กิ่งหัก/ฉีก', 'ลำต้นเอียง'];
-    const isOtherDesc = !standardDescriptions.includes(currentDamageDesc);
+    // Determine current damage type for buttons
+    let currentDamageType = ticket.damageType || 'other';
 
     // Status: allow 'new' to be its own status now
     const currentStatus = ticket.status;
@@ -2197,12 +2211,11 @@ function renderEditTicket(params) {
                     <div class="form-group">
                         <label class="form-label">ลักษณะความเสียหาย <span class="required">*</span></label>
                         <div class="description-toggle" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
-                            <button type="button" class="desc-btn ${currentDamageDesc === 'โค่นล้ม' ? 'active' : ''}" data-value="โค่นล้ม">โค่นล้ม</button>
-                            <button type="button" class="desc-btn ${currentDamageDesc === 'กิ่งหัก/ฉีก' ? 'active' : ''}" data-value="กิ่งหัก/ฉีก">กิ่งหัก/ฉีก</button>
-                            <button type="button" class="desc-btn ${currentDamageDesc === 'ลำต้นเอียง' ? 'active' : ''}" data-value="ลำต้นเอียง">ลำต้นเอียง</button>
-                            <button type="button" class="desc-btn ${isOtherDesc ? 'active' : ''}" data-value="other">อื่นๆ</button>
+                            <button type="button" class="desc-btn ${currentDamageType === 'fallen' ? 'active' : ''}" data-value="fallen">โค่นล้ม</button>
+                            <button type="button" class="desc-btn ${currentDamageType === 'broken' ? 'active' : ''}" data-value="broken">กิ่งหัก/ฉีก</button>
+                            <button type="button" class="desc-btn ${currentDamageType === 'tilted' ? 'active' : ''}" data-value="tilted">ลำต้นเอียง</button>
+                            <button type="button" class="desc-btn ${currentDamageType === 'other' ? 'active' : ''}" data-value="other">อื่นๆ</button>
                         </div>
-                        <textarea id="ticket-description-custom" class="form-textarea" rows="2" placeholder="ระบุลักษณะความเสียหายอื่นๆ..." style="display: ${isOtherDesc ? 'block' : 'none'}; margin-top: 0.5rem;">${isOtherDesc ? currentDamageDesc : ''}</textarea>
                     </div>
 
                     <!-- 4. โซนพื้นที่ -->
@@ -2637,22 +2650,17 @@ function renderEditTicket(params) {
             return;
         }
 
-        // Get description
+        // Get damage type
         const activeDescBtn = content.querySelector('.desc-btn.active');
-        let finalDescription = '';
-        if (activeDescBtn) {
-            if (activeDescBtn.dataset.value === 'other') {
-                finalDescription = content.querySelector('#ticket-description-custom').value.trim();
-            } else {
-                finalDescription = activeDescBtn.dataset.value;
-            }
-        }
+        let damageType = activeDescBtn ? activeDescBtn.dataset.value : 'other';
 
-        // Map description to damage type
-        let damageType = 'other';
-        if (finalDescription === 'โค่นล้ม') damageType = 'fallen';
-        else if (finalDescription === 'กิ่งหัก/ฉีก') damageType = 'broken';
-        else if (finalDescription === 'ลำต้นเอียง') damageType = 'tilted';
+        const damageMap = {
+            'fallen': 'โค่นล้ม',
+            'broken': 'กิ่งหัก/ฉีก',
+            'tilted': 'ลำต้นเอียง',
+            'other': 'อื่นๆ'
+        };
+        const damagePart = damageMap[damageType];
 
         const status = form.querySelector('#edit-ticket-status').value;
         const isUrgent = form.querySelector('.priority-btn.urgent').classList.contains('active');
@@ -2680,7 +2688,6 @@ function renderEditTicket(params) {
 
         // Auto title: "ต้นนนทรี โค่นล้ม โซนหอพัก"
         const treePart = treeType && treeType !== '-' ? treeType : '';
-        const damagePart = finalDescription || '';
         const zonePart = zoneShortName ? `โซน${zoneShortName}` : '';
         const autoTitle = [treePart, damagePart, zonePart].filter(Boolean).join(' ');
 
@@ -2704,9 +2711,21 @@ function renderEditTicket(params) {
             }
         }
 
+        if (!ticket.history) {
+            ticket.history = [];
+        }
+
+        const updateAction = 'อัปเดตข้อมูลทิคเก็ต';
+
+        ticket.history.push({
+            action: updateAction,
+            updatedBy: userName,
+            updatedAt: nowStr
+        });
+
         // Update Ticket Object
         ticket.title = autoTitle;
-        ticket.description = finalDescription;
+        ticket.description = '';
         ticket.status = status;
         ticket.priority = isUrgent ? 'urgent' : 'normal';
         ticket.category = damageType;

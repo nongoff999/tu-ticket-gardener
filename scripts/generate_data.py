@@ -57,13 +57,38 @@ def generate_mock_data():
         date_str = random_day.strftime(f"%Y-%m-%d {random_hour:02d}:{random_minute:02d}")
         
         zone = random.choice(zones)
+        damage_map = {
+            "fallen": "โค่นล้ม",
+            "broken": "กิ่งหัก/ฉีก",
+            "tilted": "ลำต้นเอียง",
+            "accident": "อุบัติเหตุ",
+            "nature": "อุบัติเหตุจากธรรมชาติ",
+            "other": "อื่นๆ",
+            "replant": "ทดแทน"
+        }
+        
         tree = random.choice(tree_types)
         damage = random.choice(damage_types)
+        damage_name = damage_map.get(damage, "อื่นๆ")
+        
+        zone_name = zone["name"]
+        zone_str = zone_name if zone_name.startswith("โซน") else ("โซน" + zone_name)
+        
+        if damage in ["fallen", "broken", "tilted"]:
+            if tree and tree != "-":
+                ticket_title = f"{tree} {damage_name} {zone_str}".strip()
+            else:
+                ticket_title = f"{damage_name} {zone_str}".strip()
+        else:
+            if tree and tree != "-":
+                ticket_title = f"{tree} ({damage_name})"
+            else:
+                ticket_title = f"{damage_name} {zone_str}".strip()
         
         ticket = {
             "id": current_id,
-            "title": f"{tree}{random.choice(['กิ่งหัก', 'เอียง', 'โค่นล้ม', 'มีปลวก'])}",
-            "description": f"พบปัญหา{tree}บริเวณ{zone['name']} ต้องการการตรวจสอบและแก้ไข (ประวัติย้อนหลัง)",
+            "title": ticket_title,
+            "description": "",
             "category": random.choice(categories),
             "status": random.choice(statuses),
             "priority": random.choice(priorities),
@@ -73,7 +98,7 @@ def generate_mock_data():
             "damageType": damage,
             "circumference": random.randint(10, 80) if damage != "replant" else 0,
             "quantity": random.randint(1, 5),
-            "impact": random.choice(["ขวางทางเดิน", "เสี่ยงทับอาคาร", "บดบังวิสัยทัศน์", "ไฟฟ้าขัดข้อง"]),
+            "impact": f"พบปัญหา{tree}บริเวณ{zone['name']} ต้องการการตรวจสอบและแก้ไข (ประวัติย้อนหลัง)" if damage == "other" else random.choice(["ขวางทางเดิน", "เสี่ยงทับอาคาร", "บดบังวิสัยทัศน์", "ไฟฟ้าขัดข้อง"]),
             "operation": random.choice(operations),
             "date": date_str,
             "assignees": random.sample(assignees_list, random.randint(0, 2)),
