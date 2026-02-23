@@ -2053,6 +2053,10 @@ function renderAddTicket() {
 function renderTimeline(ticket) {
     // Build timeline items, then reverse so latest is on top
     const timelineItems = [];
+    const historyTimes = new Set();
+    if (ticket.history && ticket.history.length > 0) {
+        ticket.history.forEach(h => historyTimes.add(new Date(h.updatedAt).getTime()));
+    }
 
     // 1. Open Info (oldest)
     let openerName = MOCK_DATA.user?.name || 'Security Guard';
@@ -2068,8 +2072,8 @@ function renderTimeline(ticket) {
         time: new Date(ticket.date).getTime()
     });
 
-    // 2. In Progress
-    if (ticket.startedAt || (ticket.assignees && ticket.assignees.length > 0)) {
+    // 2. In Progress (only if not covered by history)
+    if ((ticket.startedAt && !historyTimes.has(new Date(ticket.startedAt).getTime())) || (!ticket.startedAt && ticket.assignees && ticket.assignees.length > 0)) {
         timelineItems.push({
             icon: 'settings_suggest',
             gradient: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)',
@@ -2079,8 +2083,8 @@ function renderTimeline(ticket) {
         });
     }
 
-    // 3. Completed (newest)
-    if (ticket.completedAt) {
+    // 3. Completed (newest, only if not covered by history)
+    if (ticket.completedAt && !historyTimes.has(new Date(ticket.completedAt).getTime())) {
         timelineItems.push({
             icon: 'task_alt',
             gradient: 'linear-gradient(135deg, #34d399 0%, #10b981 100%)',
@@ -2095,10 +2099,27 @@ function renderTimeline(ticket) {
         ticket.history.forEach(h => {
             let actName = h.action;
             if (actName === 'อัปเดตข้อมูลทิคเก็ต' || actName === 'อัพเดทข้อมูลทิคเก็ต') actName = 'อัปเดต';
+
+            let icon = 'edit_note';
+            let gradient = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+            let title = `${actName}${h.updatedBy ? `โดย ${h.updatedBy}` : ''}`;
+
+            // Upgrade visual style for status changes
+            if (actName.includes('เสร็จสิ้น')) {
+                icon = 'task_alt';
+                gradient = 'linear-gradient(135deg, #34d399 0%, #10b981 100%)';
+            } else if (actName.includes('กำลังดำเนินการ')) {
+                icon = 'settings_suggest';
+                gradient = 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)';
+            } else if (actName.includes('ทิคเก็ตใหม่') || actName.includes('ใหม่')) {
+                icon = 'notification_important';
+                gradient = 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)';
+            }
+
             timelineItems.push({
-                icon: 'edit_note',
-                gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                title: `${actName}${h.updatedBy ? `โดย ${h.updatedBy}` : ''}`,
+                icon: icon,
+                gradient: gradient,
+                title: title,
                 detail: `เวลาวันที่: ${new Date(h.updatedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
                 time: new Date(h.updatedAt).getTime()
             });
