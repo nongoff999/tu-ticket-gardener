@@ -1052,10 +1052,11 @@ body,
 
 .chart-card {
     background: var(--card);
-    padding: 1.5rem;
-    border-radius: 2.5rem;
-    margin: 0 1.5rem 1.5rem;
+    padding: 1.25rem 1rem;
+    border-radius: 1.25rem;
+    margin: 0 0 1rem 0;
     border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
 }
 
 .chart-card h2 {
@@ -2500,7 +2501,7 @@ body.login-mode #main-content {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     gap: 1rem;
-    padding: 0 1.5rem 6rem;
+    padding: 0 0.75rem 6rem;
     /* Bottom padding for FAB */
 }
 
@@ -2529,6 +2530,50 @@ body.login-mode #main-content {
     .dashboard-container {
         gap: 1.5rem;
     }
+}
+
+/* ==========================================
+   Dashboard Stats (Mobile First)
+   ========================================== */
+.stats-compact-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    padding: 0.75rem 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.stats-compact-row .stat-card {
+    padding: 0.875rem 0.75rem !important;
+    height: 6.5rem !important;
+    border-radius: 1.25rem !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.stats-compact-row .stat-card-label {
+    font-size: 0.7rem !important;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    opacity: 0.8;
+    white-space: nowrap;
+}
+
+.stats-compact-row .stat-card-value {
+    font-size: 1.5rem !important;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.stats-compact-row .stat-card-icon {
+    font-size: 2.75rem !important;
+    bottom: -8px !important;
+    right: -8px !important;
+    opacity: 0.12;
 }
 
 @media (min-width: 1024px) {
