@@ -1128,7 +1128,7 @@ function renderMonitor() {
             const counts = { new: 0, inProgress: 0, completed: 0 };
             MOCK_DATA.tickets.forEach(t => { if (counts[t.status] !== undefined) counts[t.status]++ });
             return [
-                { id: 'new', label: 'ใหม่', count: counts.new },
+                { id: 'new', label: 'ทิคเก็ตใหม่', count: counts.new },
                 { id: 'inProgress', label: 'กำลังดำเนินการ', count: counts.inProgress },
                 { id: 'completed', label: 'เสร็จสิ้น', count: counts.completed }
             ];
@@ -1447,7 +1447,7 @@ function renderTicketList() {
             const counts = { new: 0, inProgress: 0, completed: 0 };
             MOCK_DATA.tickets.forEach(t => { if (counts[t.status] !== undefined) counts[t.status]++ });
             return [
-                { id: 'new', label: 'ใหม่', count: counts.new },
+                { id: 'new', label: 'ทิคเก็ตใหม่', count: counts.new },
                 { id: 'inProgress', label: 'กำลังดำเนินการ', count: counts.inProgress },
                 { id: 'completed', label: 'เสร็จสิ้น', count: counts.completed }
             ];
@@ -1651,7 +1651,7 @@ function renderTicketDetail(params) {
         return 'neutral';
     };
     const getStatusLabel = (s) => {
-        if (s === 'new') return 'ใหม่';
+        if (s === 'new') return 'ทิคเก็ตใหม่';
         if (s === 'inProgress') return 'กำลังดำเนินการ';
         if (s === 'completed') return 'เสร็จสิ้น';
         return s;

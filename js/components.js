@@ -147,7 +147,7 @@ const Components = {
     // Stepper for forms
     stepper(currentStep) {
         const steps = [
-            { id: 1, label: 'ใหม่' },
+            { id: 1, label: 'ทิคเก็ตใหม่' },
             { id: 2, label: 'ระหว่างดำเนินการ' },
             { id: 3, label: 'ปิดทิคเก็ต' }
         ];
