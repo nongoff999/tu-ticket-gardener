@@ -2064,7 +2064,7 @@ function renderTimeline(ticket) {
         icon: 'notification_important',
         gradient: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
         title: `เปิดทิคเก็ตใหม่โดย ${openerName}`,
-        detail: `${new Date(ticket.date).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${new Date(ticket.date).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}`,
+        detail: `เวลาวันที่: ${new Date(ticket.date).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${new Date(ticket.date).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}`,
         time: new Date(ticket.date).getTime()
     });
 
@@ -2074,7 +2074,7 @@ function renderTimeline(ticket) {
             icon: 'settings_suggest',
             gradient: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)',
             title: 'เข้าดำเนินการโดย',
-            detail: `${ticket.assignees && ticket.assignees.length > 0 ? ticket.assignees.join(', ') : 'รอการมอบหมาย'}${ticket.startedAt ? `<br>เริ่มเมื่อ: ${new Date(ticket.startedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}`,
+            detail: `${ticket.assignees && ticket.assignees.length > 0 ? ticket.assignees.join(', ') : 'รอการมอบหมาย'}${ticket.startedAt ? `<br>เวลาวันที่: ${new Date(ticket.startedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}`,
             time: ticket.startedAt ? new Date(ticket.startedAt).getTime() : new Date(ticket.date).getTime() + 1000 // Ensure slightly above creation
         });
     }
@@ -2085,7 +2085,7 @@ function renderTimeline(ticket) {
             icon: 'task_alt',
             gradient: 'linear-gradient(135deg, #34d399 0%, #10b981 100%)',
             title: 'งานเสร็จสิ้น',
-            detail: `เสร็จสิ้นโดยทีมผู้รับผิดชอบ<br>เมื่อ: ${new Date(ticket.completedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
+            detail: `เสร็จสิ้นโดยทีมผู้รับผิดชอบ<br>เวลาวันที่: ${new Date(ticket.completedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
             time: new Date(ticket.completedAt).getTime()
         });
     }
@@ -2093,11 +2093,13 @@ function renderTimeline(ticket) {
     // 4. Update History
     if (ticket.history && ticket.history.length > 0) {
         ticket.history.forEach(h => {
+            let actName = h.action;
+            if (actName === 'อัปเดตข้อมูลทิคเก็ต' || actName === 'อัพเดทข้อมูลทิคเก็ต') actName = 'อัปเดต';
             timelineItems.push({
                 icon: 'edit_note',
                 gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                title: `${h.action}${h.updatedBy ? `โดย ${h.updatedBy}` : ''}`,
-                detail: `เมื่อ: ${new Date(h.updatedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
+                title: `${actName}${h.updatedBy ? `โดย ${h.updatedBy}` : ''}`,
+                detail: `เวลาวันที่: ${new Date(h.updatedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
                 time: new Date(h.updatedAt).getTime()
             });
         });
@@ -2107,7 +2109,7 @@ function renderTimeline(ticket) {
             icon: 'edit_note',
             gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
             title: `อัปเดตผลกระทบที่ได้รับ${ticket.impactUpdatedBy ? `โดย ${ticket.impactUpdatedBy}` : ''}`,
-            detail: `เมื่อ: ${new Date(ticket.impactUpdatedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
+            detail: `เวลาวันที่: ${new Date(ticket.impactUpdatedAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
             time: new Date(ticket.impactUpdatedAt).getTime()
         });
     }
@@ -2722,7 +2724,16 @@ function renderEditTicket(params) {
             ticket.history = [];
         }
 
-        const updateAction = 'อัปเดตข้อมูลทิคเก็ต';
+        const statusHistMap = {
+            'new': 'ทิคเก็ตใหม่',
+            'inProgress': 'กำลังดำเนินการ',
+            'completed': 'เสร็จสิ้น'
+        };
+
+        let updateAction = 'อัปเดต';
+        if (oldStatus !== newStatus) {
+            updateAction = `เปลี่ยนสถานะเป็น ${statusHistMap[newStatus] || newStatus}`;
+        }
 
         ticket.history.push({
             action: updateAction,
