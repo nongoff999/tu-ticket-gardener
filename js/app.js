@@ -1672,11 +1672,7 @@ function renderTicketDetail(params) {
             <!-- Single Consolidated Card -->
             <div class="detail-card">
                 
-                <!-- HEADER: Title & Tags -->
-                <div class="detail-header-title">
-                    ${ticketNameStr}
-                </div>
-                
+                <!-- HEADER: Tags -->
                 <div class="tag-row">
                     <span class="detail-tag neutral">Ticket #${ticket.id}</span>
                     <span class="detail-tag ${getStatusTagClass(ticket.status)}">
@@ -1687,14 +1683,12 @@ function renderTicketDetail(params) {
             ? `<span class="detail-tag urgent"><span class="material-symbols-outlined" style="font-size: 1rem;">warning</span> เร่งด่วน</span>`
             : `<span class="detail-tag neutral">ปกติ</span>`
         }
-                    ${ticket.description ? `
                     <span class="detail-tag outline">
                         <span class="material-symbols-outlined" style="font-size: 1rem;">forest</span>
-                        ${ticket.description}
-                    </span>` : ''}
-                    <span class="detail-tag outline">
-                         <span class="material-symbols-outlined" style="font-size: 1rem;">location_on</span>
-                         ${ticket.zoneName || 'ไม่ระบุโซน'}
+                        ${ticket.damageType === 'fallen' ? 'โค่นล้ม' :
+            ticket.damageType === 'broken' ? 'กิ่งหัก/ฉีก' :
+                ticket.damageType === 'tilted' ? 'ลำต้นเอียง' :
+                    (ticket.category === 'other' ? 'อื่นๆ' : (ticket.category || 'ไม่ระบุ'))}
                     </span>
                 </div>
 
@@ -1706,11 +1700,7 @@ function renderTicketDetail(params) {
                             <label class="detail-label">สถานที่เกิดเหตุ (จุดสังเกต)</label>
                             <div class="detail-value">${ticket.locationDetail || '-'}</div>
                         </div>
-                        ${ticket.description ? `
-                        <div class="detail-group">
-                            <label class="detail-label">ลักษณะความเสียหาย</label>
-                            <div class="detail-value">${ticket.description}</div>
-                        </div>` : ''}
+                        <!-- Damage type description is now only in the tag row -->
                         <div class="detail-group">
                             <label class="detail-label">ผลกระทบที่ได้รับ</label>
                             <div class="detail-value">${ticket.impact || '-'}</div>
