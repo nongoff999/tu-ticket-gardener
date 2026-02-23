@@ -1862,8 +1862,8 @@ function renderAddTicket() {
                     </div>
                 </div>
 
-                <div class="sticky-footer">
-                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <div class="floating-action-bar">
+                    <button type="submit" class="btn-float">
                         <span class="material-symbols-outlined">save</span>
                         บันทึกทิคเก็ต
                     </button>
@@ -2375,8 +2375,8 @@ function renderEditTicket(params) {
                     </div>
                 </div>
 
-                <div class="sticky-footer">
-                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 3.5rem; border-radius: 1rem; font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+                <div class="floating-action-bar">
+                    <button type="submit" class="btn-float">
                         <span class="material-symbols-outlined">save</span>
                         บันทึกการแก้ไข
                     </button>
