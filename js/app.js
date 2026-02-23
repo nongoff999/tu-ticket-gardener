@@ -1690,6 +1690,10 @@ function renderTicketDetail(params) {
                 ticket.damageType === 'tilted' ? 'ลำต้นเอียง' :
                     (ticket.category === 'other' ? 'อื่นๆ' : (ticket.category || 'ไม่ระบุ'))}
                     </span>
+                    <span class="detail-tag outline">
+                         <span class="material-symbols-outlined" style="font-size: 1rem;">location_on</span>
+                         ${ticket.zoneName || 'ไม่ระบุโซน'}
+                    </span>
                 </div>
 
                 <!-- MAIN INFO GRID -->
@@ -2002,7 +2006,14 @@ function renderAddTicket() {
 
         const zoneShortName = zoneObj?.name.split(' (')[0]?.replace(/^โซน/, '') || '';
         const zonePart = zoneShortName ? `โซน${zoneShortName}` : '';
-        const autoTitle = [damagePart, zonePart].filter(Boolean).join(' ');
+
+        let autoTitle = '';
+        if (damageType === 'other') {
+            const locPart = locationName ? ` (${locationName})` : '';
+            autoTitle = `อื่นๆ${locPart}`;
+        } else {
+            autoTitle = [damagePart, zonePart].filter(Boolean).join(' ');
+        }
 
         const newTicket = {
             id: Math.floor(Math.random() * 100000), // Simple random ID
@@ -2679,7 +2690,14 @@ function renderEditTicket(params) {
         // Auto title: "ต้นนนทรี โค่นล้ม โซนหอพัก"
         const treePart = treeType && treeType !== '-' ? treeType : '';
         const zonePart = zoneShortName ? `โซน${zoneShortName}` : '';
-        const autoTitle = [treePart, damagePart, zonePart].filter(Boolean).join(' ');
+
+        let autoTitle = '';
+        if (damageType === 'other') {
+            const locPart = locationDetail ? ` (${locationDetail})` : '';
+            autoTitle = [treePart, `อื่นๆ${locPart}`].filter(Boolean).join(' ');
+        } else {
+            autoTitle = [treePart, damagePart, zonePart].filter(Boolean).join(' ');
+        }
 
         // Update Timestamps
         const oldStatus = ticket.status;
