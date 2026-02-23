@@ -2722,14 +2722,6 @@ function renderEditTicket(params) {
             ticket.history = [];
         }
 
-        const updateAction = 'อัปเดตข้อมูลทิคเก็ต';
-
-        ticket.history.push({
-            action: updateAction,
-            updatedBy: userName,
-            updatedAt: nowStr
-        });
-
         // Update Ticket Object
         ticket.title = autoTitle;
         ticket.description = '';
