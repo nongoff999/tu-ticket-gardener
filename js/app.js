@@ -1635,13 +1635,7 @@ function renderTicketDetail(params) {
     AppState.selectedTicket = ticket;
     document.getElementById('page-title').textContent = 'TICKET DETAILS';
 
-    // Construct Ticket Name
-    const ticketParts = [
-        ticket.treeType && ticket.treeType !== '-' ? ticket.treeType : '',
-        ticket.description || '',
-        ticket.zoneName || ''
-    ];
-    const ticketNameStr = ticketParts.filter(Boolean).join(' · ');
+    // No longer building ticketNameStr as we use ticket.title directly
 
     // Helpers for Tags
     const getStatusTagClass = (s) => {
@@ -1671,6 +1665,11 @@ function renderTicketDetail(params) {
             
             <!-- Single Consolidated Card -->
             <div class="detail-card">
+                
+                <!-- HEADER: Title & Tags -->
+                <div class="detail-header-title">
+                    ${ticket.title}
+                </div>
                 
                 <!-- HEADER: Tags -->
                 <div class="tag-row">
