@@ -163,7 +163,14 @@
                 "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800",
                 "https://images.unsplash.com/photo-1511497584788-876760111969?w=800"
             ],
-            "progressImages": []
+            "progressImages": [],
+            "history": [
+                {
+                    "action": "อัปเดตข้อมูลทิคเก็ต",
+                    "updatedBy": "Admin",
+                    "updatedAt": "2026-02-18T04:52:00.000Z"
+                }
+            ]
         },
         {
             "id": 1014,
@@ -280,7 +287,19 @@
                 "https://images.unsplash.com/photo-1511497584788-876760111969?w=800",
                 "https://images.unsplash.com/photo-1448375240580-08527b1406c7?w=800"
             ],
-            "progressImages": []
+            "progressImages": [],
+            "history": [
+                {
+                    "action": "เปลี่ยนสถานะเป็น กำลังดำเนินการ",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-16T19:43:00.000Z"
+                },
+                {
+                    "action": "เปลี่ยนสถานะเป็น เสร็จสิ้น",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-16T20:43:00.000Z"
+                }
+            ]
         },
         {
             "id": 1011,
@@ -391,7 +410,14 @@
             "images": [
                 "https://images.unsplash.com/photo-1458245201577-fc8a130b8829?w=800"
             ],
-            "progressImages": []
+            "progressImages": [],
+            "history": [
+                {
+                    "action": "อัปเดตข้อมูลทิคเก็ต",
+                    "updatedBy": "Admin",
+                    "updatedAt": "2026-02-13T21:28:00.000Z"
+                }
+            ]
         },
         {
             "id": 1002,
@@ -419,7 +445,14 @@
             "images": [
                 "https://images.unsplash.com/photo-1558905612-16715494d6d5?w=800"
             ],
-            "progressImages": []
+            "progressImages": [],
+            "history": [
+                {
+                    "action": "เปลี่ยนสถานะเป็น กำลังดำเนินการ",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-13T04:46:00.000Z"
+                }
+            ]
         },
         {
             "id": 1016,
@@ -505,7 +538,19 @@
                 "https://images.unsplash.com/photo-1511497584788-876760111969?w=800",
                 "https://images.unsplash.com/photo-1425913397330-cf8af2ff40a1?w=800"
             ],
-            "progressImages": []
+            "progressImages": [],
+            "history": [
+                {
+                    "action": "เปลี่ยนสถานะเป็น กำลังดำเนินการ",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-12T00:32:00.000Z"
+                },
+                {
+                    "action": "เปลี่ยนสถานะเป็น เสร็จสิ้น",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-12T01:32:00.000Z"
+                }
+            ]
         },
         {
             "id": 1001,
@@ -537,7 +582,19 @@
                 "https://images.unsplash.com/photo-1458245201577-fc8a130b8829?w=800",
                 "https://images.unsplash.com/photo-1458245201577-fc8a130b8829?w=800"
             ],
-            "progressImages": []
+            "progressImages": [],
+            "history": [
+                {
+                    "action": "เปลี่ยนสถานะเป็น กำลังดำเนินการ",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-09T22:02:00.000Z"
+                },
+                {
+                    "action": "เปลี่ยนสถานะเป็น เสร็จสิ้น",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-09T23:02:00.000Z"
+                }
+            ]
         },
         {
             "id": 1008,
@@ -683,7 +740,19 @@
                 "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
                 "https://images.unsplash.com/photo-1523306411751-bed41832b55c?w=800"
             ],
-            "progressImages": []
+            "progressImages": [],
+            "history": [
+                {
+                    "action": "เปลี่ยนสถานะเป็น กำลังดำเนินการ",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-07T00:41:00.000Z"
+                },
+                {
+                    "action": "เปลี่ยนสถานะเป็น เสร็จสิ้น",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-07T01:41:00.000Z"
+                }
+            ]
         },
         {
             "id": 1022,
@@ -712,7 +781,19 @@
             "images": [
                 "https://images.unsplash.com/photo-1511497584788-876760111969?w=800"
             ],
-            "progressImages": []
+            "progressImages": [],
+            "history": [
+                {
+                    "action": "เปลี่ยนสถานะเป็น กำลังดำเนินการ",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-06T21:10:00.000Z"
+                },
+                {
+                    "action": "เปลี่ยนสถานะเป็น เสร็จสิ้น",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-06T22:10:00.000Z"
+                }
+            ]
         },
         {
             "id": 1007,
@@ -831,7 +912,14 @@
                 "https://images.unsplash.com/photo-1448375240580-08527b1406c7?w=800",
                 "https://images.unsplash.com/photo-1501854140801-50d01674aa3e?w=800"
             ],
-            "progressImages": []
+            "progressImages": [],
+            "history": [
+                {
+                    "action": "เปลี่ยนสถานะเป็น กำลังดำเนินการ",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-04T01:13:00.000Z"
+                }
+            ]
         },
         {
             "id": 1020,
@@ -860,7 +948,19 @@
             "images": [
                 "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800"
             ],
-            "progressImages": []
+            "progressImages": [],
+            "history": [
+                {
+                    "action": "เปลี่ยนสถานะเป็น กำลังดำเนินการ",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-03T20:38:00.000Z"
+                },
+                {
+                    "action": "เปลี่ยนสถานะเป็น เสร็จสิ้น",
+                    "updatedBy": "สมชาย การดี",
+                    "updatedAt": "2026-02-03T21:38:00.000Z"
+                }
+            ]
         }
     ]
 }

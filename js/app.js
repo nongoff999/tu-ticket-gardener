@@ -3402,12 +3402,12 @@ function renderReportDetail() {
     }
 
     if (AppState.selectedReport === 'summary') {
-        renderDailySummaryReport(AppState.selectedDate);
+        renderDailySummaryReport(AppState.selectedDate, AppState.selectedEndDate);
         return;
     }
 
     // Default to summary if no report selected
-    renderDailySummaryReport(AppState.selectedDate);
+    renderDailySummaryReport(AppState.selectedDate, AppState.selectedEndDate);
 }
 
 function renderMapReport() {
@@ -3592,7 +3592,8 @@ function renderDailySummaryReport(dateStr) {
 
 
 // Function to download all images as ZIP
-async function downloadDailyImages(dateStr) {
+async function downloadDailyImages(dateStr, endDateStr) {
+    if (!endDateStr) endDateStr = dateStr;
     if (typeof JSZip === 'undefined' || typeof saveAs === 'undefined') {
         showPopup('ข้อผิดพลาด', 'ไลบรารี ZIP ไม่พร้อมใช้งาน', 'error');
         return;
@@ -3602,14 +3603,16 @@ async function downloadDailyImages(dateStr) {
 
     try {
         const zip = new JSZip();
-        // Standardize YYYY-MM-DD
-        const searchDate = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
 
         // Find tickets
-        const tickets = MOCK_DATA.tickets.filter(t => t.date && t.date.startsWith(searchDate));
+        const tickets = MOCK_DATA.tickets.filter(t => {
+            if (!t.date) return false;
+            const tDateStr = t.date.replace(' ', 'T').split('T')[0];
+            return tDateStr >= dateStr && tDateStr <= endDateStr;
+        });
 
         if (tickets.length === 0) {
-            showPopup('ไม่พบข้อมูล', 'ไม่มีรูปภาพในวันที่เลือก', 'warning');
+            showPopup('ไม่พบข้อมูล', 'ไม่มีรูปภาพในช่วงที่เลือก', 'warning');
             return;
         }
 
@@ -3652,7 +3655,8 @@ async function downloadDailyImages(dateStr) {
         await Promise.all(promises);
 
         const content = await zip.generateAsync({ type: 'blob' });
-        const zipName = `TU_Ticket_Images_${searchDate}.zip`;
+        const nameSuffix = dateStr === endDateStr ? dateStr : `${dateStr}_to_${endDateStr}`;
+        const zipName = `TU_Ticket_Images_${nameSuffix}.zip`;
         saveAs(content, zipName);
 
         showPopup('สำเร็จ', `ดาวน์โหลดรูปภาพเรียบร้อย (${imageCount} รูป)`, 'success');
@@ -3830,6 +3834,7 @@ window.changeMonth = changeMonth;
 // Helper to view daily summary instead of direct download
 function viewDailySummary(dateStr) {
     AppState.selectedDate = dateStr;
+    AppState.selectedEndDate = dateStr;
     AppState.selectedReport = 'summary';
     router.navigate('/report-detail');
 }
@@ -3838,24 +3843,28 @@ window.viewDailySummary = viewDailySummary;
 
 
 // Download report for a specific day
-async function downloadDailyReport(dateStr) {
-    const date = new Date(dateStr);
+async function downloadDailyReport(dateStr, endDateStr) {
+    if (!endDateStr) endDateStr = dateStr;
 
-    // Format dates for headers
-    const thaiDate = date.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
-    const today = new Date();
-    const todayThaiDate = today.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
-    // Filter tickets for this specific day
-    const dayTickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr));
+    // Filter tickets for this specific range
+    const dayTickets = MOCK_DATA.tickets.filter(t => {
+        if (!t.date) return false;
+        const tDateStr = t.date.replace(' ', 'T').split('T')[0];
+        return tDateStr >= dateStr && tDateStr <= endDateStr;
+    });
 
     if (dayTickets.length === 0) {
-        alert('ไม่พบข้อมูลในวันนี้');
+        alert('ไม่พบข้อมูลในช่วงที่เลือก');
         return;
     }
 
+    const nameSuffix = dateStr === endDateStr ? dateStr : `${dateStr}_to_${endDateStr}`;
+    const reportDateDisplay = window.currentReportDateDisplayForExcel || nameSuffix;
+
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet(`รายงาน ${thaiDate}`);
+    // Maximum 31 characters for worksheet name
+    const sheetName = `รายงาน ${nameSuffix}`.substring(0, 31);
+    const worksheet = workbook.addWorksheet(sheetName);
 
     // Setup worksheet
     worksheet.pageSetup = {
@@ -3887,7 +3896,7 @@ async function downloadDailyReport(dateStr) {
     headerRow1.height = 35;
 
     // Header Row 2: Date
-    const thaiFullDateForExcel = date.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const thaiFullDateForExcel = reportDateDisplay;
     const headerRow2 = worksheet.addRow(['', thaiFullDateForExcel, '', '', '', '']);
     worksheet.mergeCells('B2:F2');
     headerRow2.getCell(2).font = { name: 'Sarabun', size: 14, bold: true, color: darkBlueColor };
@@ -4682,7 +4691,8 @@ async function exportToExcel() {
 window.exportToExcel = exportToExcel;
 
 // Function to download the report as an image
-async function downloadReportAsImage(dateStr) {
+async function downloadReportAsImage(dateStr, endDateStr) {
+    if (!endDateStr) endDateStr = dateStr;
     if (typeof html2canvas === 'undefined') {
         showPopup('ข้อผิดพลาด', 'ไลบรารี html2canvas ไม่พร้อมใช้งาน', 'error');
         return;
@@ -4707,7 +4717,8 @@ async function downloadReportAsImage(dateStr) {
 
         canvas.toBlob(blob => {
             if (blob) {
-                const fileName = `TU_Ticket_Report_Image_${dateStr}.png`;
+                const nameSuffix = dateStr === endDateStr ? dateStr : `${dateStr}_to_${endDateStr}`;
+                const fileName = `TU_Ticket_Report_Image_${nameSuffix}.png`;
                 saveAs(blob, fileName);
                 showPopup('สำเร็จ', 'บันทึกรูปภาพเรียบร้อยแล้ว', 'success');
             } else {
