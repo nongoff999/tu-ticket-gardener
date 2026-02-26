@@ -522,6 +522,15 @@ function closePopup() {
 window.showPopup = showPopup;
 window.closePopup = closePopup;
 
+// Global Chart Toggle
+window.toggleChartSeries = function (series) {
+    if (!AppState.chartVisibility) {
+        AppState.chartVisibility = { new: true, inProgress: true, completed: true, pending: true };
+    }
+    AppState.chartVisibility[series] = !AppState.chartVisibility[series];
+    renderDashboard();
+};
+
 // Page Renderers
 function renderDashboard() {
     updateHeaderNav(false); // Dashboard is main page
@@ -599,15 +608,19 @@ function renderDashboard() {
                 ${generateChartSVG(AppState.dashboardPeriod, AppState.selectedDate, true)}
                 
                 <div class="chart-legend" style="display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap; padding-top: 1rem; border-top: 1px solid #f1f5f9;">
-                    <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="chart-legend-item" onclick="toggleChartSeries('new')" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; opacity: ${!AppState.chartVisibility || AppState.chartVisibility.new ? '1' : '0.4'}; transition: opacity 0.2s;">
                         <div class="chart-legend-color" style="width: 1.25rem; height: 1.25rem; background: #fbbf24; border-radius: 4px;"></div>
                         <span class="chart-legend-text" style="font-size: 0.9rem; font-weight: 600; color: #475569;">ทิคเก็ตเปิดใหม่</span>
                     </div>
-                    <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="chart-legend-item" onclick="toggleChartSeries('inProgress')" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; opacity: ${!AppState.chartVisibility || AppState.chartVisibility.inProgress ? '1' : '0.4'}; transition: opacity 0.2s;">
+                        <div class="chart-legend-color" style="width: 1.25rem; height: 1.25rem; background: #a855f7; border-radius: 4px;"></div>
+                        <span class="chart-legend-text" style="font-size: 0.9rem; font-weight: 600; color: #475569;">ระหว่างดำเนินการ</span>
+                    </div>
+                    <div class="chart-legend-item" onclick="toggleChartSeries('completed')" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; opacity: ${!AppState.chartVisibility || AppState.chartVisibility.completed ? '1' : '0.4'}; transition: opacity 0.2s;">
                         <div class="chart-legend-color" style="width: 1.25rem; height: 1.25rem; background: #cbd5e1; border-radius: 4px;"></div>
                         <span class="chart-legend-text" style="font-size: 0.9rem; font-weight: 600; color: #475569;">จำนวนที่เสร็จสิ้น</span>
                     </div>
-                    <div class="chart-legend-item" style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="chart-legend-item" onclick="toggleChartSeries('pending')" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; opacity: ${!AppState.chartVisibility || AppState.chartVisibility.pending ? '1' : '0.4'}; transition: opacity 0.2s;">
                         <div class="chart-legend-color" style="width: 1.25rem; height: 1.25rem; background: #f43f5e; border-radius: 4px;"></div>
                         <span class="chart-legend-text" style="font-size: 0.9rem; font-weight: 600; color: #475569;">จำนวนที่ค้าง</span>
                     </div>
@@ -777,7 +790,7 @@ function getStatsForPeriod(period, dateStr) {
 function getChartData(period, dateStr) {
     const data = {
         labels: [],
-        series: { new: [], pending: [], completed: [] }
+        series: { new: [], pending: [], completed: [], inProgress: [] }
     };
     const tickets = MOCK_DATA.tickets;
     const initArray = (len) => Array(len).fill(0);
@@ -789,6 +802,7 @@ function getChartData(period, dateStr) {
         data.series.new = initArray(len);
         data.series.pending = initArray(len);
         data.series.completed = initArray(len);
+        data.series.inProgress = initArray(len);
 
         const dayTickets = tickets.filter(t => t.date.startsWith(dateStr));
         dayTickets.forEach(t => {
@@ -796,7 +810,8 @@ function getChartData(period, dateStr) {
             const idx = Math.floor(h / 4);
             if (t.status === 'new') data.series.new[idx]++;
             else if (t.status === 'completed') data.series.completed[idx]++;
-            else data.series.pending[idx]++; // inProgress + pending
+            else if (t.status === 'inProgress') data.series.inProgress[idx]++;
+            else data.series.pending[idx]++; // pending
         });
     } else if (period === 'WEEK') {
         const d = new Date(dateStr);
@@ -812,12 +827,14 @@ function getChartData(period, dateStr) {
         data.series.new = initArray(len);
         data.series.pending = initArray(len);
         data.series.completed = initArray(len);
+        data.series.inProgress = initArray(len);
 
         const weekTickets = tickets.filter(t => { const td = new Date(t.date); return td >= startOfWeek && td < endOfWeek; });
         weekTickets.forEach(t => {
             const idx = new Date(t.date).getDay();
             if (t.status === 'new') data.series.new[idx]++;
             else if (t.status === 'completed') data.series.completed[idx]++;
+            else if (t.status === 'inProgress') data.series.inProgress[idx]++;
             else data.series.pending[idx]++;
         });
     } else if (period === 'MONTH') {
@@ -835,12 +852,14 @@ function getChartData(period, dateStr) {
         data.series.new = initArray(len);
         data.series.pending = initArray(len);
         data.series.completed = initArray(len);
+        data.series.inProgress = initArray(len);
 
         const monthTickets = tickets.filter(t => { const td = new Date(t.date); return td.getFullYear() === year && td.getMonth() === month; });
         monthTickets.forEach(t => {
             const idx = new Date(t.date).getDate() - 1;
             if (t.status === 'new') data.series.new[idx]++;
             else if (t.status === 'completed') data.series.completed[idx]++;
+            else if (t.status === 'inProgress') data.series.inProgress[idx]++;
             else data.series.pending[idx]++;
         });
     } else if (period === 'CUSTOM') {
@@ -855,6 +874,7 @@ function getChartData(period, dateStr) {
         data.series.new = initArray(len);
         data.series.pending = initArray(len);
         data.series.completed = initArray(len);
+        data.series.inProgress = initArray(len);
 
         for (let i = 0; i < len; i++) {
             const curr = new Date(start);
@@ -872,6 +892,7 @@ function getChartData(period, dateStr) {
             if (diff >= 0 && diff < len) {
                 if (t.status === 'new') data.series.new[diff]++;
                 else if (t.status === 'completed') data.series.completed[diff]++;
+                else if (t.status === 'inProgress') data.series.inProgress[diff]++;
                 else data.series.pending[diff]++;
             }
         });
@@ -889,17 +910,30 @@ function generateChartSVG(period, dateStr, isLarge = false) {
     const paddingRight = 10;
     const chartHeight = height - paddingTop - paddingBottom;
 
+    if (!AppState.chartVisibility) {
+        AppState.chartVisibility = { new: true, inProgress: true, completed: true, pending: true };
+    }
+    const vis = AppState.chartVisibility;
+
     // Scale
-    const allVals = [...data.series.new, ...data.series.pending, ...data.series.completed];
+    let allVals = [];
+    if (vis.new) allVals.push(...data.series.new);
+    if (vis.inProgress) allVals.push(...data.series.inProgress);
+    if (vis.completed) allVals.push(...data.series.completed);
+    if (vis.pending) allVals.push(...data.series.pending);
+
     const maxVal = Math.max(...allVals, 5);
 
     const itemCount = data.labels.length;
     const availableWidth = width - paddingLeft - paddingRight;
     const itemWidth = availableWidth / itemCount;
 
-    // 3 Bars: New, Pending, Completed
-    const barGroupWidth = isLarge ? Math.min(itemWidth * 0.9, 60) : itemWidth * 0.8;
-    const singleBarWidth = (barGroupWidth / 3) - 1;
+    const visibleCount = (vis.new ? 1 : 0) + (vis.inProgress ? 1 : 0) + (vis.completed ? 1 : 0) + (vis.pending ? 1 : 0);
+    const actualBarCount = visibleCount || 1;
+
+    // 4 Bars theoretically: New, In Progress, Completed, Pending
+    const barGroupWidth = isLarge ? Math.min(itemWidth * 0.9, 80) : itemWidth * 0.8;
+    const singleBarWidth = (barGroupWidth / actualBarCount) - 1;
     const gap = (itemWidth - barGroupWidth) / 2;
 
     let svgContent = '';
@@ -915,21 +949,39 @@ function generateChartSVG(period, dateStr, isLarge = false) {
     // Bars
     data.labels.forEach((label, i) => {
         const xBase = paddingLeft + (i * itemWidth) + gap;
+        let currentBarIdx = 0;
 
         // 1. New (Yellow)
-        const h1 = (data.series.new[i] / maxVal) * chartHeight;
-        const y1 = height - paddingBottom - h1;
-        if (h1 > 0) svgContent += `<rect x="${xBase}" y="${y1}" width="${singleBarWidth}" height="${h1}" fill="#fbbf24" rx="${isLarge ? 4 : 2}" />`;
+        if (vis.new) {
+            const h1 = (data.series.new[i] / maxVal) * chartHeight;
+            const y1 = height - paddingBottom - h1;
+            if (h1 > 0) svgContent += `<rect x="${xBase + (singleBarWidth + 1) * currentBarIdx}" y="${y1}" width="${singleBarWidth}" height="${h1}" fill="#fbbf24" rx="${isLarge ? 4 : 2}" />`;
+            currentBarIdx++;
+        }
 
-        // 2. Completed (Gray)
-        const h3 = (data.series.completed[i] / maxVal) * chartHeight;
-        const y3 = height - paddingBottom - h3;
-        if (h3 > 0) svgContent += `<rect x="${xBase + singleBarWidth + 1}" y="${y3}" width="${singleBarWidth}" height="${h3}" fill="#cbd5e1" rx="${isLarge ? 4 : 2}" />`;
+        // 2. In Progress (Purple)
+        if (vis.inProgress) {
+            const hProg = (data.series.inProgress[i] / maxVal) * chartHeight;
+            const yProg = height - paddingBottom - hProg;
+            if (hProg > 0) svgContent += `<rect x="${xBase + (singleBarWidth + 1) * currentBarIdx}" y="${yProg}" width="${singleBarWidth}" height="${hProg}" fill="#a855f7" rx="${isLarge ? 4 : 2}" />`;
+            currentBarIdx++;
+        }
 
-        // 3. Pending (Red)
-        const h2 = (data.series.pending[i] / maxVal) * chartHeight;
-        const y2 = height - paddingBottom - h2;
-        if (h2 > 0) svgContent += `<rect x="${xBase + (singleBarWidth + 1) * 2}" y="${y2}" width="${singleBarWidth}" height="${h2}" fill="#f43f5e" rx="${isLarge ? 4 : 2}" />`;
+        // 3. Completed (Gray)
+        if (vis.completed) {
+            const h3 = (data.series.completed[i] / maxVal) * chartHeight;
+            const y3 = height - paddingBottom - h3;
+            if (h3 > 0) svgContent += `<rect x="${xBase + (singleBarWidth + 1) * currentBarIdx}" y="${y3}" width="${singleBarWidth}" height="${h3}" fill="#cbd5e1" rx="${isLarge ? 4 : 2}" />`;
+            currentBarIdx++;
+        }
+
+        // 4. Pending (Red)
+        if (vis.pending) {
+            const h2 = (data.series.pending[i] / maxVal) * chartHeight;
+            const y2 = height - paddingBottom - h2;
+            if (h2 > 0) svgContent += `<rect x="${xBase + (singleBarWidth + 1) * currentBarIdx}" y="${y2}" width="${singleBarWidth}" height="${h2}" fill="#f43f5e" rx="${isLarge ? 4 : 2}" />`;
+            currentBarIdx++;
+        }
 
         // Label
         if (label) {
