@@ -3,13 +3,21 @@
  * มหาวิทยาลัยธรรมศาสตร์ รังสิต
  */
 
+// Local Date Formatter helper
+const formatDateLocal = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+};
+
 // App State
 const AppState = {
     currentPage: 'dashboard',
     selectedCategory: 'all',
     selectedTicket: null,
     isDrawerOpen: false,
-    selectedDate: new Date().toISOString().split('T')[0], // Default to today
+    selectedDate: formatDateLocal(new Date()), // Default to today
     selectedReport: null,
     currentFilter: 'all',
     ticketsPage: 1,
@@ -550,8 +558,8 @@ function renderDashboard() {
         const end = new Date();
         const start = new Date();
         start.setDate(start.getDate() - 7);
-        AppState.customStartDate = start.toISOString().split('T')[0];
-        AppState.customEndDate = end.toISOString().split('T')[0];
+        AppState.customStartDate = formatDateLocal(start);
+        AppState.customEndDate = formatDateLocal(end);
     }
 
     const stats = getStatsForPeriod(AppState.dashboardPeriod, AppState.selectedDate);
@@ -660,8 +668,8 @@ function renderDashboard() {
                 locale: "th",
                 onChange: function (selectedDates) {
                     if (selectedDates.length === 2) {
-                        AppState.customStartDate = selectedDates[0].toISOString().split('T')[0];
-                        AppState.customEndDate = selectedDates[1].toISOString().split('T')[0];
+                        AppState.customStartDate = formatDateLocal(selectedDates[0]);
+                        AppState.customEndDate = formatDateLocal(selectedDates[1]);
                         renderDashboard();
                     }
                 }
@@ -720,7 +728,7 @@ function navigatePeriod(direction) {
         currentDate.setMonth(currentDate.getMonth() + direction);
     }
 
-    AppState.selectedDate = currentDate.toISOString().split('T')[0];
+    AppState.selectedDate = formatDateLocal(currentDate);
     renderDashboard();
 }
 
