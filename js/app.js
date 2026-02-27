@@ -4218,33 +4218,23 @@ window.deleteTicket = function (id) {
     });
 };
 
+window.updateFallenTreeYear = function (year) {
+    AppState.fallenTreeYear = parseInt(year);
+    if (typeof renderDashboard === 'function') {
+        renderDashboard();
+    }
+};
+
 /* Fallen Tree Report Logic */
 function getFallenTreeStats(period, dateStr) {
     const tickets = MOCK_DATA.tickets;
-    const date = new Date(dateStr);
-    let filtered = [];
+    const y = AppState.fallenTreeYear || new Date().getFullYear();
 
-    // Filter by period
-    if (period === 'DAY') {
-        filtered = tickets.filter(t => t.date.startsWith(dateStr));
-    } else if (period === 'WEEK') {
-        const startOfWeek = new Date(date);
-        startOfWeek.setDate(date.getDate() - date.getDay());
-        startOfWeek.setHours(0, 0, 0, 0);
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 7);
-        filtered = tickets.filter(t => {
-            const d = new Date(t.date);
-            return d >= startOfWeek && d < endOfWeek;
-        });
-    } else if (period === 'MONTH') {
-        const y = date.getFullYear();
-        const m = date.getMonth();
-        filtered = tickets.filter(t => {
-            const d = new Date(t.date);
-            return d.getFullYear() === y && d.getMonth() === m;
-        });
-    }
+    // ข้อมูลสะสมรายปี (Accumulated Yearly)
+    let filtered = tickets.filter(t => {
+        const d = new Date(t.date);
+        return d.getFullYear() === y;
+    });
 
     // Filter only fallen (โค่นล้ม)
     filtered = filtered.filter(t => t.category === 'fallen' || t.damageType === 'fallen');
@@ -4357,14 +4347,31 @@ function renderRiskHotspotsSection(period, dateStr) {
 }
 
 function renderFallenTreesSection(period, dateStr) {
+    const currentYear = new Date().getFullYear();
+    const selectedYear = AppState.fallenTreeYear || currentYear;
+
+    // Extract available years from mock data
+    let availableYears = [...new Set(MOCK_DATA.tickets.map(t => new Date(t.date).getFullYear()))];
+    if (!availableYears.includes(selectedYear)) availableYears.push(selectedYear);
+    availableYears.sort((a, b) => b - a);
+
+    const yearSelectHtml = `
+        <select onchange="updateFallenTreeYear(this.value)" style="padding: 0.25rem 0.75rem; border: 1.5px solid #e2e8f0; border-radius: 0.5rem; font-family: 'Kanit'; font-size: 0.875rem; color: #475569; outline: none; background: #f8fafc; cursor: pointer;">
+            ${availableYears.map(y => `<option value="${y}" ${y === selectedYear ? 'selected' : ''}>ปี ${y}</option>`).join('')}
+        </select>
+    `;
+
     const stats = getFallenTreeStats(period, dateStr);
 
     if (stats.total === 0) {
         return `
         <div class="chart-card">
-            <h2 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.75rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                <span class="material-symbols-outlined" style="color: var(--primary);">forest</span>
-                รายงานจำนวนต้นไม้ที่โค่นล้ม
+            <h2 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.75rem; color: #1e293b; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="material-symbols-outlined" style="color: var(--primary);">forest</span>
+                    รายงานจำนวนต้นไม้ที่โค่นล้ม
+                </div>
+                ${yearSelectHtml}
             </h2>
             <div style="padding: 1.5rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px dashed var(--border); border-radius: 1rem; margin-top: 0.5rem;">
                 <span class="material-symbols-outlined" style="font-size: 2.5rem; margin-bottom: 0.5rem; opacity: 0.3;">eco</span>
@@ -4408,13 +4415,14 @@ function renderFallenTreesSection(period, dateStr) {
         </div>
     `).join('');
 
-    const periodLabel = period === 'DAY' ? 'วันนี้' : period === 'WEEK' ? 'สัปดาห์นี้' : 'เดือนนี้';
-
     return `
         <div class="chart-card">
-            <h2 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                <span class="material-symbols-outlined" style="color: var(--primary);">forest</span>
-                รายงานจำนวนต้นไม้ที่โค่นล้ม (${periodLabel})
+            <h2 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem; color: #1e293b; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="material-symbols-outlined" style="color: var(--primary);">forest</span>
+                    รายงานจำนวนต้นไม้ที่โค่นล้ม
+                </div>
+                ${yearSelectHtml}
             </h2>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: center;">
