@@ -639,7 +639,7 @@ function renderDashboard() {
 
             <!-- Risk Area Statistics -->
             <div class="col-span-12 md:col-span-6">
-                ${renderRiskHotspotsSection(AppState.dashboardPeriod, AppState.selectedDate, true)}
+                ${renderRiskHotspotsSection()}
             </div>
 
             <!-- Fallen Trees Section -->
@@ -4256,23 +4256,8 @@ function getFallenTreeStats(period, dateStr) {
     return { total, items };
 }
 
-function getZoneHotspotData(period, dateStr) {
-    let periodTickets = [];
-    const date = new Date(dateStr);
-
-    if (period === 'CUSTOM') {
-        const start = new Date(AppState.customStartDate);
-        start.setHours(0, 0, 0, 0);
-        const end = new Date(AppState.customEndDate);
-        end.setHours(23, 59, 59, 999);
-        periodTickets = MOCK_DATA.tickets.filter(t => {
-            const d = new Date(t.date);
-            return d >= start && d <= end;
-        });
-    } else {
-        // Fallback or other periods (Simplified for Dashboard)
-        periodTickets = MOCK_DATA.tickets.filter(t => t.date.startsWith(dateStr.split(' ')[0]));
-    }
+function getZoneHotspotData() {
+    let periodTickets = MOCK_DATA.tickets;
 
     const zones = {};
     periodTickets.forEach(t => {
@@ -4285,18 +4270,21 @@ function getZoneHotspotData(period, dateStr) {
         .slice(0, 5); // Top 5
 }
 
-function renderRiskHotspotsSection(period, dateStr) {
-    const hotspots = getZoneHotspotData(period, dateStr);
+function renderRiskHotspotsSection() {
+    const hotspots = getZoneHotspotData();
 
     if (hotspots.length === 0) {
         return `
             <div class="chart-card">
-                <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0 0 1rem 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                    <span class="material-symbols-outlined" style="color: #ef4444;">location_on</span>
-                    สถิติรายงานพื้นที่เสี่ยง (Top 5)
+                <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0 0 1rem 0; color: #1e293b; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="color: #ef4444;">location_on</span>
+                        สถิติรายงานพื้นที่เสี่ยง (Top 5)
+                    </div>
+                    <span style="font-size: 0.8rem; background: #fee2e2; color: #ef4444; padding: 0.2rem 0.6rem; border-radius: 1rem; font-weight: 600;">สะสมทุกปี</span>
                 </h2>
                 <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
-                    <p style="font-size: 0.875rem;">ไม่มีข้อมูลพื้นที่เสี่ยงในช่วงเวลานี้</p>
+                    <p style="font-size: 0.875rem;">ไม่มีข้อมูลพื้นที่เสี่ยง</p>
                 </div>
             </div>
         `;
@@ -4333,9 +4321,10 @@ function renderRiskHotspotsSection(period, dateStr) {
                 <div>
                      <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
                         <span class="material-symbols-outlined" style="color: #ef4444;">location_on</span>
-                        สถิติรายงานพื้นที่เสี่ยง
+                        สถิติรายงานพื้นที่เสี่ยง (Top 5)
+                        <span style="font-size: 0.75rem; background: #fee2e2; color: #ef4444; padding: 0.15rem 0.5rem; border-radius: 1rem; font-weight: 600;">สะสมทุกปี</span>
                     </h2>
-                    <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">5 อันดับโซนที่เกิดเหตุสูงสุดในช่วงเวลาที่เลือก</p>
+                    <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.5rem;">5 อันดับโซนที่เกิดเหตุสะสมสูงสุดในระบบ</p>
                 </div>
             </div>
             
