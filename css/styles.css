@@ -2556,7 +2556,7 @@ body.login-mode #main-content {
 }
 
 .stats-compact-row .stat-card-label {
-    font-size: 0.7rem !important;
+    font-size: 0.85rem !important;
     font-weight: 700;
     margin-bottom: 0.25rem;
     opacity: 0.8;
@@ -2564,7 +2564,7 @@ body.login-mode #main-content {
 }
 
 .stats-compact-row .stat-card-value {
-    font-size: 1.5rem !important;
+    font-size: 1.8rem !important;
     font-weight: 800;
     line-height: 1;
 }
@@ -2600,11 +2600,11 @@ body.login-mode #main-content {
     }
 
     .stat-card-label {
-        font-size: 0.875rem;
+        font-size: 1rem;
     }
 
     .stat-card-value {
-        font-size: 1.75rem;
+        font-size: 2.25rem;
     }
 
     /* Chart Card refinements */
@@ -3185,11 +3185,7 @@ body.login-mode #main-content {
 }
 
 
-.stats-compact-row .stat-card-label {
-    font-size: 0.6rem !important;
-    white-space: nowrap;
-    margin-bottom: 0.1rem;
-}
+
 
 /* Flatpickr Premium Theme Customization */
 .flatpickr-calendar {
