@@ -629,10 +629,6 @@ function renderDashboard() {
                         <div class="chart-legend-color" style="width: 1.25rem; height: 1.25rem; background: #cbd5e1; border-radius: 4px;"></div>
                         <span class="chart-legend-text" style="font-size: 0.9rem; font-weight: 600; color: #475569;">จำนวนที่เสร็จสิ้น</span>
                     </div>
-                    <div class="chart-legend-item" onclick="toggleChartSeries('pending')" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; opacity: ${!AppState.chartVisibility || AppState.chartVisibility.pending ? '1' : '0.4'}; transition: opacity 0.2s;">
-                        <div class="chart-legend-color" style="width: 1.25rem; height: 1.25rem; background: #f43f5e; border-radius: 4px;"></div>
-                        <span class="chart-legend-text" style="font-size: 0.9rem; font-weight: 600; color: #475569;">จำนวนที่ค้าง</span>
-                    </div>
                 </div>
                 </div>
             </div>
@@ -835,7 +831,6 @@ function getChartData(period, dateStr) {
         data.labels = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
         const len = 7;
         data.series.new = initArray(len);
-        data.series.pending = initArray(len);
         data.series.completed = initArray(len);
         data.series.inProgress = initArray(len);
 
@@ -845,7 +840,6 @@ function getChartData(period, dateStr) {
             if (t.status === 'new') data.series.new[idx]++;
             else if (t.status === 'completed') data.series.completed[idx]++;
             else if (t.status === 'inProgress') data.series.inProgress[idx]++;
-            else data.series.pending[idx]++;
         });
     } else if (period === 'MONTH') {
         const d = new Date(dateStr);
@@ -860,7 +854,6 @@ function getChartData(period, dateStr) {
 
         const len = daysInMonth;
         data.series.new = initArray(len);
-        data.series.pending = initArray(len);
         data.series.completed = initArray(len);
         data.series.inProgress = initArray(len);
 
@@ -870,7 +863,6 @@ function getChartData(period, dateStr) {
             if (t.status === 'new') data.series.new[idx]++;
             else if (t.status === 'completed') data.series.completed[idx]++;
             else if (t.status === 'inProgress') data.series.inProgress[idx]++;
-            else data.series.pending[idx]++;
         });
     } else if (period === 'CUSTOM') {
         const start = new Date(AppState.customStartDate || new Date());
@@ -882,7 +874,6 @@ function getChartData(period, dateStr) {
         const len = daysDiff + 1;
 
         data.series.new = initArray(len);
-        data.series.pending = initArray(len);
         data.series.completed = initArray(len);
         data.series.inProgress = initArray(len);
 
@@ -902,7 +893,6 @@ function getChartData(period, dateStr) {
                 if (t.status === 'new') data.series.new[diff]++;
                 else if (t.status === 'completed') data.series.completed[diff]++;
                 else if (t.status === 'inProgress') data.series.inProgress[diff]++;
-                else data.series.pending[diff]++;
             }
         });
     }
@@ -920,7 +910,7 @@ function generateChartSVG(period, dateStr, isLarge = false) {
     const chartHeight = height - paddingTop - paddingBottom;
 
     if (!AppState.chartVisibility) {
-        AppState.chartVisibility = { new: true, inProgress: true, completed: true, pending: true };
+        AppState.chartVisibility = { new: true, inProgress: true, completed: true };
     }
     const vis = AppState.chartVisibility;
 
@@ -929,7 +919,6 @@ function generateChartSVG(period, dateStr, isLarge = false) {
     if (vis.new) allVals.push(...data.series.new);
     if (vis.inProgress) allVals.push(...data.series.inProgress);
     if (vis.completed) allVals.push(...data.series.completed);
-    if (vis.pending) allVals.push(...data.series.pending);
 
     const maxVal = Math.max(...allVals, 5);
 
@@ -937,9 +926,10 @@ function generateChartSVG(period, dateStr, isLarge = false) {
     const availableWidth = width - paddingLeft - paddingRight;
     const itemWidth = availableWidth / itemCount;
 
-    const visibleCount = (vis.new ? 1 : 0) + (vis.inProgress ? 1 : 0) + (vis.completed ? 1 : 0) + (vis.pending ? 1 : 0);
+    const visibleCount = (vis.new ? 1 : 0) + (vis.inProgress ? 1 : 0) + (vis.completed ? 1 : 0);
     const actualBarCount = visibleCount || 1;
 
+    // 3 Bars theoretically: New, In Progress, Completed
     const barGroupWidth = isLarge ? Math.min(itemWidth * 0.85, 60) : itemWidth * 0.8;
     const singleBarWidth = Math.max((barGroupWidth / actualBarCount) - 1, 1); // Ensure at least 1px width
     const gap = (itemWidth - barGroupWidth) / 2;
@@ -980,14 +970,6 @@ function generateChartSVG(period, dateStr, isLarge = false) {
             const h3 = (data.series.completed[i] / maxVal) * chartHeight;
             const y3 = height - paddingBottom - h3;
             if (h3 > 0) svgContent += `<rect x="${xBase + (singleBarWidth + 1) * currentBarIdx}" y="${y3}" width="${singleBarWidth}" height="${h3}" fill="#cbd5e1" rx="${isLarge ? 4 : 2}" />`;
-            currentBarIdx++;
-        }
-
-        // 4. Pending (Red)
-        if (vis.pending) {
-            const h2 = (data.series.pending[i] / maxVal) * chartHeight;
-            const y2 = height - paddingBottom - h2;
-            if (h2 > 0) svgContent += `<rect x="${xBase + (singleBarWidth + 1) * currentBarIdx}" y="${y2}" width="${singleBarWidth}" height="${h2}" fill="#f43f5e" rx="${isLarge ? 4 : 2}" />`;
             currentBarIdx++;
         }
 
