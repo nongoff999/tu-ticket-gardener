@@ -549,7 +549,7 @@ function renderDashboard() {
 
     document.getElementById('page-title').textContent = 'TICKET DASHBOARD';
 
-    // Initialize period and default to 7-day range if not set
+    // Initialize period and default to month-to-date range if not set
     if (!AppState.dashboardPeriod || AppState.dashboardPeriod !== 'CUSTOM') {
         AppState.dashboardPeriod = 'CUSTOM';
     }
@@ -557,7 +557,7 @@ function renderDashboard() {
     if (!AppState.customStartDate || !AppState.customEndDate) {
         const end = new Date();
         const start = new Date();
-        start.setDate(start.getDate() - 7);
+        start.setDate(1); // Set to 1st of current month
         AppState.customStartDate = formatDateLocal(start);
         AppState.customEndDate = formatDateLocal(end);
     }
