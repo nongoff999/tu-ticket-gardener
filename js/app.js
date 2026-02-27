@@ -596,7 +596,8 @@ function renderDashboard() {
         
         <div class="dashboard-container">
             <!-- Chart Card (Large) -->
-            <div class="chart-card col-span-12">
+            <div class="col-span-12">
+                <div class="chart-card" style="width: 100%; max-width: 100%;">
                 <div class="chart-header" style="margin-bottom: 1rem;">
                     <h2 style="font-size: 1.125rem; font-weight: 700; margin: 0 0 0.75rem 0; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
                         <span class="material-symbols-outlined" style="color: var(--primary); font-size: 1.35rem;">analytics</span>
@@ -632,6 +633,7 @@ function renderDashboard() {
                         <div class="chart-legend-color" style="width: 1.25rem; height: 1.25rem; background: #f43f5e; border-radius: 4px;"></div>
                         <span class="chart-legend-text" style="font-size: 0.9rem; font-weight: 600; color: #475569;">จำนวนที่ค้าง</span>
                     </div>
+                </div>
                 </div>
             </div>
 
@@ -910,7 +912,9 @@ function getChartData(period, dateStr) {
 function generateChartSVG(period, dateStr, isLarge = false) {
     const data = getChartData(period, dateStr);
     const height = isLarge ? 240 : 180;
-    const width = isLarge ? 500 : 300;
+    const baseWidth = isLarge ? 500 : 300;
+    // Ensure each item has at least 35px width, so it doesn't overlap
+    const width = Math.max(baseWidth, data.labels.length * 40);
     const paddingTop = 20;
     const paddingBottom = 30;
     const paddingLeft = 10;
@@ -990,13 +994,17 @@ function generateChartSVG(period, dateStr, isLarge = false) {
             currentBarIdx++;
         }
 
-        // Label
+        // Label (Rotated slightly to prevent any horizontal collision)
         if (label) {
-            svgContent += `<text x="${xBase + barGroupWidth / 2}" y="${height - 10}" font-size="${isLarge ? 11 : 9}" fill="#94a3b8" text-anchor="middle" font-family="sans-serif">${label}</text>`;
+            svgContent += `<text x="${xBase + barGroupWidth / 2}" y="${height - 5}" font-size="${isLarge ? 11 : 9}" fill="#94a3b8" text-anchor="middle" font-family="sans-serif">${label}</text>`;
         }
     });
 
-    return `<svg viewBox="0 0 ${width} ${height}" style="width:100%; height:auto; display:block;">${svgContent}</svg>`;
+    return `<div style="width: 100%; overflow-x: auto; overflow-y: hidden; padding-bottom: 0.5rem; -webkit-overflow-scrolling: touch;">
+        <svg viewBox="0 0 ${width} ${height}" style="width: 100%; min-width: ${width}px; height: ${height}px; display:block;">
+            ${svgContent}
+        </svg>
+    </div>`;
 }
 
 function getStatsForDate(dateStr) {
