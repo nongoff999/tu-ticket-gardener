@@ -911,12 +911,10 @@ function getChartData(period, dateStr) {
 
 function generateChartSVG(period, dateStr, isLarge = false) {
     const data = getChartData(period, dateStr);
-    const height = isLarge ? 240 : 180;
-    const baseWidth = isLarge ? 500 : 300;
-    // Ensure each item has at least 35px width, so it doesn't overlap
-    const width = Math.max(baseWidth, data.labels.length * 40);
-    const paddingTop = 20;
-    const paddingBottom = 30;
+    const height = isLarge ? 280 : 200; // Increased height for Enterprise UI look
+    const width = isLarge ? 1000 : 400; // Fixed large ViewBox to scale naturally
+    const paddingTop = 30;
+    const paddingBottom = 60; // Extra room for rotated labels
     const paddingLeft = 10;
     const paddingRight = 10;
     const chartHeight = height - paddingTop - paddingBottom;
@@ -942,19 +940,18 @@ function generateChartSVG(period, dateStr, isLarge = false) {
     const visibleCount = (vis.new ? 1 : 0) + (vis.inProgress ? 1 : 0) + (vis.completed ? 1 : 0) + (vis.pending ? 1 : 0);
     const actualBarCount = visibleCount || 1;
 
-    // 4 Bars theoretically: New, In Progress, Completed, Pending
-    const barGroupWidth = isLarge ? Math.min(itemWidth * 0.9, 80) : itemWidth * 0.8;
-    const singleBarWidth = (barGroupWidth / actualBarCount) - 1;
+    const barGroupWidth = isLarge ? Math.min(itemWidth * 0.85, 60) : itemWidth * 0.8;
+    const singleBarWidth = Math.max((barGroupWidth / actualBarCount) - 1, 1); // Ensure at least 1px width
     const gap = (itemWidth - barGroupWidth) / 2;
 
     let svgContent = '';
 
-    // Grid Lines
+    // Grid Lines (Subtle Enterprise Style)
     const gridCount = 5;
     for (let i = 0; i <= gridCount; i++) {
         const val = (maxVal / gridCount) * i;
         const y = height - paddingBottom - ((val / maxVal) * chartHeight);
-        svgContent += `<line x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" stroke="#f1f5f9" stroke-width="1" />`;
+        svgContent += `<line x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4 4" />`;
     }
 
     // Bars
@@ -994,17 +991,17 @@ function generateChartSVG(period, dateStr, isLarge = false) {
             currentBarIdx++;
         }
 
-        // Label (Rotated slightly to prevent any horizontal collision)
+        // Label (Enterprise style rotated)
         if (label) {
-            svgContent += `<text x="${xBase + barGroupWidth / 2}" y="${height - 5}" font-size="${isLarge ? 11 : 9}" fill="#94a3b8" text-anchor="middle" font-family="sans-serif">${label}</text>`;
+            svgContent += `<text transform="translate(${xBase + barGroupWidth / 2}, ${height - paddingBottom + 15}) rotate(-45)" font-size="${isLarge ? 11 : 9}" fill="#64748b" text-anchor="end" font-family="sans-serif" font-weight="500">${label}</text>`;
         }
     });
 
-    return `<div style="width: 100%; overflow-x: auto; overflow-y: hidden; padding-bottom: 0.5rem; -webkit-overflow-scrolling: touch;">
-        <svg viewBox="0 0 ${width} ${height}" style="width: 100%; min-width: ${width}px; height: ${height}px; display:block;">
+    return `
+        <svg viewBox="0 0 ${width} ${height}" style="width: 100%; height: auto; display: block;">
             ${svgContent}
         </svg>
-    </div>`;
+    `;
 }
 
 function getStatsForDate(dateStr) {
