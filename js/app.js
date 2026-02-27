@@ -888,8 +888,7 @@ function getChartData(period, dateStr) {
             const curr = new Date(start);
             curr.setDate(start.getDate() + i);
             const dayStr = `${curr.getDate()}/${curr.getMonth() + 1}`;
-            if (len <= 10 || i === 0 || i === len - 1 || i % Math.ceil(len / 10) === 0) data.labels.push(dayStr);
-            else data.labels.push('');
+            data.labels.push(dayStr); // Show every day label
         }
 
         const customTickets = tickets.filter(t => { const td = new Date(t.date); return td >= start && td <= end; });
