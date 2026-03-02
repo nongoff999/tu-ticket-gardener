@@ -2049,15 +2049,14 @@ function renderAddTicket() {
         const zoneObj = MOCK_DATA.zones.find(z => z.id === zoneId);
         const combinedZoneName = `${zoneObj?.name.split(' (')[0] || ''} - ${locationName}`;
 
-        const zoneShortName = zoneObj?.name.split(' (')[0]?.replace(/^โซน/, '') || '';
-        const zonePart = zoneShortName ? `โซน${zoneShortName}` : '';
+        const zoneShortNameDisplay = zoneShortName ? `โซน${zoneShortName}` : '';
 
         let autoTitle = '';
         if (damageType === 'other') {
             const locPart = locationName ? ` (${locationName})` : '';
             autoTitle = `อื่นๆ${locPart}`;
         } else {
-            autoTitle = [damagePart, zonePart].filter(Boolean).join(' ');
+            autoTitle = [damagePart, zoneShortNameDisplay].filter(Boolean).join(' ');
         }
 
         const newTicket = {
@@ -2757,14 +2756,14 @@ function renderEditTicket(params) {
 
         // Auto title: "ต้นนนทรี โค่นล้ม โซนหอพัก"
         const treePart = treeType && treeType !== '-' ? treeType : '';
-        const zonePart = zoneShortName ? `โซน${zoneShortName}` : '';
+        const zoneShortNameDisplay = zoneShortName ? `โซน${zoneShortName}` : '';
 
         let autoTitle = '';
         if (damageType === 'other') {
             const locPart = locationDetail ? ` (${locationDetail})` : '';
             autoTitle = [treePart, `อื่นๆ${locPart}`].filter(Boolean).join(' ');
         } else {
-            autoTitle = [treePart, damagePart, zonePart].filter(Boolean).join(' ');
+            autoTitle = [treePart, damagePart, zoneShortNameDisplay].filter(Boolean).join(' ');
         }
 
         // Update Timestamps
