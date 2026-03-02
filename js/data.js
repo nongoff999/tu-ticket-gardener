@@ -178,14 +178,40 @@ function getPriorityLabel(priority) {
 
 function getCategoryName(categoryId) {
     if (!MOCK_DATA) return categoryId;
-    const category = MOCK_DATA.categories.find(c => c.id === categoryId);
-    return category ? category.name : categoryId;
+
+    // Hardcoded fallback mapping for Thai labels
+    const fallbackLabels = {
+        'fallen': 'โค่นล้ม',
+        'broken': 'กิ่งหัก/ฉีก',
+        'tilted': 'ลำต้นเอียง',
+        'other': 'อื่นๆ'
+    };
+
+    if (MOCK_DATA.categories) {
+        const category = MOCK_DATA.categories.find(c => c.id === categoryId);
+        if (category) return category.name;
+    }
+
+    return fallbackLabels[categoryId] || categoryId;
 }
 
 function getDamageTypeName(damageTypeId) {
     if (!MOCK_DATA) return damageTypeId;
-    const dt = MOCK_DATA.damageTypes.find(d => d.id === damageTypeId);
-    return dt ? dt.name : damageTypeId;
+
+    // Hardcoded fallback mapping for Thai labels
+    const fallbackLabels = {
+        'fallen': 'โค่นล้ม',
+        'broken': 'กิ่งหัก/ฉีก',
+        'tilted': 'ลำต้นเอียง',
+        'other': 'อื่นๆ'
+    };
+
+    if (MOCK_DATA.damageTypes) {
+        const dt = MOCK_DATA.damageTypes.find(d => d.id === damageTypeId);
+        if (dt) return dt.name;
+    }
+
+    return fallbackLabels[damageTypeId] || damageTypeId;
 }
 
 function formatDate(dateStr) {
