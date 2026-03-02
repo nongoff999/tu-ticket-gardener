@@ -29,14 +29,6 @@
             "name": "ลำต้นเอียง"
         },
         {
-            "id": "accident",
-            "name": "อุบัติเหตุ"
-        },
-        {
-            "id": "nature",
-            "name": "อุบัติเหตุจากธรรมชาติ"
-        },
-        {
             "id": "other",
             "name": "อื่นๆ"
         }
@@ -112,16 +104,6 @@
             "icon": "u_turn_right"
         },
         {
-            "id": "accident",
-            "name": "อุบัติเหตุ",
-            "icon": "emergency"
-        },
-        {
-            "id": "nature",
-            "name": "อุบัติเหตุจากธรรมชาติ",
-            "icon": "nature_people"
-        },
-        {
             "id": "other",
             "name": "อื่นๆ",
             "icon": "more_horiz"
@@ -134,6 +116,7 @@
         "ตัดแต่งแผลของกิ่งที่ฉีกหัก พร้อมเก็บเคลียร์ความสะอาดในพื้นที่",
         "ปลูกเพื่อทดแทนต้นเดิมที่โค่นล่ม หรือ ยืนต้นตาย"
     ],
+    "tickets": [
         {
             "id": 1570,
             "title": "ต้นสน โค่นล้ม โซนคณะวิศวกรรมศาสตร์",
@@ -150,8 +133,12 @@
             "impact": "กีดขวางการจราจร",
             "operation": "ขนย้ายและทำความสะอาดพื้นที่เรียบร้อย",
             "date": "2026-03-01 09:00",
-            "assignees": ["วิชัย ใจดี"],
-            "images": ["https://images.unsplash.com/photo-1501854140801-50d01674aa3e?w=800"],
+            "assignees": [
+                "วิชัย ใจดี"
+            ],
+            "images": [
+                "https://images.unsplash.com/photo-1501854140801-50d01674aa3e?w=800"
+            ],
             "notes": "แก้ไขตามกฎการตั้งชื่อใหม่"
         },
         {
@@ -218,13 +205,13 @@
         },
         {
             "id": 1014,
-            "title": "อุบัติเหตุ โซนอาคารบริการ",
+            "title": "โค่นล้ม โซนอาคารบริการ",
             "description": "",
             "impact": "พบปัญหาต้นหางนกยูงบริเวณโซนอาคารบริการ อุบัติเหตุ ต้องการการตรวจสอบด่วน",
             "status": "new",
             "priority": "urgent",
-            "damageType": "accident",
-            "category": "accident",
+            "damageType": "fallen",
+            "category": "broken",
             "zone": "D2",
             "zoneName": "โซนอาคารบริการ",
             "locationDetail": "ข้างเสาไฟฟ้า",
@@ -244,13 +231,13 @@
         },
         {
             "id": 1015,
-            "title": "ต้นพฤกษ์ (อุบัติเหตุ)",
+            "title": "ต้นพฤกษ์ ลำต้นเอียง โซนคณะนิติศาสตร์",
             "description": "",
             "impact": "พบปัญหาต้นพฤกษ์บริเวณโซนคณะนิติศาสตร์ อุบัติเหตุ ต้องการการตรวจสอบด่วน",
             "status": "pending",
             "priority": "normal",
-            "damageType": "accident",
-            "category": "accident",
+            "damageType": "tilted",
+            "category": "tilted",
             "zone": "C2",
             "zoneName": "โซนคณะนิติศาสตร์",
             "locationDetail": "",
@@ -371,7 +358,7 @@
         },
         {
             "id": 1011,
-            "title": "ต้นนนทรี (อื่นๆ)",
+            "title": "ต้นนนทรี อื่นๆ โซนถนนยูงทอง",
             "description": "",
             "impact": "พบปัญหาต้นนนทรีบริเวณถนนยูงทอง อื่นๆ ต้องการการตรวจสอบด่วน",
             "status": "pending",
@@ -400,13 +387,13 @@
         },
         {
             "id": 1012,
-            "title": "ต้นอินทนิล (อุบัติเหตุ)",
+            "title": "ต้นอินทนิล กิ่งหัก/ฉีก โซนถนนยูงทอง",
             "description": "",
             "impact": "พบปัญหาต้นอินทนิลบริเวณถนนยูงทอง อุบัติเหตุ ต้องการการตรวจสอบด่วน",
             "status": "pending",
             "priority": "normal",
-            "damageType": "accident",
-            "category": "accident",
+            "damageType": "broken",
+            "category": "tilted",
             "zone": "A2",
             "zoneName": "ถนนยูงทอง",
             "locationDetail": "ใกล้โรงอาหาร",
@@ -429,7 +416,7 @@
         },
         {
             "id": 1000,
-            "title": "กิ่งหัก/ฉีก โซนถนนปรีดี พนมยงค์ (ถนนหลัก)",
+            "title": "กิ่งหัก/ฉีก โซนถนนปรีดี พนมยงค์",
             "description": "",
             "impact": "พบปัญหาต้นประดู่บริเวณถนนปรีดี พนมยงค์ กิ่งหัก/ฉีก ต้องการการตรวจสอบด่วน",
             "status": "new",
@@ -489,13 +476,13 @@
         },
         {
             "id": 1002,
-            "title": "ต้นประดู่ (อุบัติเหตุจากธรรมชาติ)",
+            "title": "ต้นประดู่ ลำต้นเอียง โซนหอสมุด",
             "description": "",
             "impact": "พบปัญหาต้นประดู่บริเวณโซนหอสมุด อุบัติเหตุจากธรรมชาติ ต้องการการตรวจสอบด่วน",
             "status": "inProgress",
             "priority": "normal",
-            "damageType": "nature",
-            "category": "nature",
+            "damageType": "tilted",
+            "category": "broken",
             "zone": "D1",
             "zoneName": "โซนหอสมุด",
             "locationDetail": "หน้าอาคารเรียนรวม",
@@ -666,13 +653,13 @@
         },
         {
             "id": 1008,
-            "title": "อุบัติเหตุจากธรรมชาติ โซนหอพักนักศึกษา",
+            "title": "โค่นล้ม โซนหอพักนักศึกษา",
             "description": "",
             "impact": "พบปัญหาต้นอินทนิลบริเวณโซนหอพักนักศึกษา อุบัติเหตุจากธรรมชาติ ต้องการการตรวจสอบด่วน",
             "status": "new",
             "priority": "normal",
-            "damageType": "nature",
-            "category": "nature",
+            "damageType": "fallen",
+            "category": "tilted",
             "zone": "B2",
             "zoneName": "โซนหอพักนักศึกษา",
             "locationDetail": "",
@@ -694,7 +681,7 @@
         },
         {
             "id": 1019,
-            "title": "ต้นมะฮอกกานี กิ่งหัก/ฉีก โซนถนนปรีดี พนมยงค์ (ถนนหลัก)",
+            "title": "ต้นมะฮอกกานี กิ่งหัก/ฉีก โซนถนนปรีดี พนมยงค์",
             "description": "",
             "impact": "พบปัญหาต้นมะฮอกกานีบริเวณถนนปรีดี พนมยงค์ กิ่งหัก/ฉีก ต้องการการตรวจสอบด่วน",
             "status": "pending",
@@ -725,13 +712,13 @@
         },
         {
             "id": 1017,
-            "title": "ต้นมะฮอกกานี (อุบัติเหตุ)",
+            "title": "ต้นมะฮอกกานี กิ่งหัก/ฉีก โซนอาคารบริการ",
             "description": "",
             "impact": "พบปัญหาต้นมะฮอกกานีบริเวณโซนอาคารบริการ อุบัติเหตุ ต้องการการตรวจสอบด่วน",
             "status": "pending",
             "priority": "normal",
-            "damageType": "accident",
-            "category": "accident",
+            "damageType": "broken",
+            "category": "broken",
             "zone": "D2",
             "zoneName": "โซนอาคารบริการ",
             "locationDetail": "ใกล้โรงอาหาร",
@@ -782,13 +769,13 @@
         },
         {
             "id": 1004,
-            "title": "ต้นพฤกษ์ (อุบัติเหตุจากธรรมชาติ)",
+            "title": "ต้นพฤกษ์ กิ่งหัก/ฉีก โซนหอพักนักศึกษา",
             "description": "",
             "impact": "พบปัญหาต้นพฤกษ์บริเวณโซนหอพักนักศึกษา อุบัติเหตุจากธรรมชาติ ต้องการการตรวจสอบด่วน",
             "status": "completed",
             "priority": "normal",
-            "damageType": "nature",
-            "category": "nature",
+            "damageType": "broken",
+            "category": "tilted",
             "zone": "B2",
             "zoneName": "โซนหอพักนักศึกษา",
             "locationDetail": "ใกล้โรงอาหาร",
@@ -824,13 +811,13 @@
         },
         {
             "id": 1022,
-            "title": "ต้นนนทรี (อุบัติเหตุ)",
+            "title": "ต้นนนทรี กิ่งหัก/ฉีก โซนสวนพฤกษศาสตร์",
             "description": "",
             "impact": "พบปัญหาต้นนนทรีบริเวณโซนสวนพฤกษศาสตร์ อุบัติเหตุ ต้องการการตรวจสอบด่วน",
             "status": "completed",
             "priority": "urgent",
-            "damageType": "accident",
-            "category": "accident",
+            "damageType": "broken",
+            "category": "fallen",
             "zone": "E2",
             "zoneName": "โซนสวนพฤกษศาสตร์",
             "locationDetail": "หน้าประตูทางเข้า",
@@ -865,7 +852,7 @@
         },
         {
             "id": 1007,
-            "title": "ต้นมะฮอกกานี (อื่นๆ)",
+            "title": "ต้นมะฮอกกานี อื่นๆ โซนคณะวิศวกรรมศาสตร์",
             "description": "",
             "impact": "พบปัญหาต้นมะฮอกกานีบริเวณโซนคณะวิศวกรรมศาสตร์ อื่นๆ ต้องการการตรวจสอบด่วน",
             "status": "pending",
@@ -894,13 +881,13 @@
         },
         {
             "id": 1010,
-            "title": "ต้นนนทรี (อุบัติเหตุ)",
+            "title": "ต้นนนทรี ลำต้นเอียง โซนถนนยูงทอง",
             "description": "",
             "impact": "พบปัญหาต้นนนทรีบริเวณถนนยูงทอง อุบัติเหตุ ต้องการการตรวจสอบด่วน",
             "status": "pending",
             "priority": "normal",
-            "damageType": "accident",
-            "category": "accident",
+            "damageType": "tilted",
+            "category": "fallen",
             "zone": "A2",
             "zoneName": "ถนนยูงทอง",
             "locationDetail": "ใกล้โรงอาหาร",
@@ -950,13 +937,13 @@
         },
         {
             "id": 1009,
-            "title": "ต้นพฤกษ์ (อุบัติเหตุ)",
+            "title": "ต้นพฤกษ์ ลำต้นเอียง โซนสวนพฤกษศาสตร์",
             "description": "",
             "impact": "พบปัญหาต้นพฤกษ์บริเวณโซนสวนพฤกษศาสตร์ อุบัติเหตุ ต้องการการตรวจสอบด่วน",
             "status": "pending",
             "priority": "urgent",
-            "damageType": "accident",
-            "category": "accident",
+            "damageType": "tilted",
+            "category": "fallen",
             "zone": "E2",
             "zoneName": "โซนสวนพฤกษศาสตร์",
             "locationDetail": "",
@@ -1017,13 +1004,13 @@
         },
         {
             "id": 1020,
-            "title": "ต้นราชพฤกษ์ (อุบัติเหตุ)",
+            "title": "ต้นราชพฤกษ์ ลำต้นเอียง โซนหอพักนักศึกษา",
             "description": "",
             "impact": "พบปัญหาต้นราชพฤกษ์บริเวณโซนหอพักนักศึกษา อุบัติเหตุ ต้องการการตรวจสอบด่วน",
             "status": "completed",
             "priority": "urgent",
-            "damageType": "accident",
-            "category": "accident",
+            "damageType": "tilted",
+            "category": "tilted",
             "zone": "B2",
             "zoneName": "โซนหอพักนักศึกษา",
             "locationDetail": "ริมทางเท้า",
@@ -1109,7 +1096,7 @@
         },
         {
             "id": 980,
-            "title": "ต้นนนทรี โค่นล้ม โซนถนนปรีดี พนมยงค์ (ถนนหลัก)",
+            "title": "ต้นนนทรี โค่นล้ม โซนถนนปรีดี พนมยงค์",
             "description": "",
             "category": "fallen",
             "status": "completed",
@@ -1183,7 +1170,7 @@
         },
         {
             "id": 983,
-            "title": "ต้นหางนกยูง โค่นล้ม โซนถนนปรีดี พนมยงค์ (ถนนหลัก)",
+            "title": "ต้นหางนกยูง โค่นล้ม โซนถนนปรีดี พนมยงค์",
             "description": "",
             "category": "fallen",
             "status": "completed",
@@ -1386,7 +1373,7 @@
         },
         {
             "id": 988,
-            "title": "ต้นสน โค่นล้ม โซนถนนปรีดี พนมยงค์ (ถนนหลัก)",
+            "title": "ต้นสน โค่นล้ม โซนถนนปรีดี พนมยงค์",
             "description": "",
             "category": "fallen",
             "status": "completed",
@@ -1436,7 +1423,7 @@
         },
         {
             "id": 994,
-            "title": "ต้นไทร ลำต้นเอียง โซนถนนปรีดี พนมยงค์ (ถนนหลัก)",
+            "title": "ต้นไทร ลำต้นเอียง โซนถนนปรีดี พนมยงค์",
             "description": "",
             "category": "tilted",
             "status": "completed",

@@ -1730,10 +1730,7 @@ function renderTicketDetail(params) {
         }
                     <span class="detail-tag outline">
                         <span class="material-symbols-outlined" style="font-size: 1rem;">forest</span>
-                        ${ticket.damageType === 'fallen' ? 'โค่นล้ม' :
-            ticket.damageType === 'broken' ? 'กิ่งหัก/ฉีก' :
-                ticket.damageType === 'tilted' ? 'ลำต้นเอียง' :
-                    (ticket.category === 'other' ? 'อื่นๆ' : (ticket.category || 'ไม่ระบุ'))}
+                        ${getDamageTypeName(ticket.damageType || ticket.category)}
                     </span>
                     <span class="detail-tag outline">
                          <span class="material-symbols-outlined" style="font-size: 1rem;">location_on</span>
@@ -2946,6 +2943,8 @@ function filterTickets(filter) {
             t.id.toString().includes(query) ||
             (t.treeType && t.treeType.toLowerCase().includes(query)) ||
             (t.status && getStatusLabel(t.status).toLowerCase().includes(query)) ||
+            (t.category && getCategoryName(t.category).toLowerCase().includes(query)) ||
+            (t.damageType && getDamageTypeName(t.damageType).toLowerCase().includes(query)) ||
             (t.priority === 'urgent' && 'เร่งด่วน'.includes(query)) ||
             (t.priority !== 'urgent' && 'ไม่เร่งด่วน'.includes(query)) ||
             (t.operation && t.operation.toLowerCase().includes(query)) ||
@@ -2993,6 +2992,8 @@ function initSearch() {
             t.id.toString().includes(query) ||
             (t.treeType && t.treeType.toLowerCase().includes(query)) ||
             (t.status && getStatusLabel(t.status).toLowerCase().includes(query)) ||
+            (t.category && getCategoryName(t.category).toLowerCase().includes(query)) ||
+            (t.damageType && getDamageTypeName(t.damageType).toLowerCase().includes(query)) ||
             (t.priority === 'urgent' && 'เร่งด่วน'.includes(query)) ||
             (t.priority !== 'urgent' && 'ไม่เร่งด่วน'.includes(query)) ||
             (t.operation && t.operation.toLowerCase().includes(query)) ||
