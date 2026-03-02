@@ -173,7 +173,7 @@ function getStatusClass(status) {
 }
 
 function getPriorityLabel(priority) {
-    return priority === 'urgent' ? 'เร่งด่วน' : 'ปกติ';
+    return priority === 'urgent' ? 'เร่งด่วน' : 'ไม่เร่งด่วน';
 }
 
 function getCategoryName(categoryId) {

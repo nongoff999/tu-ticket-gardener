@@ -1726,7 +1726,7 @@ function renderTicketDetail(params) {
                     </span>
                     ${ticket.priority === 'urgent'
             ? `<span class="detail-tag urgent"><span class="material-symbols-outlined" style="font-size: 1rem;">warning</span> เร่งด่วน</span>`
-            : `<span class="detail-tag neutral">ปกติ</span>`
+            : `<span class="detail-tag neutral">ไม่เร่งด่วน</span>`
         }
                     <span class="detail-tag outline">
                         <span class="material-symbols-outlined" style="font-size: 1rem;">forest</span>
@@ -2271,7 +2271,7 @@ function renderEditTicket(params) {
                     <div class="form-group">
                         <label class="form-label">ลำดับความสำคัญ <span class="required">*</span></label>
                         <div class="priority-toggle">
-                            <button type="button" class="priority-btn normal ${ticket.priority !== 'urgent' ? 'active' : ''}">ธรรมดา</button>
+                            <button type="button" class="priority-btn normal ${ticket.priority !== 'urgent' ? 'active' : ''}">ไม่เร่งด่วน</button>
                             <button type="button" class="priority-btn urgent ${ticket.priority === 'urgent' ? 'active' : ''}">เร่งด่วน</button>
                         </div>
                     </div>
@@ -2948,7 +2948,7 @@ function filterTickets(filter) {
             (t.treeType && t.treeType.toLowerCase().includes(query)) ||
             (t.status && getStatusLabel(t.status).toLowerCase().includes(query)) ||
             (t.priority === 'urgent' && 'เร่งด่วน'.includes(query)) ||
-            (t.priority !== 'urgent' && 'ปกติ'.includes(query)) ||
+            (t.priority !== 'urgent' && 'ไม่เร่งด่วน'.includes(query)) ||
             (t.operation && t.operation.toLowerCase().includes(query)) ||
             (t.assignees && t.assignees.join(' ').toLowerCase().includes(query)) ||
             (t.locationDetail && t.locationDetail.toLowerCase().includes(query)) ||
@@ -2995,7 +2995,7 @@ function initSearch() {
             (t.treeType && t.treeType.toLowerCase().includes(query)) ||
             (t.status && getStatusLabel(t.status).toLowerCase().includes(query)) ||
             (t.priority === 'urgent' && 'เร่งด่วน'.includes(query)) ||
-            (t.priority !== 'urgent' && 'ปกติ'.includes(query)) ||
+            (t.priority !== 'urgent' && 'ไม่เร่งด่วน'.includes(query)) ||
             (t.operation && t.operation.toLowerCase().includes(query)) ||
             (t.assignees && t.assignees.join(' ').toLowerCase().includes(query)) ||
             (t.locationDetail && t.locationDetail.toLowerCase().includes(query)) ||
@@ -4708,7 +4708,7 @@ async function exportToExcel() {
                     time: t.time,
                     category: t.category === 'fallen_tree' ? 'ต้นไม้ล้ม' : (t.category === 'branch_break' ? 'กิ่งไม้หัก' : t.category),
                     title: t.title,
-                    priority: t.priority === 'urgent' ? 'เร่งด่วน' : 'ปกติ',
+                    priority: t.priority === 'urgent' ? 'เร่งด่วน' : 'ไม่เร่งด่วน',
                     zone: t.zoneName || '-',
                     treeType: t.treeType || '-',
                     assignee: t.assignee || '-',
