@@ -24,7 +24,7 @@ const Components = {
                 <div class="tli-info">
                     <span class="tli-id">#${ticket.id}</span>
                     <h3 class="tli-title">${ticket.title}</h3>
-                    <p class="tli-desc">${ticket.zoneName} - ${ticket.locationDetail || 'ทั่วไป'}</p>
+                    <p class="tli-desc">${ticket.zoneName}${ticket.locationDetail ? ` - ${ticket.locationDetail}` : ''}</p>
                     
                     <!-- Only visible in Grid View via CSS -->
                     <div class="grid-badges" style="display: none; margin-top: 0.75rem; gap: 0.5rem;">

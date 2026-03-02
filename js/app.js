@@ -2044,7 +2044,7 @@ function renderAddTicket() {
 
         // Create new ticket object
         const zoneObj = MOCK_DATA.zones.find(z => z.id === zoneId);
-        const combinedZoneName = `${zoneObj?.name.split(' (')[0] || ''} - ${locationName}`;
+        const combinedZoneName = zoneObj?.name.split(' (')[0] || '';
 
         const zoneShortNameDisplay = zoneShortName ? `โซน${zoneShortName}` : '';
 
@@ -2749,7 +2749,7 @@ function renderEditTicket(params) {
         // Rebuild zone name
         const zoneObj = MOCK_DATA.zones.find(z => z.id === zoneId);
         const zoneShortName = zoneObj?.name.split(' (')[0]?.replace(/^โซน/, '') || '';
-        const zoneName = locationDetail ? `${zoneObj?.name.split(' (')[0] || ''} - ${locationDetail}` : (zoneObj?.name.split(' (')[0] || ticket.zoneName);
+        const zoneName = zoneObj?.name.split(' (')[0] || ticket.zoneName;
 
         // Auto title: "ต้นนนทรี โค่นล้ม โซนหอพัก"
         const treePart = treeType && treeType !== '-' ? treeType : '';
