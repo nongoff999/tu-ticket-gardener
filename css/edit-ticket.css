@@ -29,11 +29,17 @@
     border-radius: 2px;
 }
 
-/* Grid layout for fields */
+/* Grid layout for fields - Responsive */
 .grid-2-col {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr; /* Default: Stacked for Mobile */
     gap: 1rem;
+}
+
+@media (min-width: 480px) {
+    .grid-2-col {
+        grid-template-columns: 1fr 1fr; /* Side-by-side for Tablet/Desktop */
+    }
 }
 
 /* Status Toggle Group - CLEAN & MODERN */
