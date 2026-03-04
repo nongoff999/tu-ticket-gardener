@@ -1093,7 +1093,7 @@ function renderMonitor() {
         ">
             <div style="padding-left: 0;">รหัส</div>
             <div>รายละเอียดงาน</div>
-            <div style="text-align: center;">สถานะ</div>
+            <div style="text-align: left;">สถานะ</div>
             <div style="text-align: right;">วันที่ / เวลา</div>
         </div>
 

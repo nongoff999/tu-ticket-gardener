@@ -39,7 +39,7 @@ const Components = {
                 </div>
 
                 <!-- Col 3: Status (top-right on mobile) -->
-                <div class="tli-meta" style="display: flex; gap: 0.25rem; justify-content: center; align-items: center;">
+                <div class="tli-meta" style="display: flex; gap: 0.25rem; justify-content: flex-start; align-items: center;">
                     <span class="badge-tag ${getStatusClass(ticket.status)}">${getStatusLabel(ticket.status)}</span>
                     ${ticket.priority === 'urgent' ? '<span class="badge-tag urgent">เร่งด่วน</span>' : ''}
                 </div>
@@ -129,7 +129,7 @@ const Components = {
 
                 <!-- 3. สถานะ & วันเวลา -->
                 ${isListView ? `
-                <div class="monitor-col-status" style="display: flex; gap: 0.5rem; justify-content: center; align-items: center; justify-self: center;">
+                <div class="monitor-col-status" style="display: flex; gap: 0.5rem; justify-content: flex-start; align-items: center; justify-self: start;">
                     <span class="badge-tag ${getStatusClass(ticket.status)}" style="padding: 0.5rem 1rem; border-radius: 0.75rem; font-weight: 600; font-size: 0.85rem; text-align: center; display: inline-block; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                         ${getStatusLabel(ticket.status)}
                     </span>
