@@ -24,7 +24,7 @@ const Components = {
                 <div class="tli-info">
                     <span class="tli-id" style="font-weight: 500; color: #64748b;">#${ticket.id}</span>
                     <h3 class="tli-title" style="font-weight: 600; color: #0f172a; margin-top: 0.15rem;">${ticket.title}</h3>
-                    <p class="tli-desc" style="font-weight: 600; color: #334155; margin-top: 0.25rem;">${ticket.zoneName}</p>
+                    <p class="tli-desc" style="font-weight: 600; color: #334155; margin-top: 0.25rem;">${ticket.zoneName.split(' - ')[0]}</p>
                     ${ticket.locationDetail ? `
                     <div style="font-size: 0.75rem; font-weight: 500; color: #64748b; margin-top: 0.25rem; line-height: 1.4; white-space: normal;">
                         ${ticket.locationDetail}
