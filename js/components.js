@@ -75,47 +75,56 @@ const Components = {
         `;
     },
 
-    // Monitor Ticket Card (Big & Easy to Read version, No Assignees)
+    // Monitor Ticket Card (Premium Table Style - Visual Hierarchy Optimized)
     monitorCard(ticket) {
-        const hasOperation = ticket.operation && ticket.operation !== '-';
+        const hasOperation = ticket.operation && ticket.operation !== '-' && ticket.status !== 'completed';
 
         return `
-            <div class="ticket-card monitor-card" style="height: auto; padding: 1.5rem; cursor: default;">
-                <!-- Header: ID + Title -->
-                <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; gap: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0;">
-                        <span style="color: var(--text-muted); font-weight: 800; font-size: 1.25rem; flex-shrink: 0;">#${ticket.id}</span>
-                        <h3 style="font-size: 1.5rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); line-height: 1.3;">${ticket.title}</h3>
-                    </div>
+            <div class="monitor-card-premium" onclick="showTicketDetail(${ticket.id})" style="
+                background: white; 
+                padding: 1.5rem; 
+                border-bottom: 1px solid #f1f5f9; 
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center; 
+                gap: 1.5rem;
+                cursor: pointer;
+                transition: background 0.2s;
+            ">
+                <!-- 1. รหัส (ID) - Secondary Info (Lighter & Smaller) -->
+                <div class="monitor-col-id" style="width: 80px; font-size: 0.95rem; font-weight: 500; color: #64748b; font-family: 'Outfit', sans-serif; flex-shrink: 0;">
+                    #${ticket.id}
                 </div>
 
-                <!-- Badges Row (Bigger) -->
-                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.25rem;">
-                    ${ticket.priority === 'urgent' ? '<span class="badge urgent" style="font-size: 1rem; padding: 0.5rem 1.25rem;">เร่งด่วน</span>' : ''}
-                    <span class="badge ${getStatusClass(ticket.status)}" style="font-size: 1rem; padding: 0.5rem 1.25rem;">${getStatusLabel(ticket.status)}</span>
+                <!-- 2. ชื่อ และ สถานที่ - Primary Info (Visual Hierarchy: Boldest & Darkest) -->
+                <div class="monitor-col-info" style="flex: 1; min-width: 250px;">
+                    <h3 style="font-size: 1.1rem; font-weight: 600; color: #0f172a; margin: 0 0 0.35rem 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">
+                        ${ticket.title}
+                    </h3>
+                    <p style="font-size: 0.95rem; font-weight: 600; color: #334155; margin: 0; display: flex; align-items: center; gap: 0.35rem;">
+                        <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #94a3b8;">location_on</span>
+                        ${ticket.zoneName}${ticket.locationDetail ? ` · ${ticket.locationDetail}` : ''}
+                    </p>
                 </div>
 
-                <!-- Zone + Date + Damage Type (Big Icons & Text) -->
-                <div style="display: flex; align-items: center; gap: 1.5rem; color: var(--text-secondary); margin-bottom: 1.25rem; font-size: 1.1rem; flex-wrap: wrap;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="material-symbols-outlined" style="font-size: 1.5rem;">location_on</span>
-                        <span style="font-weight: 500;">${ticket.zoneName}</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="material-symbols-outlined" style="font-size: 1.5rem;">calendar_today</span>
-                        <span>${formatShortDate(ticket.date)}</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="material-symbols-outlined" style="font-size: 1.5rem;">park</span>
-                        <span>${getDamageTypeName(ticket.damageType)}</span>
-                    </div>
+                <!-- 3. สถานะ (Status) -->
+                <div class="monitor-col-status" style="width: 140px; flex-shrink: 0;">
+                    <span class="badge-tag ${getStatusClass(ticket.status)}" style="padding: 0.5rem 1rem; border-radius: 0.75rem; font-weight: 600; font-size: 0.85rem; width: 100%; text-align: center; display: inline-block; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                        ${getStatusLabel(ticket.status)}
+                    </span>
                 </div>
 
-                <!-- Operation (Highlighted, Very Big) -->
+                <!-- 4. วันเวลา (DateTime) -->
+                <div class="monitor-col-date" style="width: 140px; text-align: right; flex-shrink: 0;">
+                    <div style="font-size: 0.95rem; font-weight: 500; color: #1e293b;">${formatShortDate(ticket.date).split(' • ')[0]}</div>
+                    <div style="font-size: 0.85rem; color: #64748b; font-weight: 500;">${ticket.date.split('T')[1]?.substring(0, 5) || '00:00'} น.</div>
+                </div>
+
+                <!-- Operation (Optional, Full width below) -->
                 ${hasOperation ? `
-                <div class="monitor-operation" style="display: flex; align-items: flex-start; gap: 1rem; margin-top: auto; padding: 1rem 1.25rem; background: #ecfdf5; border-radius: 1rem; border: 2px solid #a7f3d0;">
-                    <span class="material-symbols-outlined" style="font-size: 2rem; color: #16a34a; flex-shrink: 0;">construction</span>
-                    <span style="font-size: 1.25rem; color: #15803d; line-height: 1.4; font-weight: 600;">${ticket.operation}</span>
+                <div class="monitor-row-op" style="width: 100%; margin-top: 0.5rem; padding: 1rem 1.25rem; background: #f0fdf4; border-radius: 1rem; border: 1px solid #dcfce7; display: flex; align-items: center; gap: 0.75rem;">
+                    <span class="material-symbols-outlined" style="font-size: 1.35rem; color: #16a34a;">construction</span>
+                    <span style="font-size: 0.95rem; color: #15803d; font-weight: 600;">${ticket.operation}</span>
                 </div>
                 ` : ''}
             </div>

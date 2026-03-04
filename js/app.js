@@ -1801,10 +1801,12 @@ function renderTicketDetail(params) {
                 <div class="detail-section-label">การดำเนินงาน & สถานะ</div>
                 <div class="detail-grid-compact">
                     <div>
+                        ${ticket.status !== 'completed' ? `
                          <div class="detail-group">
                             <label class="detail-label">ขั้นตอนการดำเนินงาน</label>
                             <div class="detail-value">${ticket.operation || '-'}</div>
                         </div>
+                        ` : ''}
                         <div class="detail-group">
                             <label class="detail-label">หมายเหตุ</label>
                             <div class="detail-value">${ticket.notes || '-'}</div>
