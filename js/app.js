@@ -275,14 +275,14 @@ function renderLogin() {
                         <input type="checkbox" class="remember-checkbox">
                         <span>Remember me</span>
                     </label>
-                    <a href="#" class="forgot-link" onclick="showPopup('ยังไม่เปิดให้บริการ', 'ระบบกู้คืนรหัสผ่านกำลังพัฒนา', 'info'); return false;">Forgot password?</a>
+                    <a href="#" class="forgot-link" onclick="showToastNotification('ระบบกู้คืนรหัสผ่านกำลังพัฒนา'); return false;">Forgot password?</a>
                 </div>
                 
                 <button type="submit" class="login-btn">Log in</button>
             </form>
             
             <div class="login-footer">
-                Not a member yet ? <a href="#" onclick="showPopup('ยังไม่เปิดให้บริการ', 'ระบบลงทะเบียนใหม่กำลังพัฒนา', 'info'); return false;">Email activation</a>
+                Not a member yet ? <a href="#" onclick="showToastNotification('ระบบลงทะเบียนใหม่กำลังพัฒนา'); return false;">Email activation</a>
             </div>
         </div>
     `;
@@ -384,7 +384,8 @@ function initRouter() {
         .register('/add-select', withAuth(renderCategorySelection))
         .register('/edit', withAuth(renderEditTicket))
         .register('/reports', withAuth(renderReportList))
-        .register('/report-detail', withAuth(reportDetailHandler));
+        .register('/report-detail', withAuth(reportDetailHandler))
+        .register('/settings', withAuth(renderSettings));
 
     // Initial Route Check
     if (!location.hash || location.hash === '#/') {
@@ -2409,7 +2410,10 @@ function renderEditTicket(params) {
                             <!-- Chips rendered by JS -->
                         </div>
                         <div class="assignee-input-group">
-                            <input type="text" id="assignee-input" class="form-input" placeholder="ระบุชื่อผู้รับผิดชอบ">
+                            <input type="text" id="assignee-input" class="form-input" list="assignees-datalist" placeholder="ระบุชื่อผู้รับผิดชอบ">
+                            <datalist id="assignees-datalist">
+                                ${(MOCK_DATA.assignees || []).map(a => `<option value="${a}">`).join('')}
+                            </datalist>
                             <button type="button" id="add-assignee-btn" class="btn-icon-text">
                                 <span class="material-symbols-outlined">add</span> เพิ่ม
                             </button>
@@ -2894,7 +2898,7 @@ function renderCategorySelection() {
             
             <div class="category-grid">
                 <!-- Security Card (Disabled/Inactive for now) -->
-                <div class="category-card disabled" onclick="showPopup('ยังไม่เปิดให้บริการ', 'ระบบ Security Ticket อยู่ระหว่างการพัฒนา', 'info')">
+                <div class="category-card disabled" onclick="showToastNotification('ระบบ Security Ticket อยู่ระหว่างการพัฒนา')">
                     <img src="images/security_officer.jpg" 
                          alt="Professional Security Officer" class="category-card-img">
                     <div class="category-card-overlay">
@@ -3214,28 +3218,6 @@ function renderReportList() {
                 <div class="report-card-info">
                     <h3>รายงานพื้นที่เสี่ยง (Zone Hotspots)</h3>
                     <p>สรุปพื้นที่เกิดเหตุสูงสุดเพื่อการเฝ้าระวัง</p>
-                </div>
-                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
-            </div>
-
-            <div class="report-card" onclick="openReportDetail('map_overview')">
-                <div class="report-card-icon" style="background: #f0f9ff; color: #0284c7;">
-                    <span class="material-symbols-outlined">map</span>
-                </div>
-                <div class="report-card-info">
-                    <h3>แผนที่ตำแหน่งทิคเก็ต (Ticket Map)</h3>
-                    <p>ดูตำแหน่งพิกัดของทิคเก็ตทั้งหมดบนแผนที่</p>
-                </div>
-                <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
-            </div>
-
-            <div class="report-card" onclick="openReportDetail('performance')">
-                <div class="report-card-icon" style="background: #e0f2fe; color: #0284c7;">
-                    <span class="material-symbols-outlined">schedule</span>
-                </div>
-                <div class="report-card-info">
-                    <h3>รายงานประสิทธิภาพงาน (KPI)</h3>
-                    <p>ติดตามสถานะงานค้างและระยะเวลาดำเนินการ</p>
                 </div>
                 <span class="material-symbols-outlined" style="margin-left: auto; color: var(--border);">chevron_right</span>
             </div>
@@ -3686,7 +3668,7 @@ async function downloadDailyImages(dateStr, endDateStr) {
         return;
     }
 
-    showPopup('กำลังเตรียมรูปภาพ', 'กำลังรวบรวมและบีบอัดรูปภาพ อาจใช้เวลาสักครู่...', 'info');
+    showToastNotification('กำลังรวบรวมและบีบอัดรูปภาพ อาจใช้เวลาสักครู่...');
 
     try {
         const zip = new JSZip();
@@ -3746,7 +3728,7 @@ async function downloadDailyImages(dateStr, endDateStr) {
         const zipName = `TU_Ticket_Images_${nameSuffix}.zip`;
         saveAs(content, zipName);
 
-        showPopup('สำเร็จ', `ดาวน์โหลดรูปภาพเรียบร้อย (${imageCount} รูป)`, 'success');
+        showToastNotification(`ดาวน์โหลดรูปภาพเรียบร้อย (${imageCount} รูป)`);
 
     } catch (e) {
         console.error(e);
@@ -4704,7 +4686,7 @@ function renderPerformanceReport() {
 // Export to Excel Function
 async function exportToExcel() {
     console.log('🔄 Exporting to Excel...');
-    showPopup('กำลังเตรียมไฟล์', 'ระบบกำลังรวบรวมข้อมูลเพื่อสร้างไฟล์ Excel...', 'info');
+    showToastNotification('กำลังสร้างไฟล์ Excel...');
 
     // Simulate async work and use libraries
     setTimeout(async () => {
@@ -4747,7 +4729,7 @@ async function exportToExcel() {
                     status: t.status === 'new' ? 'รอดำเนินการ' : (t.status === 'inProgress' ? 'กำลังดำเนินการ' : 'เสร็จสิ้น'),
                     date: t.date,
                     time: t.time,
-                    category: t.category === 'fallen_tree' ? 'ต้นไม้ล้ม' : (t.category === 'branch_break' ? 'กิ่งไม้หัก' : t.category),
+                    category: typeof getCategoryName === 'function' ? getCategoryName(t.category) : t.category,
                     title: t.title,
                     priority: t.priority === 'urgent' ? 'เร่งด่วน' : 'ไม่เร่งด่วน',
                     zone: t.zoneName || '-',
@@ -4764,7 +4746,7 @@ async function exportToExcel() {
             const fileName = `TU_Ticket_Report_${new Date().toISOString().slice(0, 10)}.xlsx`;
             saveAs(blob, fileName);
 
-            showPopup('สำเร็จ', 'ดาวน์โหลดไฟล์เรียบร้อยแล้ว', 'success');
+            showToastNotification('ดาวน์โหลดไฟล์เรียบร้อยแล้ว');
 
         } catch (error) {
             console.error(error);
@@ -4788,7 +4770,7 @@ async function downloadReportAsImage(dateStr, endDateStr) {
         return;
     }
 
-    showPopup('กำลังบันทึกรูปภาพ', 'กำลังสร้างไฟล์รูปภาพ...', 'info');
+    showToastNotification('กำลังสร้างไฟล์รูปภาพ...');
 
     try {
         // Use html2canvas to capture the element
@@ -4804,7 +4786,7 @@ async function downloadReportAsImage(dateStr, endDateStr) {
                 const nameSuffix = dateStr === endDateStr ? dateStr : `${dateStr}_to_${endDateStr}`;
                 const fileName = `TU_Ticket_Report_Image_${nameSuffix}.png`;
                 saveAs(blob, fileName);
-                showPopup('สำเร็จ', 'บันทึกรูปภาพเรียบร้อยแล้ว', 'success');
+                showToastNotification('บันทึกรูปภาพเรียบร้อยแล้ว');
             } else {
                 throw new Error('Canvas is empty');
             }
@@ -4944,3 +4926,134 @@ window.copyTicketTitle = function (title) {
         document.body.removeChild(textArea);
     }
 };
+
+// ==========================================
+// Settings (Master Data)
+// ==========================================
+function renderSettings() {
+    AppState.currentPage = 'settings';
+    document.getElementById('page-title').textContent = 'การตั้งค่ามาสเตอร์';
+    const content = document.getElementById('main-content');
+
+    // Ensure assignees array exists for backward compatibility
+    if (!MOCK_DATA.assignees) MOCK_DATA.assignees = ["สมชาย การดี", "หน่วยรักษาความปลอดภัย"];
+
+    // Global helper functions
+    window.addMasterZone = function () {
+        const name = prompt('ชื่อโซนพื้นที่ใหม่ (เช่น "ตึกโดม"):');
+        if (name && name.trim()) {
+            const id = 'z_' + Math.random().toString(36).substr(2, 6);
+            MOCK_DATA.zones.push({ id, name: name.trim() });
+            saveData();
+            showToastNotification('เพิ่มโซนพื้นที่เรียบร้อย');
+            renderSettings();
+        }
+    };
+
+    window.deleteMasterZone = function (idx) {
+        if (confirm('ยืนยันลบโซนพื้นที่นี้?')) {
+            MOCK_DATA.zones.splice(idx, 1);
+            saveData();
+            showToastNotification('ลบโซนสำเร็จ');
+            renderSettings();
+        }
+    };
+
+    window.addMasterOperation = function () {
+        const text = prompt('เพิ่มการดำเนินงานใหม่:');
+        if (text && text.trim()) {
+            MOCK_DATA.operations.push(text.trim());
+            saveData();
+            showToastNotification('เพิ่มการดำเนินงานเรียบร้อย');
+            renderSettings();
+        }
+    };
+
+    window.deleteMasterOperation = function (idx) {
+        if (confirm('ยืนยันลบการดำเนินงานนี้?')) {
+            MOCK_DATA.operations.splice(idx, 1);
+            saveData();
+            showToastNotification('ลบสำเร็จ');
+            renderSettings();
+        }
+    };
+
+    window.addMasterAssignee = function () {
+        const text = prompt('เพิ่มชื่อผู้รับผิดชอบใหม่:');
+        if (text && text.trim()) {
+            MOCK_DATA.assignees.push(text.trim());
+            saveData();
+            showToastNotification('เพิ่มผู้รับผิดชอบเรียบร้อย');
+            renderSettings();
+        }
+    };
+
+    window.deleteMasterAssignee = function (idx) {
+        if (confirm('ยืนยันลบผู้รับผิดชอบนี้?')) {
+            MOCK_DATA.assignees.splice(idx, 1);
+            saveData();
+            showToastNotification('ลบสำเร็จ');
+            renderSettings();
+        }
+    };
+
+    content.innerHTML = `
+        <div class="mobile-container p-4">
+            
+            <!-- โซนพื้นที่ -->
+            <div class="form-section-card" style="margin-bottom: 1.5rem;">
+                <h3 class="section-title">โซนพื้นที่ (Zones)</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                    ${MOCK_DATA.zones.map((z, idx) => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
+                            <span>${z.name}</span>
+                            <button class="btn-icon-text" style="color: #ef4444; padding:0;" onclick="deleteMasterZone(${idx})">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn" onclick="addMasterZone()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <span class="material-symbols-outlined">add</span> เพิ่มโซนพื้นที่
+                </button>
+            </div>
+
+            <!-- การดำเนินงาน -->
+            <div class="form-section-card" style="margin-bottom: 1.5rem;">
+                <h3 class="section-title">การดำเนินงาน (Operations)</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                    ${MOCK_DATA.operations.map((op, idx) => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
+                            <span style="font-size:0.9rem; line-height: 1.4; flex-grow:1;">${op}</span>
+                            <button class="btn-icon-text" style="color: #ef4444; padding:0; align-self:flex-start;" onclick="deleteMasterOperation(${idx})">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn" onclick="addMasterOperation()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <span class="material-symbols-outlined">add</span> เพิ่มการดำเนินงาน
+                </button>
+            </div>
+
+            <!-- ผู้รับผิดชอบ -->
+            <div class="form-section-card" style="margin-bottom: 1.5rem;">
+                <h3 class="section-title">รายชื่อผู้รับผิดชอบ (Assignees)</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                    ${MOCK_DATA.assignees.map((a, idx) => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
+                            <span>${a}</span>
+                            <button class="btn-icon-text" style="color: #ef4444; padding:0;" onclick="deleteMasterAssignee(${idx})">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn" onclick="addMasterAssignee()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <span class="material-symbols-outlined">add</span> เพิ่มผู้รับผิดชอบ
+                </button>
+            </div>
+
+        </div>
+    `;
+}
