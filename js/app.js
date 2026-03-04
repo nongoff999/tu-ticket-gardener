@@ -531,6 +531,60 @@ function closePopup() {
 window.showPopup = showPopup;
 window.closePopup = closePopup;
 
+window.showPromptPopup = function (title, placeholder) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'popup-overlay active';
+        overlay.style.zIndex = '9999';
+
+        const content = document.createElement('div');
+        content.className = 'popup-content';
+
+        content.innerHTML = `
+            <div class="popup-icon info">
+                <span class="material-symbols-outlined">edit_square</span>
+            </div>
+            <h3 class="popup-title">${title}</h3>
+            <p class="popup-message" style="margin-bottom: 1rem;">${placeholder}</p>
+            <input type="text" id="prompt-input" placeholder="พิมพ์ข้อความที่นี่..." style="width: 100%; padding: 0.875rem 1rem; border: 1.5px solid var(--border); border-radius: 0.75rem; font-family: inherit; font-size: 1rem; margin-bottom: 1.5rem; outline: none; transition: border-color 0.2s;">
+            <div class="popup-actions" style="display: flex; gap: 0.75rem; width: 100%; justify-content: flex-end;">
+                <button class="popup-btn secondary" id="prompt-cancel" style="flex: 1; background: #f1f5f9; color: #64748b; border: none;">ยกเลิก</button>
+                <button class="popup-btn primary" id="prompt-confirm" style="flex: 1;">ตกลง</button>
+            </div>
+        `;
+
+        overlay.appendChild(content);
+        document.body.appendChild(overlay);
+
+        const input = content.querySelector('#prompt-input');
+        const cancelBtn = content.querySelector('#prompt-cancel');
+        const confirmBtn = content.querySelector('#prompt-confirm');
+
+        input.addEventListener('focus', () => input.style.borderColor = 'var(--primary)');
+        input.addEventListener('blur', () => input.style.borderColor = 'var(--border)');
+
+        setTimeout(() => input.focus(), 100);
+
+        const closeOverlay = (value) => {
+            overlay.classList.remove('active');
+            setTimeout(() => {
+                if (document.body.contains(overlay)) {
+                    document.body.removeChild(overlay);
+                }
+                resolve(value);
+            }, 300);
+        };
+
+        cancelBtn.onclick = () => closeOverlay(null);
+        confirmBtn.onclick = () => closeOverlay(input.value);
+        input.onkeypress = (e) => {
+            if (e.key === 'Enter') {
+                closeOverlay(input.value);
+            }
+        };
+    });
+};
+
 // Global Chart Toggle
 window.toggleChartSeries = function (series) {
     if (!AppState.chartVisibility) {
@@ -553,12 +607,12 @@ window.renderFilteredTickets = function () {
         listEl.innerHTML = filtered.map(ticket => Components.monitorCard(ticket)).join('');
     } else {
         listEl.innerHTML = `
-            <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+            < div style = "text-align: center; padding: 4rem 1rem; color: var(--text-muted);" >
                 <span class="material-symbols-outlined" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;">inbox</span>
                 <p style="font-size: 1.1rem; font-weight: 500;">ไม่พบรายการทิคเก็ต</p>
                 <p style="font-size: 0.9rem; opacity: 0.7;">ลองปรับตัวกรองหรือค้นหาใหม่</p>
-            </div>
-        `;
+            </div >
+            `;
     }
 };
 
@@ -589,7 +643,7 @@ function renderDashboard() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-        <div class="stats-compact-row desktop-3-col">
+            < div class="stats-compact-row desktop-3-col" >
             
             <div class="stat-card yellow">
                 <div style="position: relative; z-index: 10;">
@@ -615,7 +669,7 @@ function renderDashboard() {
                 <span class="material-symbols-outlined stat-card-icon">warning</span>
             </div>
 
-        </div>
+        </div >
         
         <div class="dashboard-container">
             <!-- Chart Card (Large) -->
@@ -669,14 +723,14 @@ function renderDashboard() {
             </div>
         </div>
 
-        <!-- Floating Action Button -->
+        <!--Floating Action Button-- >
         <button class="fab-btn" onclick="router.navigate('/add')">
             <span class="fab-text">Add Ticket</span>
             <span class="material-symbols-outlined" style="font-size: 1.75rem;">add</span>
         </button>
 
         <div class="safe-area-bottom"></div>
-    `;
+        `;
 
     // Initialize Flatpickr for Range Selection
     setTimeout(() => {
@@ -4800,13 +4854,13 @@ async function downloadReportAsImage(dateStr, endDateStr) {
 window.downloadReportAsImage = downloadReportAsImage;
 
 function clearLocalStorage() {
-    if (confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูลทั้งหมดใน LocalStorage? การกระทำนี้ไม่สามารถย้อนกลับได้!')) {
+    showPopup('ล้างข้อมูล', 'คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูลทั้งหมดใน LocalStorage? การกระทำนี้ไม่สามารถย้อนกลับได้!', 'confirm', () => {
         localStorage.removeItem('tu_gardener_data');
         showPopup('สำเร็จ', 'ข้อมูล LocalStorage ถูกล้างแล้ว! กำลังรีโหลด...', 'success');
         setTimeout(() => {
             window.location.reload();
         }, 1000);
-    }
+    });
 }
 
 /* =========================================
@@ -4939,8 +4993,8 @@ function renderSettings() {
     if (!MOCK_DATA.assignees) MOCK_DATA.assignees = ["สมชาย การดี", "หน่วยรักษาความปลอดภัย"];
 
     // Global helper functions
-    window.addMasterZone = function () {
-        const name = prompt('ชื่อโซนพื้นที่ใหม่ (เช่น "ตึกโดม"):');
+    window.addMasterZone = async function () {
+        const name = await showPromptPopup('เพิ่มโซนพื้นที่ใหม่', 'ชื่อโซนพื้นที่ใหม่ (เช่น "ตึกโดม"):');
         if (name && name.trim()) {
             const id = 'z_' + Math.random().toString(36).substr(2, 6);
             MOCK_DATA.zones.push({ id, name: name.trim() });
@@ -4951,16 +5005,16 @@ function renderSettings() {
     };
 
     window.deleteMasterZone = function (idx) {
-        if (confirm('ยืนยันลบโซนพื้นที่นี้?')) {
+        showPopup('ยืนยันลบโซนพื้นที่', 'ยืนยันลบโซนพื้นที่นี้?', 'confirm', () => {
             MOCK_DATA.zones.splice(idx, 1);
             saveData();
             showToastNotification('ลบโซนสำเร็จ');
             renderSettings();
-        }
+        });
     };
 
-    window.addMasterOperation = function () {
-        const text = prompt('เพิ่มการดำเนินงานใหม่:');
+    window.addMasterOperation = async function () {
+        const text = await showPromptPopup('เพิ่มการดำเนินงาน', 'เพิ่มการดำเนินงานใหม่:');
         if (text && text.trim()) {
             MOCK_DATA.operations.push(text.trim());
             saveData();
@@ -4970,16 +5024,16 @@ function renderSettings() {
     };
 
     window.deleteMasterOperation = function (idx) {
-        if (confirm('ยืนยันลบการดำเนินงานนี้?')) {
+        showPopup('ยืนยันลบการดำเนินงาน', 'ยืนยันลบการดำเนินงานนี้?', 'confirm', () => {
             MOCK_DATA.operations.splice(idx, 1);
             saveData();
             showToastNotification('ลบสำเร็จ');
             renderSettings();
-        }
+        });
     };
 
-    window.addMasterAssignee = function () {
-        const text = prompt('เพิ่มชื่อผู้รับผิดชอบใหม่:');
+    window.addMasterAssignee = async function () {
+        const text = await showPromptPopup('เพิ่มผู้รับผิดชอบ', 'เพิ่มชื่อผู้รับผิดชอบใหม่:');
         if (text && text.trim()) {
             MOCK_DATA.assignees.push(text.trim());
             saveData();
@@ -4989,12 +5043,12 @@ function renderSettings() {
     };
 
     window.deleteMasterAssignee = function (idx) {
-        if (confirm('ยืนยันลบผู้รับผิดชอบนี้?')) {
+        showPopup('ยืนยันลบผู้รับผิดชอบ', 'ยืนยันลบผู้รับผิดชอบนี้?', 'confirm', () => {
             MOCK_DATA.assignees.splice(idx, 1);
             saveData();
             showToastNotification('ลบสำเร็จ');
             renderSettings();
-        }
+        });
     };
 
     content.innerHTML = `
