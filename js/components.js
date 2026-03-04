@@ -22,9 +22,14 @@ const Components = {
 
                 <!-- Col 2: Basic Info -->
                 <div class="tli-info">
-                    <span class="tli-id">#${ticket.id}</span>
-                    <h3 class="tli-title">${ticket.title}</h3>
-                    <p class="tli-desc">${ticket.zoneName}${ticket.locationDetail ? ` - ${ticket.locationDetail}` : ''}</p>
+                    <span class="tli-id" style="font-weight: 500; color: #64748b;">#${ticket.id}</span>
+                    <h3 class="tli-title" style="font-weight: 600; color: #0f172a; margin-top: 0.15rem;">${ticket.title}</h3>
+                    <p class="tli-desc" style="font-weight: 600; color: #334155; margin-top: 0.25rem;">${ticket.zoneName}</p>
+                    ${ticket.locationDetail ? `
+                    <div style="font-size: 0.75rem; font-weight: 500; color: #64748b; margin-top: 0.25rem; line-height: 1.4; white-space: normal;">
+                        ${ticket.locationDetail}
+                    </div>
+                    ` : ''}
                     
                     <!-- Only visible in Grid View via CSS -->
                     <div class="grid-badges" style="display: none; margin-top: 0.75rem; gap: 0.5rem;">
@@ -103,8 +108,13 @@ const Components = {
                     </h3>
                     <p style="font-size: 0.95rem; font-weight: 600; color: #334155; margin: 0; display: flex; align-items: center; gap: 0.35rem;">
                         <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #94a3b8;">location_on</span>
-                        ${ticket.zoneName}${ticket.locationDetail ? ` · ${ticket.locationDetail}` : ''}
+                        ${ticket.zoneName}
                     </p>
+                    ${ticket.locationDetail ? `
+                    <div style="font-size: 0.85rem; font-weight: 500; color: #64748b; margin: 0.25rem 0 0 1.45rem; line-height: 1.4; white-space: normal;">
+                        ${ticket.locationDetail}
+                    </div>
+                    ` : ''}
                 </div>
 
                 <!-- 3. สถานะ (Status) -->
