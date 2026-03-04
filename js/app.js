@@ -3277,7 +3277,7 @@ function renderReportList() {
             </div>
 
             <div class="report-card" onclick="exportToExcel()">
-                <div class="report-card-icon" style="background: #f0f9ff; color: #0ea5e9;">
+                <div class="report-card-icon" style="background: var(--primary-light); color: var(--primary);">
                     <span class="material-symbols-outlined">table_view</span>
                 </div>
                 <div class="report-card-info">
@@ -3347,7 +3347,7 @@ function renderYearlyAnalysis(selectedYear) {
                 
                 <div style="display: flex; gap: 1rem; font-size: 0.7rem; margin-bottom: 1rem; justify-content: flex-end;">
                     <div style="display: flex; align-items: center; gap: 0.35rem;">
-                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #0ea5e9;"></div>
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary);"></div>
                         <span>ทิคเก็ตทั้งหมด</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.35rem;">
@@ -3373,7 +3373,7 @@ function renderYearlyAnalysis(selectedYear) {
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
                 <div style="background: #f0f9ff; padding: 1.25rem; border-radius: 1.25rem; border: 1px solid #bae6fd; display: flex; flex-direction: column; align-items: center; text-align: center;">
                     <div style="font-size: 0.75rem; color: #0369a1; margin-bottom: 0.5rem; font-weight: 600;">ทิคเก็ตรวมปีนี้</div>
-                    <div style="font-size: 1.5rem; font-weight: 800; color: #0ea5e9;">${totalInYear}</div>
+                    <div style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">${totalInYear}</div>
                     <div style="font-size: 0.75rem; color: #0c4a6e; opacity: 0.7;">ทิคเก็ต</div>
                 </div>
                 <div style="background: #ecfdf4; padding: 1.25rem; border-radius: 1.25rem; border: 1px solid #a7f3d0; display: flex; flex-direction: column; align-items: center; text-align: center;">
@@ -3470,13 +3470,13 @@ function generateTrendChartSVG(data) {
                 <!-- Glow Effects (Optional) -->
                 <defs>
                     <linearGradient id="gradTotal" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:0.2" />
-                        <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:0" />
+                        <stop offset="0%" style="stop-color:var(--primary);stop-opacity:0.2" />
+                        <stop offset="100%" style="stop-color:var(--primary);stop-opacity:0" />
                     </linearGradient>
                 </defs>
 
                 <!-- Lines -->
-                <path d="${pointsToPath(data.series.total)}" fill="none" stroke="#0ea5e9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="${pointsToPath(data.series.total)}" fill="none" stroke="var(--primary)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
                 <path d="${pointsToPath(data.series.completed)}" fill="none" stroke="#10b981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 
                 <!-- X Axis Labels -->
@@ -3501,7 +3501,7 @@ function generateHorizontalBarChartSVG(zones) {
                         <span style="color: var(--primary); font-weight: 700;">${count} <small style="font-weight: 400; color: #94a3b8;">ทิคเก็ต</small></span>
                     </div>
                     <div style="height: 12px; background: #f1f5f9; border-radius: 6px; position: relative; overflow: hidden;">
-                        <div style="position: absolute; left: 0; top: 0; height: 100%; background: linear-gradient(to right, #0ea5e9, #0284c7); width: ${(count / maxVal) * 100}%; border-radius: 6px; transition: width 1s ease-out;"></div>
+                        <div style="position: absolute; left: 0; top: 0; height: 100%; background: linear-gradient(to right, var(--accent), var(--primary)); width: ${(count / maxVal) * 100}%; border-radius: 6px; transition: width 1s ease-out;"></div>
                     </div>
                 </div>
             `).join('')}

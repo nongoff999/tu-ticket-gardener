@@ -4,14 +4,26 @@
    ========================================== */
 
 :root {
-    /* Primary Colors - More vibrant & modern */
-    --primary: #0284c7;
-    --primary-dark: #075985;
-    --primary-light: #f0f9ff;
-    --accent: #0ea5e9;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
+    /* Enterprise Color Palette */
+    --color-primary: #8bc349;
+    /* Custom Brand Green */
+    --color-primary-hover: #7baf3a;
+    --brand-secondary: #016630;
+    --color-secondary: #e0e0e0;
+    --color-secondary-hover: #d5d5d5;
+
+    --color-success: #198038;
+    --color-warning: #f1c21b;
+    --color-danger: #da1e28;
+
+    /* Primary Colors mapped to Enterprise */
+    --primary: var(--color-primary);
+    --primary-dark: var(--brand-secondary);
+    --primary-light: #f1f8e9;
+    --accent: var(--color-primary-hover);
+    --success: var(--color-success);
+    --warning: var(--color-warning);
+    --danger: var(--color-danger);
 
     /* Status Colors */
     --urgent-bg: #fff1f2;
@@ -1903,7 +1915,7 @@ body,
     left: 0;
     right: 0;
     height: 6px;
-    background: linear-gradient(90deg, #0284c7, #0ea5e9);
+    background: linear-gradient(90deg, var(--primary), var(--accent));
 }
 
 .report-paper-header {
@@ -2266,7 +2278,7 @@ body.login-mode #main-content {
     border-radius: 50%;
     padding: 0;
 
-    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    background: linear-gradient(135deg, var(--accent), var(--primary));
     /* Accent to Primary */
     color: white;
     border: none;
