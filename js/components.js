@@ -85,7 +85,7 @@ const Components = {
         const isListView = AppState.monitorViewMode === 'list';
         const cardStyles = isListView ? `
             display: grid;
-            grid-template-columns: 80px 1fr 140px 140px;
+            grid-template-columns: 80px 1fr 220px 120px;
             align-items: center;
         ` : `
             display: flex;
