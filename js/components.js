@@ -127,8 +127,19 @@ const Components = {
                 <!-- Spacer for Grid View -->
                 ${!isListView ? '<div style="flex-grow: 1;"></div>' : ''}
 
-                <!-- 3. สถานะ & วันเวลา (Combined for Grid View) -->
-                <div class="monitor-col-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: ${isListView ? '0' : '1rem'};">
+                <!-- 3. สถานะ & วันเวลา -->
+                ${isListView ? `
+                <div class="monitor-col-status" style="text-align: center; justify-self: center;">
+                    <span class="badge-tag ${getStatusClass(ticket.status)}" style="padding: 0.5rem 1rem; border-radius: 0.75rem; font-weight: 600; font-size: 0.85rem; text-align: center; display: inline-block; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                        ${getStatusLabel(ticket.status)}
+                    </span>
+                </div>
+                <div class="monitor-col-date" style="text-align: right; justify-self: end;">
+                    <div style="font-size: 0.95rem; font-weight: 500; color: #1e293b;">${formatShortDate(ticket.date).split(' • ')[0]}</div>
+                    <div style="font-size: 0.85rem; color: #64748b; font-weight: 500;">${ticket.date.split('T')[1]?.substring(0, 5) || '00:00'} น.</div>
+                </div>
+                ` : `
+                <div class="monitor-col-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 1rem;">
                     <div class="monitor-col-status" style="text-align: left; flex-shrink: 0;">
                         <span class="badge-tag ${getStatusClass(ticket.status)}" style="padding: 0.5rem 1rem; border-radius: 0.75rem; font-weight: 600; font-size: 0.85rem; text-align: center; display: inline-block; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                             ${getStatusLabel(ticket.status)}
@@ -139,6 +150,7 @@ const Components = {
                         <div style="font-size: 0.85rem; color: #64748b; font-weight: 500;">${ticket.date.split('T')[1]?.substring(0, 5) || '00:00'} น.</div>
                     </div>
                 </div>
+                `}
             </div>
         `;
     },
