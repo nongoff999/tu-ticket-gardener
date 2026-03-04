@@ -1090,17 +1090,22 @@ function renderMonitor() {
 
     // View Switching
     function setView(view) {
+        const monitorHeader = document.querySelector('.monitor-header');
         if (view === 'grid') {
             listContainer.classList.add('grid-view');
             viewGridBtn.classList.add('active');
             viewListBtn.classList.remove('active');
+            if (monitorHeader) monitorHeader.style.display = 'none';
             AppState.monitorViewMode = 'grid';
         } else {
             listContainer.classList.remove('grid-view');
             viewListBtn.classList.add('active');
             viewGridBtn.classList.remove('active');
+            if (monitorHeader) monitorHeader.style.display = 'grid';
             AppState.monitorViewMode = 'list';
         }
+        // We need to re-render the cards as their internal style depends on the view mode
+        renderFilteredTickets(); 
     }
 
     viewListBtn.addEventListener('click', () => setView('list'));
