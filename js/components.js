@@ -130,13 +130,7 @@ const Components = {
                     <div style="font-size: 0.85rem; color: #64748b; font-weight: 500;">${ticket.date.split('T')[1]?.substring(0, 5) || '00:00'} น.</div>
                 </div>
 
-                <!-- Operation (Optional, Full width below) -->
-                ${hasOperation ? `
-                <div class="monitor-row-op" style="width: 100%; margin-top: 0.5rem; padding: 1rem 1.25rem; background: #f0fdf4; border-radius: 1rem; border: 1px solid #dcfce7; display: flex; align-items: center; gap: 0.75rem;">
-                    <span class="material-symbols-outlined" style="font-size: 1.35rem; color: #16a34a;">construction</span>
-                    <span style="font-size: 0.95rem; color: #15803d; font-weight: 600;">${ticket.operation}</span>
-                </div>
-                ` : ''}
+                
             </div>
         `;
     },
