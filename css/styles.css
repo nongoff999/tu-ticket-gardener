@@ -211,8 +211,10 @@ body,
     font-size: 1.25rem;
     font-weight: 800;
     font-family: 'Outfit', sans-serif;
-    color: var(--primary);
+    color: var(--text-primary);
     letter-spacing: -0.02em;
+    text-align: center;
+    flex: 1;
 }
 
 .header-btn {
@@ -4241,4 +4243,52 @@ body.login-mode #main-content {
 .toast-icon .material-symbols-outlined {
     font-size: 16px;
     color: #4ade80;
+}
+
+/* ==========================================
+   List Action Buttons (Enterprise UI)
+   ========================================== */
+.list-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    background: transparent;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #94a3b8;
+    /* Default Muted Gray */
+}
+
+.list-action-btn:hover {
+    background: #f1f5f9;
+}
+
+.list-action-btn:active {
+    transform: scale(0.95);
+}
+
+/* Edit Action */
+.list-action-btn.edit {
+    color: #3b82f6;
+    /* Subtle Blue */
+}
+
+.list-action-btn.edit:hover {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+/* Delete Action */
+.list-action-btn.delete {
+    color: #ef4444;
+    /* Subtle Red */
+}
+
+.list-action-btn.delete:hover {
+    background: #fef2f2;
+    color: #dc2626;
 }

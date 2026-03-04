@@ -5095,11 +5095,11 @@ function renderSettings() {
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
                             <span>${z.name}</span>
                             <div style="display: flex; gap: 0.5rem;">
-                                <button class="btn-icon-text" style="color: var(--ticket-blue); padding:0;" onclick="editMasterZone(${idx})">
-                                    <span class="material-symbols-outlined">edit</span>
+                                <button class="list-action-btn edit" onclick="editMasterZone(${idx})">
+                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">edit</span>
                                 </button>
-                                <button class="btn-icon-text" style="color: #ef4444; padding:0;" onclick="deleteMasterZone(${idx})">
-                                    <span class="material-symbols-outlined">delete</span>
+                                <button class="list-action-btn delete" onclick="deleteMasterZone(${idx})">
+                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">delete</span>
                                 </button>
                             </div>
                         </div>
@@ -5118,11 +5118,11 @@ function renderSettings() {
                         <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
                             <span style="font-size:0.9rem; line-height: 1.4; flex-grow:1;">${op}</span>
                             <div style="display: flex; gap: 0.5rem; align-self: flex-start;">
-                                <button class="btn-icon-text" style="color: var(--ticket-blue); padding:0;" onclick="editMasterOperation(${idx})">
-                                    <span class="material-symbols-outlined">edit</span>
+                                <button class="list-action-btn edit" onclick="editMasterOperation(${idx})">
+                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">edit</span>
                                 </button>
-                                <button class="btn-icon-text" style="color: #ef4444; padding:0;" onclick="deleteMasterOperation(${idx})">
-                                    <span class="material-symbols-outlined">delete</span>
+                                <button class="list-action-btn delete" onclick="deleteMasterOperation(${idx})">
+                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">delete</span>
                                 </button>
                             </div>
                         </div>
@@ -5141,11 +5141,11 @@ function renderSettings() {
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
                             <span>${a}</span>
                             <div style="display: flex; gap: 0.5rem;">
-                                <button class="btn-icon-text" style="color: var(--ticket-blue); padding:0;" onclick="editMasterAssignee(${idx})">
-                                    <span class="material-symbols-outlined">edit</span>
+                                <button class="list-action-btn edit" onclick="editMasterAssignee(${idx})">
+                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">edit</span>
                                 </button>
-                                <button class="btn-icon-text" style="color: #ef4444; padding:0;" onclick="deleteMasterAssignee(${idx})">
-                                    <span class="material-symbols-outlined">delete</span>
+                                <button class="list-action-btn delete" onclick="deleteMasterAssignee(${idx})">
+                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">delete</span>
                                 </button>
                             </div>
                         </div>
