@@ -4820,7 +4820,7 @@ window.downloadReportAsImage = downloadReportAsImage;
 function clearLocalStorage() {
     if (confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูลทั้งหมดใน LocalStorage? การกระทำนี้ไม่สามารถย้อนกลับได้!')) {
         localStorage.removeItem('tu_gardener_data');
-        showToast('ข้อมูล LocalStorage ถูกล้างแล้ว! กำลังรีโหลด...', 'info');
+        showPopup('สำเร็จ', 'ข้อมูล LocalStorage ถูกล้างแล้ว! กำลังรีโหลด...', 'success');
         setTimeout(() => {
             window.location.reload();
         }, 1000);
