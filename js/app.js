@@ -531,7 +531,7 @@ function closePopup() {
 window.showPopup = showPopup;
 window.closePopup = closePopup;
 
-window.showPromptPopup = function (title, placeholder) {
+window.showPromptPopup = function (title, placeholder, defaultValue = '') {
     return new Promise((resolve) => {
         const overlay = document.createElement('div');
         overlay.className = 'popup-overlay active';
@@ -546,7 +546,7 @@ window.showPromptPopup = function (title, placeholder) {
             </div>
             <h3 class="popup-title">${title}</h3>
             <p class="popup-message" style="margin-bottom: 1rem;">${placeholder}</p>
-            <input type="text" id="prompt-input" placeholder="พิมพ์ข้อความที่นี่..." style="width: 100%; padding: 0.875rem 1rem; border: 1.5px solid var(--border); border-radius: 0.75rem; font-family: inherit; font-size: 1rem; margin-bottom: 1.5rem; outline: none; transition: border-color 0.2s;">
+            <input type="text" id="prompt-input" value="${defaultValue}" placeholder="พิมพ์ข้อความที่นี่..." style="width: 100%; padding: 0.875rem 1rem; border: 1.5px solid var(--border); border-radius: 0.75rem; font-family: inherit; font-size: 1rem; margin-bottom: 1.5rem; outline: none; transition: border-color 0.2s;">
             <div class="popup-actions" style="display: flex; gap: 0.75rem; width: 100%; justify-content: flex-end;">
                 <button class="popup-btn secondary" id="prompt-cancel" style="flex: 1; background: #f1f5f9; color: #64748b; border: none;">ยกเลิก</button>
                 <button class="popup-btn primary" id="prompt-confirm" style="flex: 1;">ตกลง</button>
@@ -643,7 +643,7 @@ function renderDashboard() {
 
     const content = document.getElementById('main-content');
     content.innerHTML = `
-            < div class="stats-compact-row desktop-3-col" >
+        <div class="stats-compact-row desktop-3-col">
             
             <div class="stat-card yellow">
                 <div style="position: relative; z-index: 10;">
@@ -5004,6 +5004,17 @@ function renderSettings() {
         }
     };
 
+    window.editMasterZone = async function (idx) {
+        const zone = MOCK_DATA.zones[idx];
+        const newName = await showPromptPopup('แก้ไขโซนพื้นที่', 'แก้ไขชื่อโซนพื้นที่:', zone.name);
+        if (newName && newName.trim() && newName.trim() !== zone.name) {
+            MOCK_DATA.zones[idx].name = newName.trim();
+            saveData();
+            showToastNotification('แก้ไขโซนพื้นที่เรียบร้อย');
+            renderSettings();
+        }
+    };
+
     window.deleteMasterZone = function (idx) {
         showPopup('ยืนยันลบโซนพื้นที่', 'ยืนยันลบโซนพื้นที่นี้?', 'confirm', () => {
             MOCK_DATA.zones.splice(idx, 1);
@@ -5019,6 +5030,17 @@ function renderSettings() {
             MOCK_DATA.operations.push(text.trim());
             saveData();
             showToastNotification('เพิ่มการดำเนินงานเรียบร้อย');
+            renderSettings();
+        }
+    };
+
+    window.editMasterOperation = async function (idx) {
+        const op = MOCK_DATA.operations[idx];
+        const newText = await showPromptPopup('แก้ไขการดำเนินงาน', 'แก้ไขการดำเนินงาน:', op);
+        if (newText && newText.trim() && newText.trim() !== op) {
+            MOCK_DATA.operations[idx] = newText.trim();
+            saveData();
+            showToastNotification('แก้ไขการดำเนินงานเรียบร้อย');
             renderSettings();
         }
     };
@@ -5042,6 +5064,17 @@ function renderSettings() {
         }
     };
 
+    window.editMasterAssignee = async function (idx) {
+        const assignee = MOCK_DATA.assignees[idx];
+        const newText = await showPromptPopup('แก้ไขผู้รับผิดชอบ', 'แก้ไขชื่อผู้รับผิดชอบ:', assignee);
+        if (newText && newText.trim() && newText.trim() !== assignee) {
+            MOCK_DATA.assignees[idx] = newText.trim();
+            saveData();
+            showToastNotification('แก้ไขผู้รับผิดชอบเรียบร้อย');
+            renderSettings();
+        }
+    };
+
     window.deleteMasterAssignee = function (idx) {
         showPopup('ยืนยันลบผู้รับผิดชอบ', 'ยืนยันลบผู้รับผิดชอบนี้?', 'confirm', () => {
             MOCK_DATA.assignees.splice(idx, 1);
@@ -5061,9 +5094,14 @@ function renderSettings() {
                     ${MOCK_DATA.zones.map((z, idx) => `
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
                             <span>${z.name}</span>
-                            <button class="btn-icon-text" style="color: #ef4444; padding:0;" onclick="deleteMasterZone(${idx})">
-                                <span class="material-symbols-outlined">delete</span>
-                            </button>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn-icon-text" style="color: var(--ticket-blue); padding:0;" onclick="editMasterZone(${idx})">
+                                    <span class="material-symbols-outlined">edit</span>
+                                </button>
+                                <button class="btn-icon-text" style="color: #ef4444; padding:0;" onclick="deleteMasterZone(${idx})">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </button>
+                            </div>
                         </div>
                     `).join('')}
                 </div>
@@ -5079,9 +5117,14 @@ function renderSettings() {
                     ${MOCK_DATA.operations.map((op, idx) => `
                         <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
                             <span style="font-size:0.9rem; line-height: 1.4; flex-grow:1;">${op}</span>
-                            <button class="btn-icon-text" style="color: #ef4444; padding:0; align-self:flex-start;" onclick="deleteMasterOperation(${idx})">
-                                <span class="material-symbols-outlined">delete</span>
-                            </button>
+                            <div style="display: flex; gap: 0.5rem; align-self: flex-start;">
+                                <button class="btn-icon-text" style="color: var(--ticket-blue); padding:0;" onclick="editMasterOperation(${idx})">
+                                    <span class="material-symbols-outlined">edit</span>
+                                </button>
+                                <button class="btn-icon-text" style="color: #ef4444; padding:0;" onclick="deleteMasterOperation(${idx})">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </button>
+                            </div>
                         </div>
                     `).join('')}
                 </div>
@@ -5097,9 +5140,14 @@ function renderSettings() {
                     ${MOCK_DATA.assignees.map((a, idx) => `
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
                             <span>${a}</span>
-                            <button class="btn-icon-text" style="color: #ef4444; padding:0;" onclick="deleteMasterAssignee(${idx})">
-                                <span class="material-symbols-outlined">delete</span>
-                            </button>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn-icon-text" style="color: var(--ticket-blue); padding:0;" onclick="editMasterAssignee(${idx})">
+                                    <span class="material-symbols-outlined">edit</span>
+                                </button>
+                                <button class="btn-icon-text" style="color: #ef4444; padding:0;" onclick="deleteMasterAssignee(${idx})">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </button>
+                            </div>
                         </div>
                     `).join('')}
                 </div>
