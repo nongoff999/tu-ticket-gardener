@@ -539,6 +539,28 @@ window.toggleChartSeries = function (series) {
     renderDashboard();
 };
 
+// Global Function for Rendering Monitor Tickets (Moved outside renderMonitor)
+window.renderFilteredTickets = function () {
+    const listEl = document.getElementById('ticket-list');
+    if (!listEl) return;
+
+    // Retrieve filtered tickets from AppState, fallback to all MOCK_DATA tickets
+    const filtered = AppState.monitorFilteredTickets || (typeof MOCK_DATA !== 'undefined' ? MOCK_DATA.tickets : []);
+
+    if (filtered.length > 0) {
+        // Using monitorCard for Monitor view
+        listEl.innerHTML = filtered.map(ticket => Components.monitorCard(ticket)).join('');
+    } else {
+        listEl.innerHTML = `
+            <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+                <span class="material-symbols-outlined" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;">inbox</span>
+                <p style="font-size: 1.1rem; font-weight: 500;">ไม่พบรายการทิคเก็ต</p>
+                <p style="font-size: 0.9rem; opacity: 0.7;">ลองปรับตัวกรองหรือค้นหาใหม่</p>
+            </div>
+        `;
+    }
+};
+
 // Page Renderers
 function renderDashboard() {
     updateHeaderNav(false); // Dashboard is main page
@@ -1105,7 +1127,7 @@ function renderMonitor() {
             AppState.monitorViewMode = 'list';
         }
         // We need to re-render the cards as their internal style depends on the view mode
-        renderFilteredTickets(); 
+        renderFilteredTickets();
     }
 
     viewListBtn.addEventListener('click', () => setView('list'));
@@ -1268,19 +1290,10 @@ function renderMonitor() {
         filtered.sort((a, b) => b.id - a.id);
 
         // Render
-        const listEl = document.getElementById('ticket-list');
-        if (filtered.length > 0) {
-            // Using monitorCard for Monitor view
-            listEl.innerHTML = filtered.map(ticket => Components.monitorCard(ticket)).join('');
-        } else {
-            listEl.innerHTML = `
-                <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
-                    <span class="material-symbols-outlined" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;">inbox</span>
-                    <p style="font-size: 1.1rem; font-weight: 500;">ไม่พบรายการทิคเก็ต</p>
-                    <p style="font-size: 0.9rem; opacity: 0.7;">ลองปรับตัวกรองหรือค้นหาใหม่</p>
-                </div>
-            `;
-        }
+        // Update AppState for the global render function
+        AppState.monitorFilteredTickets = filtered;
+        // Call the Global render function
+        renderFilteredTickets();
 
         // Update Count
         countLabel.textContent = `แสดง ${filtered.length} รายการ`;
