@@ -89,26 +89,26 @@ const Components = {
                 background: white; 
                 padding: 1.5rem; 
                 border-bottom: 1px solid #f1f5f9; 
-                display: flex;
-                flex-wrap: wrap;
+                display: grid; 
+                grid-template-columns: 80px 1fr 140px 140px; 
                 align-items: center; 
                 gap: 1.5rem;
                 cursor: pointer;
                 transition: background 0.2s;
             ">
                 <!-- 1. รหัส (ID) - Secondary Info (Lighter & Smaller) -->
-                <div class="monitor-col-id" style="width: 80px; font-size: 0.95rem; font-weight: 500; color: #64748b; font-family: 'Outfit', sans-serif; flex-shrink: 0;">
+                <div class="monitor-col-id" style="font-size: 0.95rem; font-weight: 500; color: #64748b; font-family: 'Outfit', sans-serif; flex-shrink: 0;">
                     #${ticket.id}
                 </div>
 
                 <!-- 2. ชื่อ และ สถานที่ - Primary Info (Visual Hierarchy: Boldest & Darkest) -->
-                <div class="monitor-col-info" style="flex: 1; min-width: 250px;">
+                <div class="monitor-col-info" style="min-width: 250px;">
                     <h3 style="font-size: 1.1rem; font-weight: 600; color: #0f172a; margin: 0 0 0.35rem 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">
                         ${ticket.title}
                     </h3>
                     <p style="font-size: 0.95rem; font-weight: 600; color: #334155; margin: 0; display: flex; align-items: center; gap: 0.35rem;">
                         <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #94a3b8;">location_on</span>
-                        ${ticket.zoneName}
+                        ${ticket.zoneName.split(' - ')[0]}
                     </p>
                     ${ticket.locationDetail ? `
                     <div style="font-size: 0.85rem; font-weight: 500; color: #64748b; margin: 0.25rem 0 0 1.45rem; line-height: 1.4; white-space: normal;">
@@ -118,14 +118,14 @@ const Components = {
                 </div>
 
                 <!-- 3. สถานะ (Status) -->
-                <div class="monitor-col-status" style="width: 140px; flex-shrink: 0;">
+                <div class="monitor-col-status" style="text-align: center; flex-shrink: 0;">
                     <span class="badge-tag ${getStatusClass(ticket.status)}" style="padding: 0.5rem 1rem; border-radius: 0.75rem; font-weight: 600; font-size: 0.85rem; width: 100%; text-align: center; display: inline-block; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                         ${getStatusLabel(ticket.status)}
                     </span>
                 </div>
 
                 <!-- 4. วันเวลา (DateTime) -->
-                <div class="monitor-col-date" style="width: 140px; text-align: right; flex-shrink: 0;">
+                <div class="monitor-col-date" style="text-align: right; flex-shrink: 0;">
                     <div style="font-size: 0.95rem; font-weight: 500; color: #1e293b;">${formatShortDate(ticket.date).split(' • ')[0]}</div>
                     <div style="font-size: 0.85rem; color: #64748b; font-weight: 500;">${ticket.date.split('T')[1]?.substring(0, 5) || '00:00'} น.</div>
                 </div>

@@ -1054,6 +1054,27 @@ function renderMonitor() {
             <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="monitor-count"></p>
         </div>
 
+        <!-- Table Header -->
+        <div class="monitor-header" style="
+            display: grid;
+            grid-template-columns: 80px 1fr 140px 140px;
+            gap: 1.5rem;
+            padding: 0 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.75rem;
+        ">
+            <div style="padding-left: 0;">รหัส</div>
+            <div>รายละเอียดงาน</div>
+            <div style="text-align: center;">สถานะ</div>
+            <div style="text-align: right;">วันที่ / เวลา</div>
+        </div>
+
         <!-- Ticket List -->
         <div class="ticket-list pb-safe" id="ticket-list">
             <!-- Content rendered by JS -->
