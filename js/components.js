@@ -94,7 +94,7 @@ const Components = {
         `;
 
         return `
-            <div class="monitor-card-premium" onclick="showTicketDetail(${ticket.id})" style="
+            <div class="monitor-card-premium ${isListView ? 'list-view' : ''}" onclick="showTicketDetail(${ticket.id})" style="
                 background: white; 
                 padding: 1.5rem; 
                 border-bottom: 1px solid #f1f5f9; 
@@ -110,6 +110,7 @@ const Components = {
 
                 <!-- 2. ชื่อ และ สถานที่ - Primary Info (Visual Hierarchy: Boldest & Darkest) -->
                 <div class="monitor-col-info" style="min-width: 0; flex-grow: 1;">
+                    <span class="monitor-mobile-id" style="font-size: 0.7rem; color: #64748b; font-weight: 500; display: none;">#${ticket.id}</span>
                     <h3 style="font-size: 1.1rem; font-weight: 600; color: #0f172a; margin: 0 0 0.35rem 0; overflow: hidden; text-overflow: ellipsis; white-space: ${isListView ? 'nowrap' : 'normal'}; line-height: 1.4;">
                         ${ticket.title}
                     </h3>
