@@ -4186,3 +4186,47 @@ body.login-mode #main-content {
         color: #94a3b8 !important;
     }
 }
+
+/* ==========================================
+   Toast Notification (Top Right)
+   ========================================== */
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #0f172a;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 9999;
+    font-family: 'Kanit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.toast-notification.active {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+}
+
+.toast-icon .material-symbols-outlined {
+    font-size: 16px;
+    color: #4ade80;
+}

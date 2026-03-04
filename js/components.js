@@ -94,7 +94,7 @@ const Components = {
         `;
 
         return `
-            <div class="monitor-card-premium ${isListView ? 'list-view' : ''}" onclick="showTicketDetail(${ticket.id})" style="
+            <div class="monitor-card-premium ${isListView ? 'list-view' : ''}" onclick="copyTicketTitle(this.querySelector('h3').innerText)" style="
                 background: white; 
                 padding: 1.5rem; 
                 border-bottom: 1px solid #f1f5f9; 

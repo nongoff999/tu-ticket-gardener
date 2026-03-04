@@ -4885,3 +4885,62 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+window.showToastNotification = function (message) {
+    let existingToast = document.querySelector('.toast-notification');
+    if (existingToast) {
+        existingToast.remove();
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.innerHTML = `
+        <div class="toast-icon">
+            <span class="material-symbols-outlined">check</span>
+        </div>
+        <span>${message}</span>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Animate in
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            toast.classList.add('active');
+        });
+    });
+
+    // Auto remove after 3s
+    setTimeout(() => {
+        toast.classList.remove('active');
+        setTimeout(() => {
+            if (toast.parentNode) toast.remove();
+        }, 300);
+    }, 3000);
+};
+
+window.copyTicketTitle = function (title) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(title).then(() => {
+            showToastNotification('คัดลอกรายละเอียดแล้ว');
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    } else {
+        let textArea = document.createElement("textarea");
+        textArea.value = title;
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showToastNotification('คัดลอกรายละเอียดแล้ว');
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+        }
+        document.body.removeChild(textArea);
+    }
+};
