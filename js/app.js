@@ -1079,7 +1079,7 @@ function renderMonitor() {
         <!-- Table Header -->
         <div class="monitor-header" style="
             display: grid;
-            grid-template-columns: 80px 1fr 140px 140px;
+            grid-template-columns: 80px 1fr 220px 120px;
             gap: 1.5rem;
             padding: 0 1.5rem;
             margin-bottom: 0.5rem;

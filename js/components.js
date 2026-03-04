@@ -47,7 +47,7 @@ const Components = {
                 <!-- Col 4: DateTime -->
                 <div class="tli-date">
                     <span class="date">${formatShortDate(ticket.date)}</span>
-                    <span class="time">${ticket.date.split('T')[1]?.substring(0, 5) || '00:00'} น.</span>
+                    <span class="time">${ticket.date.includes('T') ? ticket.date.split('T')[1].substring(0, 5) : (ticket.date.includes(' ') ? ticket.date.split(' ')[1].substring(0, 5) : '00:00')} น.</span>
                 </div>
 
                 <!-- Col 5: Action Menu -->
@@ -137,7 +137,7 @@ const Components = {
                 </div>
                 <div class="monitor-col-date" style="text-align: right; justify-self: end;">
                     <div style="font-size: 0.95rem; font-weight: 500; color: #1e293b;">${formatShortDate(ticket.date).split(' • ')[0]}</div>
-                    <div style="font-size: 0.85rem; color: #64748b; font-weight: 500;">${ticket.date.split('T')[1]?.substring(0, 5) || '00:00'} น.</div>
+                    <div style="font-size: 0.85rem; color: #64748b; font-weight: 500;">${ticket.date.includes('T') ? ticket.date.split('T')[1].substring(0, 5) : (ticket.date.includes(' ') ? ticket.date.split(' ')[1].substring(0, 5) : '00:00')} น.</div>
                 </div>
                 ` : `
                 <div class="monitor-col-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 1rem;">
@@ -149,7 +149,7 @@ const Components = {
                     </div>
                     <div class="monitor-col-date" style="text-align: right; flex-shrink: 0;">
                         <div style="font-size: 0.95rem; font-weight: 500; color: #1e293b;">${formatShortDate(ticket.date).split(' • ')[0]}</div>
-                        <div style="font-size: 0.85rem; color: #64748b; font-weight: 500;">${ticket.date.split('T')[1]?.substring(0, 5) || '00:00'} น.</div>
+                        <div style="font-size: 0.85rem; color: #64748b; font-weight: 500;">${ticket.date.includes('T') ? ticket.date.split('T')[1].substring(0, 5) : (ticket.date.includes(' ') ? ticket.date.split(' ')[1].substring(0, 5) : '00:00')} น.</div>
                     </div>
                 </div>
                 `}
