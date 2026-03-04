@@ -46,7 +46,7 @@ const Components = {
 
                 <!-- Col 4: DateTime -->
                 <div class="tli-date">
-                    <span class="date">${formatShortDate(ticket.date)}</span>
+                    <span class="date">${formatShortDate(ticket.date).split(' • ')[0]}</span>
                     <span class="time">${ticket.date.includes('T') ? ticket.date.split('T')[1].substring(0, 5) : (ticket.date.includes(' ') ? ticket.date.split(' ')[1].substring(0, 5) : '00:00')} น.</span>
                 </div>
 
