@@ -134,8 +134,16 @@ function saveData() {
     };
 
     // Save to LocalStorage
-    localStorage.setItem('tu_gardener_data', JSON.stringify(MOCK_DATA));
-    console.log('💾 บันทึกข้อมูลลง LocalStorage แล้ว');
+    try {
+        localStorage.setItem('tu_gardener_data', JSON.stringify(MOCK_DATA));
+        console.log('💾 บันทึกข้อมูลลง LocalStorage แล้ว');
+    } catch (e) {
+        if (e.name === 'QuotaExceededError') {
+            console.warn('⚠️ LocalStorage เต็ม! ไม่สามารถบันทึกข้อมูลลง LocalStorage ได้ แต่แอปพลิเคชันยังทำงานต่อได้');
+        } else {
+            console.error('❌ เกิดข้อผิดพลาดในการบันทึกข้อมูลลง LocalStorage:', e);
+        }
+    }
 
     // Save to Firebase if enabled
     if (typeof isFirebaseEnabled === 'function' && isFirebaseEnabled()) {
