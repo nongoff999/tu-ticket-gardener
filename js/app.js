@@ -4991,6 +4991,17 @@ function renderSettings() {
 
     // Ensure assignees array exists for backward compatibility
     if (!MOCK_DATA.assignees) MOCK_DATA.assignees = ["สมชาย การดี", "หน่วยรักษาความปลอดภัย"];
+    if (!MOCK_DATA.treeTypes || MOCK_DATA.treeTypes.length === 0) {
+        MOCK_DATA.treeTypes = [
+            "ต้นจามจุรี", "ต้นพฤกษ์", "ต้นนนทรี", "ต้นประดู่", "ต้นมะฮอกกานี",
+            "ต้นกระพี้จั่น", "ต้นอินทนิล", "ต้นตะแบก", "ต้นเสลา", "ต้นสะเดา",
+            "ต้นเหลืองปรีดียาธร", "ต้นปีบ", "ต้นกระถินณรงค์", "ต้นชมพูพันธ์ทิพย์",
+            "ต้นพิกุล", "ต้นขี้เหล็ก", "ต้นพะยูง", "ต้นสาเก", "ต้นกระทิง",
+            "ต้นโศก", "ต้นจิกทะเล", "ต้นจิกสวน", "ต้นชะแมบทอง", "ต้นหางนกยูง",
+            "ต้นทองอุไร", "ต้นไทร", "ต้นหว้า", "ต้นมะขาม", "ต้นตะเคียน",
+            "ต้นมะกอกน้ำ", "ต้นตีนเป็ด", "ต้นพญาสัตบรรณ", "ต้นพะยอม", "ต้นทองกวาว"
+        ];
+    }
 
     // Global helper functions
     window.addMasterZone = async function () {
@@ -5084,6 +5095,36 @@ function renderSettings() {
         });
     };
 
+    window.addMasterTreeType = async function () {
+        const text = await showPromptPopup('เพิ่มชนิดพรรณไม้', 'เพิ่มชนิดพรรณไม้ใหม่:');
+        if (text && text.trim()) {
+            MOCK_DATA.treeTypes.push(text.trim());
+            saveData();
+            showToastNotification('เพิ่มชนิดพรรณไม้เรียบร้อย');
+            renderSettings();
+        }
+    };
+
+    window.editMasterTreeType = async function (idx) {
+        const pt = MOCK_DATA.treeTypes[idx];
+        const newText = await showPromptPopup('แก้ไขชนิดพรรณไม้', 'แก้ไขชนิดพรรณไม้:', pt);
+        if (newText && newText.trim() && newText.trim() !== pt) {
+            MOCK_DATA.treeTypes[idx] = newText.trim();
+            saveData();
+            showToastNotification('แก้ไขชนิดพรรณไม้เรียบร้อย');
+            renderSettings();
+        }
+    };
+
+    window.deleteMasterTreeType = function (idx) {
+        showPopup('ยืนยันลบชนิดพรรณไม้', 'ยืนยันลบชนิดพรรณไม้นี้?', 'confirm', () => {
+            MOCK_DATA.treeTypes.splice(idx, 1);
+            saveData();
+            showToastNotification('ลบสำเร็จ');
+            renderSettings();
+        });
+    };
+
     content.innerHTML = `
         <div class="mobile-container p-4">
             
@@ -5153,6 +5194,29 @@ function renderSettings() {
                 </div>
                 <button class="btn" onclick="addMasterAssignee()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                     <span class="material-symbols-outlined">add</span> เพิ่มผู้รับผิดชอบ
+                </button>
+            </div>
+
+            <!-- ชนิดพรรณไม้ -->
+            <div class="form-section-card" style="margin-bottom: 1.5rem;">
+                <h3 class="section-title">ชนิดพรรณไม้ (Tree Types)</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                    ${MOCK_DATA.treeTypes.map((pt, idx) => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
+                            <span>${pt}</span>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="list-action-btn edit" onclick="editMasterTreeType(${idx})">
+                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">edit</span>
+                                </button>
+                                <button class="list-action-btn delete" onclick="deleteMasterTreeType(${idx})">
+                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn" onclick="addMasterTreeType()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <span class="material-symbols-outlined">add</span> เพิ่มชนิดพรรณไม้
                 </button>
             </div>
 
