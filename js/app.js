@@ -5454,7 +5454,7 @@ function renderSettings() {
 
         // Restore last active tab if exists
         if (AppState.lastActiveSettingsTab) {
-            const activeTabBtn = document.querySelector(\`.settings-tab[data-target="\${AppState.lastActiveSettingsTab}"]\`);
+            const activeTabBtn = document.querySelector(`.settings-tab[data-target="${AppState.lastActiveSettingsTab}"]`);
             if (activeTabBtn) {
                 activeTabBtn.click();
             }
