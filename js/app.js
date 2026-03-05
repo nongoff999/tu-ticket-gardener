@@ -602,17 +602,70 @@ window.renderFilteredTickets = function () {
     // Retrieve filtered tickets from AppState, fallback to all MOCK_DATA tickets
     const filtered = AppState.monitorFilteredTickets || (typeof MOCK_DATA !== 'undefined' ? MOCK_DATA.tickets : []);
 
-    if (filtered.length > 0) {
+    // Pagination Elements
+    const infoEl = document.getElementById('monitor-pagination-info');
+    const prevBtn = document.getElementById('monitor-prev-page-btn');
+    const nextBtn = document.getElementById('monitor-next-page-btn');
+    const pageNumbersEl = document.getElementById('monitor-page-numbers');
+
+    const hasPagination = infoEl && prevBtn && nextBtn && pageNumbersEl;
+
+    // Apply Pagination
+    let displayData = filtered;
+    let total = filtered.length;
+    let startIdx = 0;
+    let endIdx = total;
+
+    if (hasPagination) {
+        const perPage = AppState.monitorPerPage || 10;
+        const totalPages = Math.ceil(total / perPage);
+
+        if (!AppState.monitorPage || AppState.monitorPage < 1) AppState.monitorPage = 1;
+        if (AppState.monitorPage > totalPages && totalPages > 0) AppState.monitorPage = totalPages;
+
+        startIdx = (AppState.monitorPage - 1) * perPage;
+        endIdx = Math.min(startIdx + perPage, total);
+
+        displayData = filtered.slice(startIdx, endIdx);
+
+        // Update UI
+        infoEl.textContent = total > 0 ? `แสดง ${startIdx + 1}-${endIdx} จาก ${total} รายการ` : 'ไม่พบรายการ';
+        prevBtn.disabled = AppState.monitorPage <= 1;
+        nextBtn.disabled = AppState.monitorPage >= totalPages || totalPages === 0;
+
+        let pageHtml = '';
+        let lastDots = false;
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= AppState.monitorPage - 1 && i <= AppState.monitorPage + 1)) {
+                pageHtml += `<button class="pagination-btn ${i === AppState.monitorPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                lastDots = false;
+            } else if (!lastDots) {
+                pageHtml += `<span style="padding: 0 0.5rem; color: #94a3b8;">...</span>`;
+                lastDots = true;
+            }
+        }
+        pageNumbersEl.innerHTML = pageHtml;
+
+        pageNumbersEl.querySelectorAll('.pagination-btn').forEach(btn => {
+            btn.onclick = () => {
+                AppState.monitorPage = parseInt(btn.dataset.page);
+                window.renderFilteredTickets();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+        });
+    }
+
+    if (displayData.length > 0) {
         // Using monitorCard for Monitor view
-        listEl.innerHTML = filtered.map(ticket => Components.monitorCard(ticket)).join('');
+        listEl.innerHTML = displayData.map(ticket => Components.monitorCard(ticket)).join('');
     } else {
         listEl.innerHTML = `
-            < div style = "text-align: center; padding: 4rem 1rem; color: var(--text-muted);" >
+            <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
                 <span class="material-symbols-outlined" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;">inbox</span>
                 <p style="font-size: 1.1rem; font-weight: 500;">ไม่พบรายการทิคเก็ต</p>
                 <p style="font-size: 0.9rem; opacity: 0.7;">ลองปรับตัวกรองหรือค้นหาใหม่</p>
-            </div >
-            `;
+            </div>
+        `;
     }
 };
 
@@ -1081,6 +1134,10 @@ function renderMonitor() {
     AppState.currentPage = 'monitor';
     updateActiveNavItem('monitor');
 
+    // Default pagination state
+    if (!AppState.monitorPerPage) AppState.monitorPerPage = 10;
+    if (!AppState.monitorPage) AppState.monitorPage = 1;
+
     document.getElementById('page-title').textContent = 'GARDEN MONITOR';
 
     const content = document.getElementById('main-content');
@@ -1153,8 +1210,32 @@ function renderMonitor() {
         </div>
 
         <!-- Ticket List -->
-        <div class="ticket-list pb-safe" id="ticket-list">
+        <div class="ticket-list pb-safe" id="ticket-list" style="margin-bottom: 0;">
             <!-- Content rendered by JS -->
+        </div>
+
+        <!-- Standard Table Pagination -->
+        <div class="table-pagination">
+            <div class="rows-per-page">
+                <span>แสดงหน้าละ:</span>
+                <select id="monitor-rows-per-page-select" class="rows-select">
+                    <option value="10" ${AppState.monitorPerPage == 10 ? 'selected' : ''}>10</option>
+                    <option value="25" ${AppState.monitorPerPage == 25 ? 'selected' : ''}>25</option>
+                    <option value="50" ${AppState.monitorPerPage == 50 ? 'selected' : ''}>50</option>
+                </select>
+                <span>รายการ</span>
+            </div>
+            
+            <div class="pagination-controls">
+                <div class="pagination-info" id="monitor-pagination-info" style="margin-right: 1rem;">แสดง - จาก -</div>
+                <button class="pagination-btn" id="monitor-prev-page-btn">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="monitor-page-numbers" style="display: flex; gap: 0.25rem;"></div>
+                <button class="pagination-btn" id="monitor-next-page-btn">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
         </div>
     `;
 
@@ -1196,7 +1277,7 @@ function renderMonitor() {
     setView(AppState.monitorViewMode);
 
     // Filters State
-    let selectedStatuses = ['new', 'inProgress', 'completed']; // Default all
+    let selectedStatuses = ['new', 'inProgress']; // Default initial values for GARDEN MONITOR
     let selectedPriorities = ['urgent', 'not-urgent']; // Default all
 
     // --- Generic Multi-Select Helper (Duplicated for Safety) ---
@@ -1350,11 +1431,47 @@ function renderMonitor() {
         // Call the Global render function
         renderFilteredTickets();
 
-        // Update Count
-        countLabel.textContent = `แสดง ${filtered.length} รายการ`;
+        // Update Count label above the table
+        countLabel.textContent = `พบทั้งหมด ${filtered.length} รายการ`;
     }
 
-    searchInput.addEventListener('input', applyFilters);
+    // Pagination Controls Setup for static buttons
+    const rowsSelect = document.getElementById('monitor-rows-per-page-select');
+    const prevBtn = document.getElementById('monitor-prev-page-btn');
+    const nextBtn = document.getElementById('monitor-next-page-btn');
+
+    if (rowsSelect) {
+        rowsSelect.onchange = (e) => {
+            AppState.monitorPerPage = parseInt(e.target.value);
+            AppState.monitorPage = 1;
+            renderFilteredTickets();
+        };
+    }
+
+    if (prevBtn) {
+        prevBtn.onclick = () => {
+            if (AppState.monitorPage > 1) {
+                AppState.monitorPage--;
+                renderFilteredTickets();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        };
+    }
+
+    if (nextBtn) {
+        nextBtn.onclick = () => {
+            AppState.monitorPage++;
+            renderFilteredTickets();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+    }
+
+    searchInput.addEventListener('input', () => {
+        AppState.monitorPage = 1; // Reset to page 1 on search
+        applyFilters();
+    });
+
+    // Initial render call
     applyFilters();
 }
 
