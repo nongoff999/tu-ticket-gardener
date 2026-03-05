@@ -5243,100 +5243,221 @@ function renderSettings() {
     };
 
     content.innerHTML = `
+        <style>
+            .settings-tabs {
+                display: flex;
+                overflow-x: auto;
+                background-color: white;
+                border-bottom: 1px solid #e2e8f0;
+                margin-bottom: 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            }
+            .settings-tabs::-webkit-scrollbar {
+                display: none;
+            }
+            .settings-tab {
+                padding: 1rem 1.25rem;
+                font-size: 0.95rem;
+                font-weight: 500;
+                color: #64748b;
+                background: none;
+                border: none;
+                border-bottom: 2px solid transparent;
+                cursor: pointer;
+                white-space: nowrap;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .settings-tab:hover {
+                color: var(--primary);
+                background-color: #f8fafc;
+            }
+            .settings-tab.active {
+                color: var(--primary);
+                border-bottom-color: var(--primary);
+            }
+            .settings-tab-icon {
+                font-size: 1.25rem;
+            }
+            .settings-content-pane {
+                display: none;
+                animation: fadeIn 0.3s ease;
+            }
+            .settings-content-pane.active {
+                display: block;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(5px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        </style>
         <div class="mobile-container p-4">
             
-            <!-- โซนพื้นที่ -->
-            <div class="form-section-card" style="margin-bottom: 1.5rem;">
-                <h3 class="section-title">โซนพื้นที่ (Zones)</h3>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
-                    ${MOCK_DATA.zones.map((z, idx) => `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
-                            <span>${z.name}</span>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <button class="list-action-btn edit" onclick="editMasterZone(${idx})">
-                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">edit</span>
-                                </button>
-                                <button class="list-action-btn delete" onclick="deleteMasterZone(${idx})">
-                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">delete</span>
-                                </button>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-                <button class="btn" onclick="addMasterZone()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <span class="material-symbols-outlined">add</span> เพิ่มโซนพื้นที่
+            <div class="settings-tabs" id="settings-tabs">
+                <button class="settings-tab active" data-target="tab-trees">
+                    <span class="material-symbols-outlined settings-tab-icon">nature</span> ชนิดพรรณไม้
                 </button>
-            </div>
-
-            <!-- การดำเนินงาน -->
-            <div class="form-section-card" style="margin-bottom: 1.5rem;">
-                <h3 class="section-title">การดำเนินงาน (Operations)</h3>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
-                    ${MOCK_DATA.operations.map((op, idx) => `
-                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
-                            <span style="font-size:0.9rem; line-height: 1.4; flex-grow:1;">${op}</span>
-                            <div style="display: flex; gap: 0.5rem; align-self: flex-start;">
-                                <button class="list-action-btn edit" onclick="editMasterOperation(${idx})">
-                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">edit</span>
-                                </button>
-                                <button class="list-action-btn delete" onclick="deleteMasterOperation(${idx})">
-                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">delete</span>
-                                </button>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-                <button class="btn" onclick="addMasterOperation()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <span class="material-symbols-outlined">add</span> เพิ่มการดำเนินงาน
+                <button class="settings-tab" data-target="tab-zones">
+                    <span class="material-symbols-outlined settings-tab-icon">map</span> โซนพื้นที่
                 </button>
-            </div>
-
-            <!-- ผู้รับผิดชอบ -->
-            <div class="form-section-card" style="margin-bottom: 1.5rem;">
-                <h3 class="section-title">รายชื่อผู้รับผิดชอบ (Assignees)</h3>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
-                    ${MOCK_DATA.assignees.map((a, idx) => `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
-                            <span>${a}</span>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <button class="list-action-btn edit" onclick="editMasterAssignee(${idx})">
-                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">edit</span>
-                                </button>
-                                <button class="list-action-btn delete" onclick="deleteMasterAssignee(${idx})">
-                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">delete</span>
-                                </button>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-                <button class="btn" onclick="addMasterAssignee()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <span class="material-symbols-outlined">add</span> เพิ่มผู้รับผิดชอบ
+                <button class="settings-tab" data-target="tab-operations">
+                    <span class="material-symbols-outlined settings-tab-icon">build</span> การดำเนินงาน
+                </button>
+                <button class="settings-tab" data-target="tab-assignees">
+                    <span class="material-symbols-outlined settings-tab-icon">group</span> ผู้รับผิดชอบ
                 </button>
             </div>
 
             <!-- ชนิดพรรณไม้ -->
-            <div class="form-section-card" style="margin-bottom: 1.5rem;">
-                <h3 class="section-title">ชนิดพรรณไม้ (Tree Types)</h3>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
-                    ${MOCK_DATA.treeTypes.map((pt, idx) => `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
-                            <span>${pt}</span>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <button class="list-action-btn edit" onclick="editMasterTreeType(${idx})">
-                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">edit</span>
-                                </button>
-                                <button class="list-action-btn delete" onclick="deleteMasterTreeType(${idx})">
-                                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">delete</span>
-                                </button>
+            <div class="settings-content-pane active" id="tab-trees">
+                <div class="form-section-card" style="margin-bottom: 1.5rem;">
+                    <h3 class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>ชนิดพรรณไม้ (Tree Types)</span>
+                        <span style="font-size: 0.8rem; font-weight: 500; background: #e0e7ff; color: #4338ca; padding: 0.25rem 0.75rem; border-radius: 999px;">${MOCK_DATA.treeTypes.length} รายการ</span>
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; max-height: 500px; overflow-y: auto; padding-right: 0.5rem;">
+                        ${MOCK_DATA.treeTypes.map((pt, idx) => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; transition: background 0.2s;">
+                                <span style="font-weight: 500; color: #334155;">${pt}</span>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button class="list-action-btn edit" onclick="editMasterTreeType(${idx})" title="แก้ไข">
+                                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">edit</span>
+                                    </button>
+                                    <button class="list-action-btn delete" onclick="deleteMasterTreeType(${idx})" title="ลบ">
+                                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">delete</span>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    `).join('')}
+                        `).join('')}
+                    </div>
+                    <button class="btn btn-primary" onclick="addMasterTreeType()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                        <span class="material-symbols-outlined">add</span> เพิ่มชนิดพรรณไม้
+                    </button>
                 </div>
-                <button class="btn" onclick="addMasterTreeType()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <span class="material-symbols-outlined">add</span> เพิ่มชนิดพรรณไม้
-                </button>
+            </div>
+
+            <!-- โซนพื้นที่ -->
+            <div class="settings-content-pane" id="tab-zones">
+                <div class="form-section-card" style="margin-bottom: 1.5rem;">
+                    <h3 class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>โซนพื้นที่ (Zones)</span>
+                        <span style="font-size: 0.8rem; font-weight: 500; background: #e0e7ff; color: #4338ca; padding: 0.25rem 0.75rem; border-radius: 999px;">${MOCK_DATA.zones.length} รายการ</span>
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; max-height: 500px; overflow-y: auto; padding-right: 0.5rem;">
+                        ${MOCK_DATA.zones.map((z, idx) => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
+                                <span style="font-weight: 500; color: #334155;">${z.name}</span>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button class="list-action-btn edit" onclick="editMasterZone(${idx})" title="แก้ไข">
+                                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">edit</span>
+                                    </button>
+                                    <button class="list-action-btn delete" onclick="deleteMasterZone(${idx})" title="ลบ">
+                                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="btn btn-primary" onclick="addMasterZone()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                        <span class="material-symbols-outlined">add</span> เพิ่มโซนพื้นที่
+                    </button>
+                </div>
+            </div>
+
+            <!-- การดำเนินงาน -->
+            <div class="settings-content-pane" id="tab-operations">
+                <div class="form-section-card" style="margin-bottom: 1.5rem;">
+                    <h3 class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>การดำเนินงาน (Operations)</span>
+                        <span style="font-size: 0.8rem; font-weight: 500; background: #e0e7ff; color: #4338ca; padding: 0.25rem 0.75rem; border-radius: 999px;">${MOCK_DATA.operations.length} รายการ</span>
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; max-height: 500px; overflow-y: auto; padding-right: 0.5rem;">
+                        ${MOCK_DATA.operations.map((op, idx) => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
+                                <span style="font-size:0.9rem; line-height: 1.4; flex-grow:1; font-weight: 500; color: #334155;">${op}</span>
+                                <div style="display: flex; gap: 0.5rem; align-self: flex-start;">
+                                    <button class="list-action-btn edit" onclick="editMasterOperation(${idx})" title="แก้ไข">
+                                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">edit</span>
+                                    </button>
+                                    <button class="list-action-btn delete" onclick="deleteMasterOperation(${idx})" title="ลบ">
+                                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="btn btn-primary" onclick="addMasterOperation()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                        <span class="material-symbols-outlined">add</span> เพิ่มการดำเนินงาน
+                    </button>
+                </div>
+            </div>
+
+            <!-- ผู้รับผิดชอบ -->
+            <div class="settings-content-pane" id="tab-assignees">
+                <div class="form-section-card" style="margin-bottom: 1.5rem;">
+                    <h3 class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>รายชื่อผู้รับผิดชอบ (Assignees)</span>
+                        <span style="font-size: 0.8rem; font-weight: 500; background: #e0e7ff; color: #4338ca; padding: 0.25rem 0.75rem; border-radius: 999px;">${MOCK_DATA.assignees.length} รายการ</span>
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; max-height: 500px; overflow-y: auto; padding-right: 0.5rem;">
+                        ${MOCK_DATA.assignees.map((a, idx) => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem;">
+                                        ${a.substring(0, 1)}
+                                    </div>
+                                    <span style="font-weight: 500; color: #334155;">${a}</span>
+                                </div>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button class="list-action-btn edit" onclick="editMasterAssignee(${idx})" title="แก้ไข">
+                                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">edit</span>
+                                    </button>
+                                    <button class="list-action-btn delete" onclick="deleteMasterAssignee(${idx})" title="ลบ">
+                                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="btn btn-primary" onclick="addMasterAssignee()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                        <span class="material-symbols-outlined">add</span> เพิ่มผู้รับผิดชอบ
+                    </button>
+                </div>
             </div>
 
         </div>
     `;
+
+    // Initialize tabs logic
+    setTimeout(() => {
+        const tabs = document.querySelectorAll('.settings-tab');
+        const panes = document.querySelectorAll('.settings-content-pane');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                // Remove active class from all
+                tabs.forEach(t => t.classList.remove('active'));
+                panes.forEach(p => p.classList.remove('active'));
+
+                // Add active class to clicked
+                const targetId = e.currentTarget.dataset.target;
+                e.currentTarget.classList.add('active');
+                document.getElementById(targetId).classList.add('active');
+
+                // Store last active tab
+                AppState.lastActiveSettingsTab = targetId;
+            });
+        });
+
+        // Restore last active tab if exists
+        if (AppState.lastActiveSettingsTab) {
+            const activeTabBtn = document.querySelector(\`.settings-tab[data-target="\${AppState.lastActiveSettingsTab}"]\`);
+            if (activeTabBtn) {
+                activeTabBtn.click();
+            }
+        }
+    }, 50);
 }
